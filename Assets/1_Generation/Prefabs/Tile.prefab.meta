@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 882a68cab87adc249928e3e67ee355ab
+timeCreated: 1467810251
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 67195
+  packageName: Procedural Room Dungeon Generator
+  packageVersion: 1.2
+  assetPath: Assets/Room Dungeon Generator/03.Prefabs/Tile.prefab
+  uploadId: 139876

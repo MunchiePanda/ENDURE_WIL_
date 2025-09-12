@@ -9,16 +9,38 @@ public class DungeonGenerator : MonoBehaviour
     [Header("Map Settings - How big our map is and how rooms are made!")]
     [SerializeField] private int rows = 80; // How many squares tall our map is
     [SerializeField] private int cols = 80; // How many squares wide our map is
-    [SerializeField] private int minRoomSize = 10; // The smallest room we can make
-    [SerializeField] private int maxRoomSize = 16; // The biggest room we can make
+    [SerializeField] private int minRoomSize = 3; // The smallest room we can make
+    [SerializeField] private int maxRoomSize = 6; // The biggest room we can make
     [SerializeField] private int roomCount = 40;   // How many rooms we want to try and make
     [SerializeField] private float tileSize = 10.0f; // How big each square is in the game world (e.g., 10 units wide)
+
+    [Header("Algorithm")]
+    [SerializeField] private bool useBsp = false;
+    [SerializeField] private bool useMstRooms = false;
+
+    [Tooltip("Corridor half-width in tiles (0=1 wide, 1=3 wide)")] 
+    [SerializeField] private int corridorRadius = 1;
+
+    [Header("BSP Settings")] 
+    [SerializeField] private int bspMinLeafSize = 10;
+    [SerializeField] private int bspMaxLeafSize = 24;
+
+    [Header("MST Rooms Settings")] 
+    [SerializeField] private int rectRoomPadding = 1;
+    [SerializeField] private int rectMinSize = 4;
+    [SerializeField] private int rectMaxSize = 10;
+
+    [Header("Randomness")]
+    [SerializeField] private bool useSeed = false;
+    [SerializeField] private int seed = 12345;
 
     [Header("Dungeon Pieces - What our dungeon is made of!")]
     [SerializeField] private GameObject floorPrefab;          // The piece we use for the floor
     [SerializeField] private GameObject wallPrefab;           // The piece we use for the walls
     [SerializeField] private GameObject roofPrefab;           // The piece we use for the roof
     [SerializeField] private float wallHeight = 10.0f; // How tall our walls are in the game world
+    [SerializeField] private bool spawnWalls = true;
+    [SerializeField] private bool spawnRoof = true;
 
     private TileMatrix tileMatrix; // This is the map-making brain we talked about earlier!
     private List<GameObject> spawnedObjects = new List<GameObject>(); // We'll keep track of all the pieces we put in the dungeon
@@ -39,6 +61,7 @@ public class DungeonGenerator : MonoBehaviour
     }
 
     // This is like pressing the "Build Dungeon!" button!
+    [ContextMenu("Generate Now")]
     public void GenerateDungeon()
     {
         if (isGenerating) return; // If we're already building, let's not start over!
@@ -57,10 +80,41 @@ public class DungeonGenerator : MonoBehaviour
 
         tileMatrix.InitializeTileMap(rows, cols); // Tell the map brain how big the map is
         tileMatrix.SetRoomSize(minRoomSize, maxRoomSize); // Tell the map brain how big rooms should be
+        tileMatrix.corridorRadius = Mathf.Max(0, corridorRadius);
+        tileMatrix.bspMinLeafSize = bspMinLeafSize;
+        tileMatrix.bspMaxLeafSize = Mathf.Max(bspMinLeafSize + 1, bspMaxLeafSize);
+        tileMatrix.rectRoomPadding = rectRoomPadding;
+        tileMatrix.rectMinSize = rectMinSize;
+        tileMatrix.rectMaxSize = rectMaxSize;
 
         // Create the rooms on our map!
-        // We'll use a default exit point for now, maybe the center of our hub.
-        tileMatrix.CreateRooms(roomCount, new Vector2Int(5, 40)); // Example exit point, you can change this!
+        if (useSeed) Random.InitState(seed);
+        if (useBsp)
+        {
+            tileMatrix.CreateRoomsBsp();
+        }
+        else if (useMstRooms)
+        {
+            tileMatrix.CreateRoomsMstLike(roomCount);
+        }
+        else
+        {
+            tileMatrix.CreateRooms(roomCount, new Vector2Int(5, 40));
+        }
+
+        // Early prefab sanity checks
+        if (floorPrefab == null)
+        {
+            Debug.LogError("DungeonGenerator: floorPrefab is not assigned. Assign a floor prefab in the inspector.");
+        }
+        if (spawnWalls && wallPrefab == null)
+        {
+            Debug.LogWarning("DungeonGenerator: spawnWalls is true but wallPrefab is not assigned. Walls will be skipped.");
+        }
+        if (spawnRoof && roofPrefab == null)
+        {
+            Debug.LogWarning("DungeonGenerator: spawnRoof is true but roofPrefab is not assigned. Roofs will be skipped.");
+        }
 
         SpawnDungeonObjects(); // Now, use the map to put actual pieces in the game!
         tileMatrix.PrintDebugTileMap(); // Show us a little picture of our map in the console
@@ -95,7 +149,25 @@ public class DungeonGenerator : MonoBehaviour
 
         tileMatrix.InitializeTileMap(rows, cols); // Tell the map brain how big the map is
         tileMatrix.SetRoomSize(minRoomSize, maxRoomSize); // Tell the map brain how big rooms should be
-        tileMatrix.CreateRooms(roomCount, exitPoint); // Create rooms, starting from the exit door!
+        tileMatrix.corridorRadius = Mathf.Max(0, corridorRadius);
+        tileMatrix.bspMinLeafSize = bspMinLeafSize;
+        tileMatrix.bspMaxLeafSize = Mathf.Max(bspMinLeafSize + 1, bspMaxLeafSize);
+        tileMatrix.rectRoomPadding = rectRoomPadding;
+        tileMatrix.rectMinSize = rectMinSize;
+        tileMatrix.rectMaxSize = rectMaxSize;
+        if (useSeed) Random.InitState(seed);
+        if (useBsp)
+        {
+            tileMatrix.CreateRoomsBsp();
+        }
+        else if (useMstRooms)
+        {
+            tileMatrix.CreateRoomsMstLike(roomCount);
+        }
+        else
+        {
+            tileMatrix.CreateRooms(roomCount, exitPoint); // Create rooms, starting from the exit door!
+        }
         tileMatrix.PrintDebugTileMap(); // Show us our new map!
 
         yield return null; // Take a short break so the game doesn't freeze
@@ -126,11 +198,20 @@ public class DungeonGenerator : MonoBehaviour
     {
         // Put down all the floor tiles!
         List<Vector2Int> floorTiles = tileMatrix.GetFloorTilePositions();
+        if (floorTiles == null || floorTiles.Count == 0)
+        {
+            Debug.LogWarning("DungeonGenerator: No floor tiles returned from TileMatrix. Check rows/cols, room sizes, and roomCount.");
+        }
+        else
+        {
+            Debug.Log($"DungeonGenerator: Spawning {floorTiles.Count} floor tiles.");
+        }
         foreach (Vector2Int tilePos in floorTiles)
         {
             Vector3 worldPos = TileToWorldPosition(tilePos);
             InstantiateAndAdd(floorPrefab, worldPos); // Place the floor
 
+            if (!spawnRoof) continue;
             // Now, let's put a roof above each floor piece!
             // The roof should be positioned at `floor.y + wallHeight + (roofPrefab.localScale.y * 0.5f)`
             // Assuming floorPrefab.transform.localScale.y is the height of the floor
@@ -139,8 +220,17 @@ public class DungeonGenerator : MonoBehaviour
             InstantiateAndAdd(roofPrefab, worldPos + new Vector3(0, roofOffset + floorHeightOffset, 0));
         }
 
+        if (!spawnWalls) return;
         // Put up all the wall tiles!
         List<WallSpawnData> wallSpawnPoints = tileMatrix.GetWallSpawnPoints();
+        if (wallSpawnPoints == null || wallSpawnPoints.Count == 0)
+        {
+            Debug.LogWarning("DungeonGenerator: No wall spawn points returned from TileMatrix.");
+        }
+        else
+        {
+            Debug.Log($"DungeonGenerator: Spawning up to {wallSpawnPoints.Count} walls (deduped).");
+        }
         foreach (WallSpawnData wallData in wallSpawnPoints)
         {
             Vector3 worldPos = TileToWorldPosition(wallData.TilePosition);
@@ -150,7 +240,6 @@ public class DungeonGenerator : MonoBehaviour
             // For a wall prefab with scale (1,1,10) that is 1 unit thick and 10 units long (along its local Z-axis),
             // and a tileSize of 10.0f, the wall needs to be shifted by half a tileSize in the correct direction.
             // The wall's pivot is usually at its center.
-            float wallThicknessOffset = 0.5f; // Assuming wall prefab is 1 unit thick, and pivot is center
 
             switch (wallData.Direction)
             {

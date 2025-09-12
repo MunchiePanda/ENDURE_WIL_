@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 87f204376d8cbb5438e6b251229b7e69
+timeCreated: 1467619915
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 67195
+  packageName: Procedural Room Dungeon Generator
+  packageVersion: 1.2
+  assetPath: Assets/Room Dungeon Generator/02.Scripts/IntVector2.cs
+  uploadId: 139876
