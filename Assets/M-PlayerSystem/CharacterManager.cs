@@ -12,16 +12,6 @@ namespace ENDURE
         [SerializeField] protected Stat staminaField; // How much energy they have for running or jumping!
         [SerializeField] protected Stat speedField;   // How fast they can move!
 
-/*
-What does => mean in C# Getters?
-You might have seen => in your code, like this:
-This is called an expression-bodied member (or expression-bodied property in this case). It's a shorthand way to write very simple getters and setters (or methods) in C#.
-Think of it like this:
-get => healthField;
-This means: "When someone tries to get the Health property, just give them the value of healthField." It's a quick way to say get { return healthField; }.
-set => healthField = value;
-This means: "When someone tries to set the Health property, take the value they're giving and put it into healthField." It's a quick way to say set { healthField = value; }.
-*/
         // The rules say we need a health stat, so here it is!
         public Stat Health { get => healthField; set => healthField = value; }
 

@@ -17,27 +17,25 @@ public class DungeonGenerator : MonoBehaviour
     [Header("Dungeon Pieces - What our dungeon is made of!")]
     [SerializeField] private GameObject floorPrefab;          // The piece we use for the floor
     [SerializeField] private GameObject wallPrefab;           // The piece we use for the walls
-    [SerializeField] private GameObject treasureChestPrefab;  // A cool chest to find!
-    [SerializeField] private GameObject torchPrefab;          // Light up the dungeon!
-    [SerializeField] private GameObject techScrapPrefab;      // Shiny bits to collect
-    [SerializeField] private GameObject carvingPrefab;        // Fancy decorations on walls
-    [SerializeField] private GameObject healthPickupPrefab;   // For when our player needs a little boost!
-    [SerializeField] private GameObject exitPortalPrefab;     // The way out of the dungeon!
-    [SerializeField] private GameObject loadingIndicator;     // Something to show when the dungeon is being built
+    [SerializeField] private GameObject roofPrefab;           // The piece we use for the roof
+    [SerializeField] private float wallHeight = 10.0f; // How tall our walls are in the game world
 
     private TileMatrix tileMatrix; // This is the map-making brain we talked about earlier!
     private List<GameObject> spawnedObjects = new List<GameObject>(); // We'll keep track of all the pieces we put in the dungeon
+    private HashSet<string> spawnedWallKeys = new HashSet<string>(); // To keep track of unique walls and prevent duplicates
     private Vector2Int activeExitPoint = new Vector2Int(-1, -1); // Where the player came from to get here
     private bool isGenerating = false; // A switch to know if we are busy building the dungeon
 
-    // This happens even before the game starts, like getting our tools ready!
+    // This happens when the game first starts, like getting our tools ready!
     void Awake()
     {
         tileMatrix = new TileMatrix(); // We get our map-making brain ready
-        if (loadingIndicator != null)
+    }
+
+    // This is like a button that automatically builds the dungeon when the game starts!
+    void Start()
         {
-            loadingIndicator.SetActive(false); // Hide the loading sign at first
-        }
+        GenerateDungeon();
     }
 
     // This is like pressing the "Build Dungeon!" button!
@@ -46,6 +44,9 @@ public class DungeonGenerator : MonoBehaviour
         if (isGenerating) return; // If we're already building, let's not start over!
 
         ClearDungeon(); // First, clear away any old dungeon pieces
+
+        // Clear the wall keys at the start of a new generation
+        spawnedWallKeys.Clear();
 
         // Make sure our map is big enough for the starting area
         if (rows < 20 || cols < 20)
@@ -76,7 +77,6 @@ public class DungeonGenerator : MonoBehaviour
 
         isGenerating = true; // We start building!
         activeExitPoint = exitPoint; // Remember where the player came from
-        if (loadingIndicator != null) loadingIndicator.SetActive(true); // Show the loading sign!
         
         StartCoroutine(BeginAsyncGeneration(exitPoint)); // Start building in a slow, careful way
     }
@@ -90,7 +90,6 @@ public class DungeonGenerator : MonoBehaviour
         {
             Debug.LogWarning("Grid must be at least 20x20 for hub!");
             isGenerating = false;
-            if (loadingIndicator != null) loadingIndicator.SetActive(false);
             yield break; // Stop here if map is too small
         }
 
@@ -104,7 +103,6 @@ public class DungeonGenerator : MonoBehaviour
         SpawnDungeonObjects(); // Put all the dungeon pieces in the game!
 
         isGenerating = false; // We're done building!
-        if (loadingIndicator != null) loadingIndicator.SetActive(false); // Hide the loading sign
         // Maybe tell other scripts that the dungeon is ready!
     }
 
@@ -117,9 +115,10 @@ public class DungeonGenerator : MonoBehaviour
         }
         spawnedObjects.Clear(); // Empty our list of pieces
 
+        spawnedWallKeys.Clear(); // Also clear the unique wall tracker
+
         activeExitPoint = new Vector2Int(-1, -1); // Forget the old exit point
         isGenerating = false; // We are not building anymore
-        if (loadingIndicator != null) loadingIndicator.SetActive(false); // Hide the loading sign
     }
 
     // This is where we actually put the game pieces in the world!
@@ -130,110 +129,61 @@ public class DungeonGenerator : MonoBehaviour
         foreach (Vector2Int tilePos in floorTiles)
         {
             Vector3 worldPos = TileToWorldPosition(tilePos);
-            InstantiateAndAdd(floorPrefab, worldPos);
+            InstantiateAndAdd(floorPrefab, worldPos); // Place the floor
+
+            // Now, let's put a roof above each floor piece!
+            // The roof should be positioned at `floor.y + wallHeight + (roofPrefab.localScale.y * 0.5f)`
+            // Assuming floorPrefab.transform.localScale.y is the height of the floor
+            float floorHeightOffset = floorPrefab.transform.localScale.y * 0.5f; // Assuming pivot is center for floor
+            float roofOffset = wallHeight + (roofPrefab.transform.localScale.y * 0.5f); // Half roof height to center it
+            InstantiateAndAdd(roofPrefab, worldPos + new Vector3(0, roofOffset + floorHeightOffset, 0));
         }
 
         // Put up all the wall tiles!
-        List<Vector2Int> wallTiles = tileMatrix.GetWallTilePositions();
-        foreach (Vector2Int tilePos in wallTiles)
+        List<WallSpawnData> wallSpawnPoints = tileMatrix.GetWallSpawnPoints();
+        foreach (WallSpawnData wallData in wallSpawnPoints)
         {
-            Vector3 worldPos = TileToWorldPosition(tilePos);
-            // Walls need to be placed carefully, depending on which side of the tile they are
-            // This simple example just places a wall at the center of the tile, you'll need more logic here
-            InstantiateAndAdd(wallPrefab, worldPos + new Vector3(0,0,tileSize * 0.5f)); // Lift walls a bit
-        }
+            Vector3 worldPos = TileToWorldPosition(wallData.TilePosition);
+            Quaternion rotation = Quaternion.identity;
+            Vector3 offset = Vector3.zero;
 
-        // Put cool stuff in the rooms!
-        List<SpawnPointData> roomSpawnPoints = tileMatrix.GetRoomSpawnPoints(tileSize, true); // Don't put stuff in the hub
-        foreach (SpawnPointData spawnPoint in roomSpawnPoints)
-        {
-            // Example: Put a treasure chest in some rooms far away
-            if (Random.value < spawnPoint.Distance / (rows * tileSize / 2) && treasureChestPrefab != null)
+            // For a wall prefab with scale (1,1,10) that is 1 unit thick and 10 units long (along its local Z-axis),
+            // and a tileSize of 10.0f, the wall needs to be shifted by half a tileSize in the correct direction.
+            // The wall's pivot is usually at its center.
+            float wallThicknessOffset = 0.5f; // Assuming wall prefab is 1 unit thick, and pivot is center
+
+            switch (wallData.Direction)
             {
-                InstantiateAndAdd(treasureChestPrefab, spawnPoint.Location);
+                case WallDirection.North:
+                    // Wall needs to be along the X-axis (its local Z is world Z), shifted by 0.5 * tileSize in positive Z
+                    offset = new Vector3(0, wallHeight * 0.5f, tileSize * 0.5f); // Centered vertically, at Z-edge
+                    rotation = Quaternion.Euler(0, 0, 0); // No rotation (default for Z-axis wall, assuming prefab long axis is Z)
+                    break;
+                case WallDirection.South:
+                    // Wall needs to be along the X-axis (its local Z is world Z), shifted by 0.5 * tileSize in negative Z
+                    offset = new Vector3(0, wallHeight * 0.5f, -tileSize * 0.5f); // Centered vertically, at Z-edge
+                    rotation = Quaternion.Euler(0, 0, 0); // No rotation (default for Z-axis wall)
+                    break;
+                case WallDirection.West:
+                    // Wall needs to be along the Z-axis (its local Z is world X), shifted by 0.5 * tileSize in negative X
+                    offset = new Vector3(-tileSize * 0.5f, wallHeight * 0.5f, 0); // Centered vertically, at X-edge
+                    rotation = Quaternion.Euler(0, 90, 0); // Rotate 90 degrees for X-axis wall
+                    break;
+                case WallDirection.East:
+                    // Wall needs to be along the Z-axis (its local Z is world X), shifted by 0.5 * tileSize in positive X
+                    offset = new Vector3(tileSize * 0.5f, wallHeight * 0.5f, 0); // Centered vertically, at X-edge
+                    rotation = Quaternion.Euler(0, 90, 0); // Rotate 90 degrees for X-axis wall
+                    break;
             }
-            // Example: Put some tech scrap in most rooms
-            if (techScrapPrefab != null)
+            
+            Vector3 finalWallPosition = worldPos + offset;
+            // Use integer tile coordinate plus direction to ensure stable uniqueness
+            string wallKey = wallData.TilePosition.x + "," + wallData.TilePosition.y + "," + (int)wallData.Direction;
+
+            if (!spawnedWallKeys.Contains(wallKey))
             {
-                int numScrap = Random.Range(1, Mathf.CeilToInt(3 * (spawnPoint.Distance / (rows * tileSize / 2))));
-                for (int i = 0; i < numScrap; i++)
-                {
-                    Vector3 offset = new Vector3(Random.Range(-tileSize * 0.3f, tileSize * 0.3f), Random.Range(-tileSize * 0.3f, tileSize * 0.3f), 0);
-                    InstantiateAndAdd(techScrapPrefab, spawnPoint.Location + offset);
-                }
-            }
-            // Example: Add carvings to some far-away rooms
-            if (carvingPrefab != null && Random.value > 0.7f && spawnPoint.Distance > (rows * tileSize / 4))
-            {
-                InstantiateAndAdd(carvingPrefab, spawnPoint.Location + new Vector3(0, 0, tileSize * 0.5f));
-            }
-        }
-
-        // Put health pickups in corridors!
-        List<Vector2Int> corridorTiles = tileMatrix.GetCorridorTilePositions();
-        foreach (Vector2Int tilePos in corridorTiles)
-        {
-            if (healthPickupPrefab != null && Random.value < 0.2f) // Small chance to spawn a health pickup
-            {
-                Vector3 worldPos = TileToWorldPosition(tilePos);
-                InstantiateAndAdd(healthPickupPrefab, worldPos);
-            }
-        }
-
-        // Put the exit portal at a random edge tile!
-        List<Vector2Int> borderTiles = new List<Vector2Int>();
-        for (int r = 0; r < rows; r++)
-        {
-            for (int c = 0; c < cols; c++)
-            {
-                Vector2Int tile = new Vector2Int(r, c);
-                // Check if it's on the border and occupied by the dungeon (not hub)
-                if (tileMatrix.IsTileOccupiedPublic(tile) && !tileMatrix.IsTileInHub(tile) && 
-                    (r == 0 || r == rows - 1 || c == 0 || c == cols - 1))
-                {
-                    borderTiles.Add(tile);
-                }
-            }
-        }
-        if (exitPortalPrefab != null && borderTiles.Count > 0)
-        {
-            Vector2Int portalTile = borderTiles[Random.Range(0, borderTiles.Count)];
-            Vector3 portalWorldPos = TileToWorldPosition(portalTile) + new Vector3(0, 0, tileSize * 0.5f); // Lift it a bit
-            InstantiateAndAdd(exitPortalPrefab, portalWorldPos);
-        }
-
-        // Example: Spawning central room objects (like a special treasure chest or torches)
-        SpawnCentralRoomObjects();
-    }
-
-    // This puts special things in the starting hub area
-    private void SpawnCentralRoomObjects()
-    {
-        // We'll calculate the center of the hub in world coordinates
-        float centerX = 40 * tileSize; // Column 40
-        float centerY = 5 * tileSize;  // Row 5
-        float Z = 10.0f; // A small height
-
-        // If we have a treasure chest for the hub
-        if (treasureChestPrefab != null)
-        {
-            InstantiateAndAdd(treasureChestPrefab, new Vector3(centerX, centerY, Z));
-        }
-
-        // If we have torches for the hub
-        if (torchPrefab != null)
-        {
-            List<Vector3> torchOffsets = new List<Vector3>
-            {
-                new Vector3(-4.5f * tileSize, -4.5f * tileSize, 0),
-                new Vector3(-4.5f * tileSize,  4.5f * tileSize, 0),
-                new Vector3(4.5f * tileSize, -4.5f * tileSize, 0),
-                new Vector3(4.5f * tileSize,  4.5f * tileSize, 0)
-            };
-
-            foreach (Vector3 offset in torchOffsets)
-            {
-                InstantiateAndAdd(torchPrefab, new Vector3(centerX, centerY, Z) + offset);
+                InstantiateAndAdd(wallPrefab, finalWallPosition, rotation);
+                spawnedWallKeys.Add(wallKey);
             }
         }
     }
@@ -243,6 +193,8 @@ public class DungeonGenerator : MonoBehaviour
     {
         // Unity's Y-axis is often 'up', so we'll use X for columns and Z for rows
         // Remember to multiply by tileSize to get actual world units
+        // We also offset by half a tile size to center the floor prefabs if they are 1x1 unit and tileSize is their extent.
+        // If floor prefab is already 10x1x10 (with scale 10,1,10), it's centered on integer world coords.
         return new Vector3(tile.y * tileSize, 0, tile.x * tileSize);
     }
 

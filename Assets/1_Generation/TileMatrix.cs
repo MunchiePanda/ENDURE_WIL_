@@ -14,6 +14,22 @@ public struct SpawnPointData
     public float Distance;   // How far from the center it is
 }
 
+// This helps us know which way a wall should face
+public enum WallDirection
+{
+    North, // Wall goes above the tile
+    South, // Wall goes below the tile
+    West,  // Wall goes to the left of the tile
+    East   // Wall goes to the right of the tile
+}
+
+// This struct tells us where to put a wall and which way it should face
+public struct WallSpawnData
+{
+    public Vector2Int TilePosition; // Which square on the map this wall is for
+    public WallDirection Direction;   // Which side of the tile the wall should be on
+}
+
 // This class is like a big brain that figures out how to draw our dungeon map!
 public class TileMatrix
 {
@@ -32,8 +48,8 @@ public class TileMatrix
     {
         rowsNum = 80;
         colsNum = 80;
-        minRoomSize = 6;
-        maxRoomSize = 12;
+        minRoomSize = 1; // Even smaller rooms for more organic, cave-like shapes
+        maxRoomSize = 3; // Even smaller rooms for more organic, cave-like shapes
         maxRandomAttemptsPerRoom = 300;
         GeneratedRooms = new List<RoomData>();
         HubTiles = new List<Vector2Int>();
@@ -242,17 +258,21 @@ public class TileMatrix
             {
                 current.y += current.y < newRoomTile.y ? 1 : -1; // Move left or right
             }
-            // Occupy a 3x3 area for a wider hallway
-            for (int dR = -1; dR <= 1; dR++)
+            // Occupy a 1x1 area for a thinner hallway (instead of 3x3)
+            // for (int dR = -1; dR <= 1; dR++)
+            // {
+            //     for (int dC = -1; dC <= 1; dC++)
+            //     {
+            //         Vector2Int neighbor = new Vector2Int(current.x + dR, current.y + dC);
+            //         if (IsTileInMap(neighbor) && !IsTileInHub(neighbor))
+            //         {
+            //             OccupyTile(neighbor);
+            //         }
+            //     }
+            // }
+            if (IsTileInMap(current) && !IsTileInHub(current))
             {
-                for (int dC = -1; dC <= 1; dC++)
-                {
-                    Vector2Int neighbor = new Vector2Int(current.x + dR, current.y + dC);
-                    if (IsTileInMap(neighbor) && !IsTileInHub(neighbor))
-                    {
-                        OccupyTile(neighbor);
-                    }
-                }
+                OccupyTile(current);
             }
         }
     }
@@ -264,21 +284,31 @@ public class TileMatrix
         RoomData hubRoom = new RoomData { OccupiedTiles = HubTiles };
         GeneratedRooms.Add(hubRoom);
 
+        // Determine the first row immediately above the hub at the exitPoint's column.
+        // The hub occupies rows 0-9 for its given column range. So, the first row outside is row 10.
+        int firstAvailableRowAboveHub = 0;
+        foreach (Vector2Int hubTile in HubTiles)
+        {
+            if (hubTile.x > firstAvailableRowAboveHub) firstAvailableRowAboveHub = hubTile.x;
+        }
+        firstAvailableRowAboveHub++; // Move one row up from the maximum hub row
+
         // First, we make a special hallway that goes upwards from our exit point
         int size = Random.Range(minRoomSize, maxRoomSize);
         List<Vector2Int> tiles = new List<Vector2Int>();
-        int startRow = exitPoint.x + size; // This makes it go upward from the exit point
-        int startCol = exitPoint.y; // Starts at the same column as the exit point
+        int startRowForHallway = firstAvailableRowAboveHub; // Start above the hub
+        int startColForHallway = exitPoint.y; // Keep the same column as the exit point
 
-        // Make sure the hallway fits on the map
-        if (startRow + size > rowsNum) // This check is probably not right for 'startRow' being a target, should be about room size
+        // Make sure the hallway fits on the map vertically
+        if (startRowForHallway + size > rowsNum)
         {
-             size = Mathf.Max(minRoomSize, rowsNum - exitPoint.x - 1); // Adjust size to fit within bounds
+             size = Mathf.Max(minRoomSize, rowsNum - startRowForHallway); // Adjust size to fit within bounds
         }
-        startRow = exitPoint.x + 1; // Start just above ExitPoint
-        for (int r = startRow; r < startRow + size; r++)
+
+        // Form the tiles for the initial hallway. It's a square room for now.
+        for (int r = startRowForHallway; r < startRowForHallway + size; r++)
         {
-            for (int c = startCol - (size / 2); c < startCol + (size / 2); c++)
+            for (int c = startColForHallway - (size / 2); c < startColForHallway + (size / 2); c++)
             {
                 if (c >= 0 && c < colsNum)
                 {
@@ -295,18 +325,19 @@ public class TileMatrix
             }
             RoomData newRoom = new RoomData { OccupiedTiles = tiles };
             GeneratedRooms.Add(newRoom);
+            // Connect this new room to the original exitPoint (which is in the hub)
             ConnectRooms(hubRoom, newRoom, exitPoint);
         }
         else
         {
-            Debug.LogWarning($"Failed to place initial hallway at ExitPoint: {exitPoint}");
-            // If the first try fails, we try with the smallest room size
+            Debug.LogWarning($"Failed to place initial hallway at safe point: {new Vector2Int(startRowForHallway, startColForHallway)}");
+            // Fallback: try with minimum size at the same safe start.
             size = minRoomSize;
             tiles.Clear();
-            startRow = exitPoint.x + 1; // Start just above ExitPoint
-            for (int r = startRow; r < startRow + size; r++)
+            // Re-form tiles for minimum size hallway
+            for (int r = startRowForHallway; r < startRowForHallway + size; r++)
             {
-                for (int c = startCol - (size / 2); c < startCol + (size / 2); c++)
+                for (int c = startColForHallway - (size / 2); c < startColForHallway + (size / 2); c++)
                 {
                     if (c >= 0 && c < colsNum)
                     {
@@ -326,11 +357,11 @@ public class TileMatrix
             }
             else
             {
-                Debug.LogError($"Failed to place fallback hallway at ExitPoint: {exitPoint}");
+                Debug.LogError($"Failed to place fallback hallway at safe point: {new Vector2Int(startRowForHallway, startColForHallway)}");
             }
         }
 
-        // Now we make the rest of the rooms, but only above the exit point
+        // Generate remaining rooms, restricting to above ExitPoint (the hub's row 5)
         for (int i = GeneratedRooms.Count - 1; i < roomCount; i++)
         {
             int attempts = 0;
@@ -346,7 +377,8 @@ public class TileMatrix
                 }
                 Vector2Int edgeTile = edgeTiles[Random.Range(0, edgeTiles.Count)]; // Pick a random edge
                 int roomSize = Random.Range(minRoomSize, maxRoomSize); // Pick a random size for the new room
-                if (edgeTile.x <= exitPoint.x) // Only make rooms above the exit point
+                // Only allow rooms to be placed above the original exitPoint's row (row 5 of the hub)
+                if (edgeTile.x <= exitPoint.x) 
                 {
                     attempts++;
                     continue;
@@ -379,38 +411,42 @@ public class TileMatrix
     }
 
     // This tells us where to put the wall pieces and how to turn them
-    public List<Vector2Int> GetWallTilePositions()
+    public List<WallSpawnData> GetWallSpawnPoints()
     {
-        List<Vector2Int> wallTiles = new List<Vector2Int>();
+        List<WallSpawnData> wallSpawnPoints = new List<WallSpawnData>();
         for (int r = 0; r < rowsNum; r++)
         {
             for (int c = 0; c < colsNum; c++)
             {
                 Vector2Int currentTile = new Vector2Int(r, c);
-                if (!TileMap[r * colsNum + c] || IsTileInHub(currentTile)) continue; // Only check occupied non-hub tiles
+                // We only care about tiles that are part of the dungeon and not the hub
+                if (!TileMap[r * colsNum + c] || IsTileInHub(currentTile)) continue;
 
-                List<Vector2Int> neighbors = new List<Vector2Int>
+                // Define all four possible neighbors and their corresponding wall directions
+                Vector2Int[] neighbors = 
                 {
-                    new Vector2Int(r - 1, c), // North
-                    new Vector2Int(r + 1, c), // South
-                    new Vector2Int(r, c - 1), // West
-                    new Vector2Int(r, c + 1)  // East
+                    new Vector2Int(r - 1, c), // North neighbor
+                    new Vector2Int(r + 1, c), // South neighbor
+                    new Vector2Int(r, c - 1), // West neighbor
+                    new Vector2Int(r, c + 1)  // East neighbor
                 };
+                WallDirection[] directions = { WallDirection.North, WallDirection.South, WallDirection.West, WallDirection.East };
 
-                foreach (Vector2Int neighbor in neighbors)
+                for (int i = 0; i < neighbors.Length; i++)
                 {
-                    // If a neighbor is outside the map or empty, then currentTile needs a wall facing that neighbor
+                    Vector2Int neighbor = neighbors[i];
+                    WallDirection direction = directions[i];
+
+                    // If a neighbor is outside the map or is an empty space (not occupied)
+                    // We will add the wall, and let DungeonGenerator handle duplicates.
                     if (!IsTileInMap(neighbor) || !IsTileOccupied(neighbor))
                     {
-                        if (!wallTiles.Contains(currentTile))
-                        {
-                            wallTiles.Add(currentTile); // We add the tile that *needs* a wall
-                        }
+                        wallSpawnPoints.Add(new WallSpawnData { TilePosition = currentTile, Direction = direction });
                     }
                 }
             }
         }
-        return wallTiles;
+        return wallSpawnPoints;
     }
 
     // This tells us where the rooms are, so we can put things inside them
@@ -475,19 +511,28 @@ public class TileMatrix
     // This helps us see our map in the debug console, like a drawing!
     public void PrintDebugTileMap()
     {
-        string output = "";
-        for (int r = 0; r < rowsNum; r++)
+        // Unity's Console truncates very long single log entries.
+        // To ensure the whole map is visible, we print it in chunks of rows.
+        const int rowsPerChunk = 32; // Tune as needed
+        int printed = 0;
+        while (printed < rowsNum)
         {
-            for (int c = 0; c < colsNum; c++)
+            int endRow = Mathf.Min(printed + rowsPerChunk, rowsNum);
+            string output = "";
+            for (int r = printed; r < endRow; r++)
             {
-                Vector2Int tile = new Vector2Int(r, c);
-                if (IsTileInHub(tile))
-                    output += "H"; // 'H' for Hub
-                else
-                    output += TileMap[r * colsNum + c] ? "█" : "."; // '█' for used, '.' for empty
+                for (int c = 0; c < colsNum; c++)
+                {
+                    Vector2Int tile = new Vector2Int(r, c);
+                    if (IsTileInHub(tile))
+                        output += "H"; // 'H' for Hub
+                    else
+                        output += TileMap[r * colsNum + c] ? "█" : "."; // '█' for used, '.' for empty
+                }
+                output += "\n";
             }
-            output += "\n";
+            Debug.Log(output);
+            printed = endRow;
         }
-        Debug.Log(output);
     }
 }
