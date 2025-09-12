@@ -1,34 +1,31 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class InventoryUIManager : MonoBehaviour
 {
     // References to UI elements, assign in inspector
-    // panel_Inventory root and its background image
     public GameObject panel_Inventory;          // Root panel
-    public Image panel_InventoryBackground;     // Background image on the panel
-
-    // Scroll view container
-    public ScrollRect scrollView_Inventory;     // ScrollRect component on the scroll view
-    public Image scrollView_Background;         // Optional background image on the scroll view
-
-    // Viewport and content
-    public RectTransform viewport;              // Viewport RectTransform
-    public Image viewport_Image;                // Viewport Image (for raycast & visuals)
-    public Mask viewport_Mask;                  // Viewport Mask to clip children
     public RectTransform content;               // Content RectTransform (items parent)
-
-    // Vertical scrollbar and visuals
-    public Scrollbar verticalScrollbar;         // Vertical Scrollbar component
-    public Image verticalScrollbar_Image;       // Scrollbar background image
-    public RectTransform verticalScrollbar_Handle;   // Handle RectTransform
-    public Image verticalScrollbar_HandleImage; // Handle image
-
-    public GameObject itemUIPrefab;
+    public Button btn_CloseInventory;           // Close button for inventory panel
+    
+    public GameObject itemUIPrefab;            // Prefab for individual item UI
     [SerializeField] private Inventory inventory;    // Source inventory to listen to
+    // Lookup: map each ItemBase to its instantiated ItemUIManager for fast update/remove without searching children
+    private readonly Dictionary<ItemBase, ItemUIManager> ItemUiMap = new Dictionary<ItemBase, ItemUIManager>();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
+    {
+        // Wire up the close button to hide the inventory panel
+        if (btn_CloseInventory != null)
+        {
+            btn_CloseInventory.onClick.AddListener(CloseInventory);
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
     {
         
     }
@@ -39,6 +36,8 @@ public class InventoryUIManager : MonoBehaviour
         if (inventory != null)
         {
             inventory.OnItemAdded += AddItem;
+            inventory.OnItemRemoved += RemoveItem;
+            inventory.OnItemQuantityChanged += ChangeItemQuantity;
         }
     }
 
@@ -48,11 +47,12 @@ public class InventoryUIManager : MonoBehaviour
         if (inventory != null)
         {
             inventory.OnItemAdded -= AddItem;
+            inventory.OnItemRemoved -= RemoveItem;
+            inventory.OnItemQuantityChanged -= ChangeItemQuantity;
         }
     }
 
     // Add a UI entry when an item is added to the Inventory (listener for Inventory.AddItem)
-    // WHY: Keeps UI list in sync by instantiating an item row under the scroll content
     public void AddItem(ItemBase item, int quantity)
     {
         if (itemUIPrefab == null || content == null || item == null)
@@ -69,12 +69,56 @@ public class InventoryUIManager : MonoBehaviour
         if (itemUiManager != null)
         {
             itemUiManager.UpdateItemUI(item, quantity);
+            ItemUiMap[item] = itemUiManager;
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    // Remove the item's UI entry when it is removed from the inventory
+    public void RemoveItem(ItemBase item, int oldQuantity)
     {
-        
+        if (item == null) return;
+
+        if (ItemUiMap.TryGetValue(item, out ItemUIManager itemUiManager) && itemUiManager != null)
+        {
+            Destroy(itemUiManager.gameObject);
+            ItemUiMap.Remove(item);
+        }
+    }
+
+    // Update the quantity display when an item's quantity changes
+    public void ChangeItemQuantity(ItemBase item, int oldQuantity, int newQuantity)
+    {
+        if (item == null) return;
+
+        if (newQuantity <= 0) // if Quantity dropped to zero or below; remove the UI entry
+        {
+            RemoveItem(item, oldQuantity);
+            return;
+        }
+
+        if (ItemUiMap.TryGetValue(item, out ItemUIManager itemUiManager) && itemUiManager != null)
+        {
+            itemUiManager.UpdateItemUI(item, newQuantity);
+        }
+    }
+
+    // Close the inventory panel when close button is clicked
+    public void CloseInventory()
+    {
+        if (panel_Inventory != null)
+        {
+            panel_Inventory.SetActive(false);
+            Debug.Log("InventoryUIManager CloseInventory(): Inventory panel closed (D2, D5)");
+        }
+    }
+
+    // Open the inventory panel (useful for external calls)
+    public void OpenInventory()
+    {
+        if (panel_Inventory != null)
+        {
+            panel_Inventory.SetActive(true);
+            Debug.Log("InventoryUIManager OpenInventory(): Inventory panel opened (D2, D5)");
+        }
     }
 }
