@@ -128,7 +128,7 @@ public class CraftingRecipieBase : ScriptableObject
 }
 
 [System.Serializable]
-public class RecipeIngredient
+public struct RecipeIngredient
 {
     public ItemBase item;
     public int quantity;
