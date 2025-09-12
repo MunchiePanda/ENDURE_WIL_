@@ -50,7 +50,7 @@ This means: "When someone tries to set the Health property, take the value they'
         }
 
         // This special method helps us apply power-up effects to our stats!
-        protected virtual void applyAttributeEffect(Attribute attribute)
+        protected virtual void ApplyAttributeEffect(Attribute attribute)
         {
             switch (attribute.type)
             {
