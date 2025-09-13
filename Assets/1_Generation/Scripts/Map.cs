@@ -8,61 +8,136 @@ using Random = UnityEngine.Random;
 
 namespace ENDURE
 {
-	// This struct holds minimum and maximum values for room sizes
+	/// <summary>
+	/// This struct holds minimum and maximum values, typically used for room sizes.
+	/// </summary>
 	[System.Serializable]
 	public struct MinMax
 	{
+		/// <summary>
+		/// The minimum value.
+		/// </summary>
 		public int Min;
+
+		/// <summary>
+		/// The maximum value.
+		/// </summary>
 		public int Max;
 	}
 
-	// This enum defines what type each tile can be in our dungeon
+	/// <summary>
+	/// Represents the type of a tile in the dungeon.
+	/// </summary>
 	public enum TileType
 	{
-		Empty,    // Nothing here yet
-		Room,     // This is part of a room floor
-		Corridor, // This is part of a corridor floor
-		Wall      // This is a wall
+		/// <summary>
+		/// Empty tile, no structure.
+		/// </summary>
+		Empty,
+
+		/// <summary>
+		/// Tile that is part of a room.
+		/// </summary>
+		Room,
+
+		/// <summary>
+		/// Tile that is part of a corridor.
+		/// </summary>
+		Corridor,
+
+		/// <summary>
+		/// Tile that is a wall.
+		/// </summary>
+		Wall
 	}
 
-	// This is the main class that manages the entire dungeon generation!
-	// It creates rooms, connects them with corridors, and handles all the complex algorithms.
-	public class Map : MonoBehaviour
-	{
-		public Room RoomPrefab; // The room prefab we use to create rooms
-		[HideInInspector] public int RoomCount; // How many rooms we want to create
-		public RoomSetting[] RoomSettings; // Different visual styles for rooms
-		[HideInInspector] public IntVector2 MapSize; // How big the entire map is
-		[HideInInspector] public MinMax RoomSize; // Min and max size for rooms
-		public float GenerationStepDelay; // How long to wait between generation steps
-
-		private List<Room> _rooms; // All the rooms we've created
-		private List<Corridor> _corridors; // All the corridors we've created
-
-		private TileType[,] _tilesTypes; // A 2D array that tracks what type each tile is
-
-		private bool _hasPlayer = false; // Whether we've spawned the player yet
-
-		// This sets the type of a tile at specific coordinates
-		public void SetTileType(IntVector2 coordinates, TileType tileType)
+	/// <summary>
+	/// The main class for dungeon generation. This class handles the creation of rooms, corridors, walls, and roofs.
+	/// It uses a combination of procedural generation techniques:
+	///   - Random room placement with collision checks.
+	///   - Delaunay Triangulation (Bowyer-Watson algorithm) to connect rooms.
+	///   - Minimal Spanning Tree (Prim's algorithm) to ensure all rooms are connected with minimal corridors.
+	///   - Wall generation around rooms and corridors.
+	///   - Roof generation above floor tiles.
+		/// </summary>
+		public class Map : MonoBehaviour
 		{
-			_tilesTypes[coordinates.x, coordinates.z] = tileType;
-		}
+			/// <summary>
+			/// Prefab for rooms in the dungeon.
+			/// </summary>
+			public Room RoomPrefab;
 
-		// This gets the type of a tile at specific coordinates
-		public TileType GetTileType(IntVector2 coordinates)
-		{
-			return _tilesTypes[coordinates.x, coordinates.z];
-		}
+			/// <summary>
+			/// The number of rooms to generate in the dungeon.
+			/// </summary>
+			[HideInInspector] public int RoomCount;
 
-		// This is the main dungeon generation function!
-		// It creates rooms, connects them with corridors, and builds walls.
+			/// <summary>
+			/// Settings for rooms, including materials for floors and walls.
+			/// </summary>
+			public RoomSetting[] RoomSettings;
+
+			/// <summary>
+			/// The size of the dungeon map.
+			/// </summary>
+			[HideInInspector] public IntVector2 MapSize;
+
+			/// <summary>
+			/// The minimum and maximum size of rooms.
+			/// </summary>
+			[HideInInspector] public MinMax RoomSize;
+
+			/// <summary>
+			/// Delay between generation steps for visualization.
+			/// </summary>
+			public float GenerationStepDelay;
+
+			/// <summary>
+			/// List of rooms in the dungeon.
+			/// </summary>
+			private List<Room> _rooms;
+
+			/// <summary>
+			/// List of corridors in the dungeon.
+			/// </summary>
+			private List<Corridor> _corridors;
+
+			/// <summary>
+			/// 2D array representing the type of each tile in the dungeon.
+			/// </summary>
+			private TileType[,] _tilesTypes;
+
+			/// <summary>
+			/// Flag to check if the player has been spawned.
+			/// </summary>
+			private bool _hasPlayer = false;
+
+			/// <summary>
+			/// Sets the type of a tile at the specified coordinates.
+			/// </summary>
+			/// <param name="coordinates">The coordinates of the tile.</param>
+			/// <param name="tileType">The type of the tile.</param>
+			public void SetTileType(IntVector2 coordinates, TileType tileType)
+			{
+				_tilesTypes[coordinates.x, coordinates.z] = tileType;
+			}
+
+			/// <summary>
+			/// Gets the type of a tile at the specified coordinates.
+			/// </summary>
+			/// <param name="coordinates">The coordinates of the tile.</param>
+			/// <returns>The type of the tile.</returns>
+			public TileType GetTileType(IntVector2 coordinates)
+			{
+				return _tilesTypes[coordinates.x, coordinates.z];
+			}
+
+
+		// Generate Rooms and Corridors
 		public IEnumerator Generate()
 		{
 			Stopwatch stopwatch = new Stopwatch();
 			stopwatch.Start();
-
-			{
 				_tilesTypes = new TileType[MapSize.x, MapSize.z];
 				_rooms = new List<Room>();
 
@@ -80,8 +155,10 @@ namespace ENDURE
 					roomInstance.Setting = RoomSettings[Random.Range(0, RoomSettings.Length)];
 					StartCoroutine(roomInstance.Generate());
 
-					// Generate Player in the first room only
-					if (!_hasPlayer)
+					// Generate Player or Monster
+					if (_hasPlayer)
+						yield return roomInstance.CreateMonsters();
+					else
 					{
 						yield return roomInstance.CreatePlayer();
 						_hasPlayer = true;
@@ -90,10 +167,10 @@ namespace ENDURE
 				}
 				Debug.Log("Every rooms are generated");
 
-				// Delaunay Triangulation - creates triangles between room centers
+				// Delaunay Triangulation
 				yield return BowyerWatson();
 
-				// Minimal Spanning Tree - removes unnecessary connections
+				// Minimal Spanning Tree
 				yield return PrimMST();
 				Debug.Log("Every rooms are minimally connected");
 
@@ -110,21 +187,66 @@ namespace ENDURE
 				foreach (Room room in _rooms)
 				{
 					yield return room.CreateWalls();
-					yield return room.CreateRoof(); // Add roof generation
 				}
 				foreach (Corridor corridor in _corridors)
 				{
 					yield return corridor.CreateWalls();
-					yield return corridor.CreateRoof(); // Add roof generation
 				}
-				Debug.Log("Every walls and roofs are generated");
+				Debug.Log("Every walls are generated");
+
+				// Generate Roof
+				yield return GenerateRoof();
+			} 
+
+
+		public IEnumerator GenerateRoof()
+		{
+			// Iterate through all tiles in the map
+			for (int x = 0; x < MapSize.x; x++)
+			{
+				for (int z = 0; z < MapSize.z; z++)
+				{
+					IntVector2 coordinates = new IntVector2(x, z);
+					TileType tileType = _tilesTypes[x, z];
+
+					// Place a roof tile above floor tiles (rooms and corridors)
+					if (tileType == TileType.Room || tileType == TileType.Corridor)
+					{
+						GameObject roofTile = GameObject.CreatePrimitive(PrimitiveType.Cube);
+						roofTile.name = $"Roof ({coordinates.x}, {coordinates.z})";
+        roofTile.transform.parent = transform;
+
+        // Position the roof tile directly above the floor tile
+        Vector3 floorPosition = CoordinatesToPosition(coordinates);
+        roofTile.transform.localPosition = new Vector3(
+            floorPosition.x * RoomMapManager.TileSize,
+            14.0f, // Height of the roof above the floor
+            floorPosition.z * RoomMapManager.TileSize
+        );
+
+        // Scale the roof tile to match the floor tile size
+        roofTile.transform.localScale = new Vector3(RoomMapManager.TileSize, 0.2f, RoomMapManager.TileSize);
+
+        // Apply the roof material from the first room's settings
+        if (_rooms.Count > 0 && _rooms[0].Setting != null && _rooms[0].Setting.roof != null)
+        {
+            roofTile.GetComponent<Renderer>().material = _rooms[0].Setting.roof;
+        }
+        else
+        {
+            // Fallback material if no roof material is set
+            roofTile.GetComponent<Renderer>().material = new Material(Shader.Find("Standard"));
+        }
+					}
+				}
 			}
+			yield return null;
 
-			stopwatch.Stop();
-			print("Done in :" + stopwatch.ElapsedMilliseconds / 1000f + "s");
+
+			
 		}
+	
 
-		// This checks all empty tiles and marks them as walls if they're next to rooms or corridors
 		private IEnumerator WallCheck()
 		{
 			for (int x = 0; x < MapSize.x; x++)
@@ -140,7 +262,6 @@ namespace ENDURE
 			yield return null;
 		}
 
-		// This checks if a tile should be a wall (if it's next to a room or corridor)
 		private bool IsWall(int x, int z)
 		{
 			for (int i = x - 1; i <= x + 1; i++)

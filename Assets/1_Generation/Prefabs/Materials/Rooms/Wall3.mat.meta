@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f9def51f619aa6e4bac5e36283d349af
+timeCreated: 1467783651
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 67195
+  packageName: Procedural Room Dungeon Generator
+  packageVersion: 1.2
+  assetPath: Assets/Room Dungeon Generator/04.Images/Rooms/Wall3.mat
+  uploadId: 139876

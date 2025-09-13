@@ -1,20 +1,18 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections.Generic;
+using ENDURE;
 
 namespace ENDURE
 {
-	// This class represents a triangle used in Delaunay triangulation!
-	// It connects three rooms and helps us figure out how to connect rooms efficiently.
 	public class Triangle
 	{
-		public List<Room> Rooms = new List<Room>(); // The three rooms that make up this triangle
-		public List<Corridor> Corridors = new List<Corridor>(); // The corridors connecting these rooms
+		public List<Room> Rooms = new List<Room>();
+		public List<Corridor> Corridors = new List<Corridor>();
 
-		private Vector3 _circumcenter = Vector3.zero; // The center of the circle that passes through all three rooms
-		private float _radius; // The radius of that circle
+		private Vector3 _circumcenter = Vector3.zero;
+		private float _radius;
 
-		// Create a triangle from three rooms and automatically create corridors between them
 		public Triangle(Room r1, Room r2, Room r3)
 		{
 			Rooms.Add(r1);
@@ -29,11 +27,14 @@ namespace ENDURE
 			Corridors[2].Triangles.Add(this);
 		}
 
-		// This checks if a room is inside this triangle's circumcircle
-		// It's used in Delaunay triangulation to determine if we need to flip triangles
+		/// <summary>
+		/// Is in circumcircle
+		/// </summary>
+		/// <param name="room"> The point that be checked </param>
+		/// <returns> True if the point is in this triangle's circumcircle </returns>
 		public bool IsContaining(Room room)
 		{
-			// Calculate the circumcenter (center of the circle passing through all three rooms) if we haven't already
+			// Save calculated circumcenter.
 			if (_circumcenter == Vector3.zero)
 			{
 				Vector3[] vertexs = new Vector3[3];
@@ -61,7 +62,6 @@ namespace ENDURE
 				_radius = Mathf.Sqrt((_circumcenter.x - vertexs[0].x) * (_circumcenter.x - vertexs[0].x) + (_circumcenter.z - vertexs[0].z) * (_circumcenter.z - vertexs[0].z));
 			}
 
-			// Check if the room is inside the circumcircle
 			if (Vector3.Distance(room.transform.localPosition, _circumcenter) > _radius)
 			{
 				return false;
@@ -70,7 +70,6 @@ namespace ENDURE
 			return true;
 		}
 
-		// This draws debug lines to show the triangle's corridors
 		public void Show()
 		{
 			foreach (Corridor corridor in Corridors)

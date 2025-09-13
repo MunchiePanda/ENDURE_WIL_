@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8ba58f6546738394f90ac8bbc13497d7
+timeCreated: 1467783642
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 67195
+  packageName: Procedural Room Dungeon Generator
+  packageVersion: 1.2
+  assetPath: Assets/Room Dungeon Generator/04.Images/Rooms/Floor2.mat
+  uploadId: 139876

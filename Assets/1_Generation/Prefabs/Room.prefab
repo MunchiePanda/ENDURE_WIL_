@@ -54,8 +54,9 @@ MonoBehaviour:
   Num: 0
   TilePrefab: {fileID: 11474140, guid: 882a68cab87adc249928e3e67ee355ab, type: 3}
   WallPrefab: {fileID: 123962, guid: dca2ec261cb2cf949be2ca0148a958b7, type: 3}
-  RoofPrefab: {fileID: 135020, guid: 882a68cab87adc249928e3e67ee355ab, type: 3}
   Setting:
     floor: {fileID: 0}
     wall: {fileID: 0}
   PlayerPrefab: {fileID: 1828309862799263484, guid: 6f1f3c50a1e444247a0a2a2389443c01, type: 3}
+  MonsterPrefab: {fileID: 154156, guid: acde751c4c58d3b499304eeb64a637c5, type: 3}
+  MonsterCount: 5

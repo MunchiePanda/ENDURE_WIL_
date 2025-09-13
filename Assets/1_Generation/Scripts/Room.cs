@@ -1,48 +1,47 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using ENDURE;
 
 namespace ENDURE
 {
-	// This class represents a room in our dungeon!
-	// It's like a big square area where players can walk around.
-	public class Room : MonoBehaviour
+  public class Room : MonoBehaviour
 	{
-		public Corridor CorridorPrefab; // The corridor prefab we use to connect rooms
-		public IntVector2 Size; // How big this room is (width and height)
-		public IntVector2 Coordinates; // Where this room is positioned on the map
-		public int Num; // A number to identify this room
+		public Corridor CorridorPrefab;
+		public IntVector2 Size;
+		public IntVector2 Coordinates;
+		public int Num;
 
-		private GameObject _tilesObject; // Container for all the floor tiles in this room
-		private GameObject _wallsObject; // Container for all the walls around this room
-		private GameObject _roofObject; // Container for all the roof tiles above this room
-		public Tile TilePrefab; // The floor tile we use to build the room
-		private Tile[,] _tiles; // A 2D array to keep track of all tiles in this room
-		public GameObject WallPrefab; // The wall piece we use around the room
-		public GameObject RoofPrefab; // The roof piece we use above the room
-		public RoomSetting Setting; // The visual settings for this room (colors, materials, etc.)
+		private GameObject _tilesObject;
+		private GameObject _wallsObject;
+		private GameObject _monstersObject;
+		public Tile TilePrefab;
+		private Tile[,] _tiles;
+		public GameObject WallPrefab;
+		public RoomSetting Setting;
 
-		public Dictionary<Room, Corridor> RoomCorridor = new Dictionary<Room, Corridor>(); // Keeps track of which corridors connect to which rooms
+		public Dictionary<Room, Corridor> RoomCorridor = new Dictionary<Room, Corridor>();
 
-		private Map _map; // Reference to the main map that owns this room
+		private Map _map;
 
-		public GameObject PlayerPrefab; // The player prefab to spawn in the first room
+		public GameObject PlayerPrefab;
 
-		// This sets up the room with a reference to the main map
+		public GameObject MonsterPrefab;
+		public int MonsterCount;
+		private GameObject[] Monsters;
+
 		public void Init(Map map)
 		{
 			_map = map;
 		}
 
-		// This builds the room by placing floor tiles in a grid pattern
 		public IEnumerator Generate()
 		{
-			// Create parent object to hold all the floor tiles
+			// Create parent object
 			_tilesObject = new GameObject("Tiles");
 			_tilesObject.transform.parent = transform;
 			_tilesObject.transform.localPosition = Vector3.zero;
 
-			// Create a 2D array to store all the tiles
 			_tiles = new Tile[Size.x, Size.z];
 			for (int x = 0; x < Size.x; x++)
 			{
@@ -54,7 +53,6 @@ namespace ENDURE
 			yield return null;
 		}
 
-		// This creates a floor tile at the specified coordinates
 		private Tile CreateTile(IntVector2 coordinates)
 		{
 			if (_map.GetTileType(coordinates) == TileType.Empty)
@@ -63,18 +61,27 @@ namespace ENDURE
 			}
 			else
 			{
-				Debug.LogError("Tile Conflict! Two rooms are trying to use the same space!");
+				Debug.LogError("Tile Conflict!");
 			}
 			Tile newTile = Instantiate(TilePrefab);
 			newTile.Coordinates = coordinates;
 			newTile.name = "Tile " + coordinates.x + ", " + coordinates.z;
 			newTile.transform.parent = _tilesObject.transform;
 			newTile.transform.localPosition = RoomMapManager.TileSize * new Vector3(coordinates.x - Coordinates.x - Size.x * 0.5f + 0.5f, 0f, coordinates.z - Coordinates.z - Size.z * 0.5f + 0.5f);
-			newTile.transform.GetChild(0).GetComponent<Renderer>().material = Setting.floor;
+
+			// Apply the floor material
+			if (Setting != null && Setting.floor != null)
+			{
+				newTile.transform.GetChild(0).GetComponent<Renderer>().material = Setting.floor;
+			}
+			else
+			{
+				Debug.LogError("Floor material not set!");
+			}
+
 			return newTile;
 		}
 
-		// This creates a corridor connecting this room to another room
 		public Corridor CreateCorridor(Room otherRoom)
 		{
 			// Don't create if already connected
@@ -98,7 +105,6 @@ namespace ENDURE
 			return newCorridor;
 		}
 
-		// This creates walls around the room where needed
 		public IEnumerator CreateWalls()
 		{
 			_wallsObject = new GameObject("Walls");
@@ -145,60 +151,48 @@ namespace ENDURE
 					newWall.transform.parent = _wallsObject.transform;
 					newWall.transform.localPosition = RoomMapManager.TileSize * new Vector3(x - Coordinates.x - Size.x * 0.5f + 0.5f, 0f, z - Coordinates.z - Size.z * 0.5f + 0.5f);
 					newWall.transform.localRotation = rotation;
-					newWall.transform.localScale *= RoomMapManager.TileSize;
-					newWall.transform.GetChild(0).GetComponent<Renderer>().material = Setting.wall;
+    newWall.transform.localScale *= RoomMapManager.TileSize;
+
+    // Apply the wall material
+    if (Setting != null && Setting.wall != null)
+    {
+        newWall.transform.GetChild(0).GetComponent<Renderer>().material = Setting.wall;
+    }
+    else
+    {
+        Debug.LogError("Wall material not set!");
+    }
 				}
 			}
 			yield return null;
 		}
 
-		// This creates a roof above the room
-public IEnumerator CreateRoof()
-{
-    if (RoofPrefab == null) yield break;
+		public IEnumerator CreateMonsters()
+		{
+			_monstersObject = new GameObject("Monsters");
+			_monstersObject.transform.parent = transform;
+			_monstersObject.transform.localPosition = Vector3.zero;
 
-    _roofObject = new GameObject("Roof");
-    _roofObject.transform.parent = transform;
-    _roofObject.transform.localPosition = Vector3.zero;
+			Monsters = new GameObject[MonsterCount];
 
-    // Create roof tiles above each floor tile
-    for (int x = 0; x < Size.x; x++)
-    {
-        for (int z = 0; z < Size.z; z++)
-        {
-            GameObject newRoof = Instantiate(RoofPrefab);
-            newRoof.name = "Roof (" + (Coordinates.x + x) + ", " + (Coordinates.z + z) + ")";
-            newRoof.transform.parent = _roofObject.transform;
-            newRoof.transform.localPosition = RoomMapManager.TileSize * new Vector3(x - Size.x * 0.5f + 0.5f, 1f, z - Size.z * 0.5f + 0.5f);
-            newRoof.transform.localScale *= RoomMapManager.TileSize;
+			for (int i = 0; i < MonsterCount; i++)
+			{
+				GameObject newMonster = Instantiate(MonsterPrefab);
+				newMonster.name = "Monster " + (i + 1);
+				newMonster.transform.parent = _monstersObject.transform;
+				newMonster.transform.localPosition = new Vector3(i / 2f, 0f, i % 2f);
+				Monsters[i] = newMonster;
+			}
+			yield return null;
+		}
 
-            // Assign the floor material to the roof
-            Renderer roofRenderer = newRoof.transform.GetChild(0).GetComponent<Renderer>();
-            if (roofRenderer != null)
-            {
-                roofRenderer.material = new Material(Setting.floor);
-                roofRenderer.material.renderQueue = 3000; // Ensure it renders on top
-                roofRenderer.material.SetInt("_Cull", 0); // Disable culling to make it double-sided
-            }
-            else
-            {
-                Debug.LogError("Roof prefab child does not have a Renderer component!");
-            }
-        }
-    }
-    yield return null;
-}
-
-		// This creates the player in the first room
-public IEnumerator CreatePlayer()
-{
-    // Add a delay before spawning the player
-    yield return new WaitForSeconds(0.5f);
-
-    GameObject player = Instantiate(PlayerPrefab);
-    player.name = "Player";
-    player.transform.parent = transform.parent;
-    player.transform.localPosition = transform.localPosition;
-}
+		public IEnumerator CreatePlayer()
+		{
+			GameObject player = Instantiate((PlayerPrefab));
+			player.name = "Player";
+			player.transform.parent = transform.parent;
+			player.transform.localPosition = transform.localPosition;
+			yield return null;
+		}
 	}
 }

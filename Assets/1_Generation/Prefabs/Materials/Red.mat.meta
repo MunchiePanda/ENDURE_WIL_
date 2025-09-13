@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 40deeb291758d2841bdc23df758888f8
+timeCreated: 1475294638
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 67195
+  packageName: Procedural Room Dungeon Generator
+  packageVersion: 1.2
+  assetPath: Assets/Room Dungeon Generator/04.Images/Red.mat
+  uploadId: 139876
