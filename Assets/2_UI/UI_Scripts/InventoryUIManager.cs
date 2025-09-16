@@ -8,7 +8,8 @@ public class InventoryUIManager : MonoBehaviour
     public GameObject panel_Inventory;          // Root panel
     public RectTransform content;               // Content RectTransform (items parent)
     public Button btn_CloseInventory;           // Close button for inventory panel
-    
+    public UIManager uiManager;               // Reference to UIManager for enabling/disabling panels
+
     public GameObject itemUIPrefab;            // Prefab for individual item UI
     [SerializeField] private Inventory inventory;    // Source inventory to listen to
     // Lookup: map each ItemBase to its instantiated ItemUIManager for fast update/remove without searching children
@@ -22,6 +23,32 @@ public class InventoryUIManager : MonoBehaviour
         {
             btn_CloseInventory.onClick.AddListener(CloseInventory);
         }
+
+        if (uiManager == null)
+        {
+            uiManager = GetComponentInParent<UIManager>();
+            if (uiManager == null)
+            {
+                Debug.LogWarning("CraftingUIManager Start(): No UIManager found in parent hierarchy (D2, D5)");
+            }
+        }
+        //Get Inventory from the attached player if not assigned
+        if (inventory == null)
+        {
+            inventory = GetComponentInParent<Inventory>();
+            if (inventory == null)
+            {
+                Debug.LogWarning("InventoryUIManager Start(): No player inventory found (D2, D6)");
+                return;
+            }
+        }
+        // Subscribe to inventory add events so UI reflects changes
+        if (inventory != null)
+        {
+            inventory.OnItemAdded += AddItem;
+            inventory.OnItemRemoved += RemoveItem;
+            inventory.OnItemQuantityChanged += ChangeItemQuantity;
+        }
     }
 
     // Update is called once per frame
@@ -30,6 +57,7 @@ public class InventoryUIManager : MonoBehaviour
         
     }
 
+    /*
     void OnEnable()
     {
         // Subscribe to inventory add events so UI reflects changes
@@ -46,11 +74,12 @@ public class InventoryUIManager : MonoBehaviour
         // Unsubscribe to avoid memory leaks and duplicate bindings
         if (inventory != null)
         {
-            inventory.OnItemAdded -= AddItem;
-            inventory.OnItemRemoved -= RemoveItem;
-            inventory.OnItemQuantityChanged -= ChangeItemQuantity;
+            //inventory.OnItemAdded -= AddItem;
+            //inventory.OnItemRemoved -= RemoveItem;
+            //inventory.OnItemQuantityChanged -= ChangeItemQuantity;
         }
     }
+    */
 
     // Add a UI entry when an item is added to the Inventory (listener for Inventory.AddItem)
     public void AddItem(ItemBase item, int quantity)
@@ -105,20 +134,12 @@ public class InventoryUIManager : MonoBehaviour
     // Close the inventory panel when close button is clicked
     public void CloseInventory()
     {
-        if (panel_Inventory != null)
-        {
-            panel_Inventory.SetActive(false);
-            Debug.Log("InventoryUIManager CloseInventory(): Inventory panel closed (D2, D5)");
-        }
+        uiManager.EnableInventoryUI(false);
     }
 
     // Open the inventory panel (useful for external calls)
     public void OpenInventory()
     {
-        if (panel_Inventory != null)
-        {
-            panel_Inventory.SetActive(true);
-            Debug.Log("InventoryUIManager OpenInventory(): Inventory panel opened (D2, D5)");
-        }
+        uiManager.EnableInventoryUI(true);
     }
 }

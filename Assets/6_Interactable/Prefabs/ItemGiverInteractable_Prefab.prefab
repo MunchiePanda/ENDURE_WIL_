@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: -7525542492913216252}
   - component: {fileID: 7990851612070853447}
   m_Layer: 6
-  m_Name: CarrotSource
+  m_Name: ItemGiverInteractable_Prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -81,14 +81,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74470e0c233786e4c8ada546100b5260, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiPrompt: Press E to grab carrot
+  uiPrompt: Press E to do this
   isInteractable: 1
   interactableCollider: {fileID: 7990851612070853447}
   requiredLayerName: InteractableObjects
   enforceLayerInEditor: 1
   onInteractAnimation: {fileID: 0}
-  item: {fileID: 11400000, guid: cc5330d35c0b6ae4e8cbb8b16463fa2e, type: 2}
-  itemAmount: 2
+  item: {fileID: 0}
+  itemAmount: 1
   VisualAsset: {fileID: 159108931595930162}
   beforeInteractModel: {fileID: 4435905794242638309}
   afterInteractModel: {fileID: 437205163200715899}
@@ -99,7 +99,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2675720976549494293}
-  m_Mesh: {fileID: -6593678172696870230, guid: ac4b17b1ec418994ea192ac64ed4c681, type: 3}
+  m_Mesh: {fileID: 0}
 --- !u!23 &-7525542492913216252
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -216,7 +216,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d3d797ed67bd58b429ffbc268b570c0e, type: 3}
       propertyPath: m_Name
-      value: Bush02
+      value: AfterInteractionModel
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -283,7 +283,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: ac4b17b1ec418994ea192ac64ed4c681, type: 3}
       propertyPath: m_Name
-      value: BushWithBerrys02
+      value: BeforeInteractionModel
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

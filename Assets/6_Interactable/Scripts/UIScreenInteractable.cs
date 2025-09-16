@@ -15,6 +15,9 @@ public class UIScreenInteractable : InteractableBase
     [Tooltip("If true, toggles the screen on/off. If false, only opens it.")]
     public bool toggle = false;
 
+    [Tooltip("If true and the screen isn't found under mainUI/interactor, instantiate the prefab under mainUI (or interactor Canvas).")]
+    public bool instantiateIfMissing = false;
+
     public override void Interact(Interactor interactor)
     {
         if (onInteractAnimation != null) onInteractAnimation.Play();
@@ -25,13 +28,18 @@ public class UIScreenInteractable : InteractableBase
             return;
         }
 
-        if (toggle)
+        // Delegate to the player's UI manager for screen handling
+        var uiManager = interactor.GetComponentInChildren<UIManager>(true);
+        if (uiManager == null)
         {
-            screenToOpen.SetActive(!screenToOpen.activeSelf);
+            Debug.LogWarning("UIScreenInteractable Interact: UIManager not found under Interactor.", this);
+            return;
         }
-        else
+
+        var instance = uiManager.OpenScreen(screenToOpen, toggle, instantiateIfMissing);
+        if (instance == null)
         {
-            screenToOpen.SetActive(true);
+            Debug.LogWarning($"UIScreenInteractable Interact: Could not open screen '{screenToOpen.name}'.", this);
         }
     }
 }

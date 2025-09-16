@@ -118,12 +118,18 @@ public class CraftingRecipieBase : ScriptableObject
         {
             craftQuantity = 1;
         }
-        
-        // Remove any null ingredients
-        requiredIngredients = requiredIngredients.Where(ingredient => ingredient.item != null).ToList();
-        
-        // Remove any ingredients with zero or negative quantities
-        requiredIngredients = requiredIngredients.Where(ingredient => ingredient.quantity > 0).ToList();
+
+        // Clamp ingredient quantities to a minimum of 1, but DO NOT remove null items
+        // so that users can add entries in the Inspector and assign items later.
+        for (int i = 0; i < requiredIngredients.Count; i++)
+        {
+            var ingredient = requiredIngredients[i];
+            if (ingredient.quantity <= 0)
+            {
+                ingredient.quantity = 1;
+                requiredIngredients[i] = ingredient;
+            }
+        }
     }
 }
 

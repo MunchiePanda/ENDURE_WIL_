@@ -915,7 +915,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.00002166916}
+  m_AnchoredPosition: {x: 0, y: 0.0006566882}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &8896073982061497362
@@ -2173,12 +2173,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 971c8ca081c752e46a6ec876386f0fe2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  availableRecipes: []
+  availableRecipes:
+  - {fileID: 11400000, guid: 3ba29c69b658b764bb4f430963b6ebb3, type: 2}
+  - {fileID: 11400000, guid: 514b87332c9d53545be31b4e11b2f0ed, type: 2}
   recipeUIPrefab: {fileID: 5899346135953647622, guid: eba71fcdb9117bb4397f77a75e913bdc, type: 3}
   content: {fileID: 4850832302560860493}
   playerInventory: {fileID: 0}
-  panel_Crafting: {fileID: 6299895033102939226}
   btn_CloseCrafting: {fileID: 7451664999945809167}
+  uiManager: {fileID: 0}
 --- !u!1 &6515536882539509320
 GameObject:
   m_ObjectHideFlags: 0

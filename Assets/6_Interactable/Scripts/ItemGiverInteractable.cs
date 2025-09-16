@@ -31,7 +31,7 @@ public class ItemGiverInteractable : InteractableBase
         {
             isInteractable = !inventory.AddItem(item, itemAmount);   //add the item to the inventory, set isInteractable to the inverse of the returned bool (successful or not)
             ChangeVisuals(isInteractable);                          //change visuals to suit new isInteractable state
-            if (!isInteractable) Debug.Log($"ItemGiverInteractable Interact(): Failed to add {itemAmount} {item.itemName} to inventory. (D5, D6)", interactor);
+            if (isInteractable) Debug.Log($"ItemGiverInteractable Interact(): Failed to add {itemAmount} {item.itemName} to inventory. (D5, D6)", interactor);
         }
         else
         {

@@ -5,6 +5,11 @@ using UnityEngine;
 // This is like a special brain for our player in the game!
 public class PlayerController : MonoBehaviour
 {
+    public enum PlayerState
+    {
+        Playing,
+        UI
+    }
     // These are like the player's super powers and how fast they move!
     [Header("Base setup")]
     public float walkingSpeed = 7.5f; // How fast the player walks like a normal person
@@ -25,6 +30,11 @@ public class PlayerController : MonoBehaviour
     private float cameraYOffset = 0.4f; // This moves the camera a little bit up so we can see better
     private Camera playerCamera; // This is like our player's eyes, what we see in the game!
 
+    [SerializeField]
+    private UIManager uiManager; // This is like our player's UI manager, what we use to open and close the inventory panel!
+
+    [Header("State")]
+    public PlayerState state = PlayerState.Playing; // What mode the player is in
 
     // This happens when the game first starts, like getting ready to play!
     void Start()
@@ -37,10 +47,29 @@ public class PlayerController : MonoBehaviour
         // Lock cursor so it doesn't leave the game window, like a treasure hidden in a box!
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false; // We hide the mouse cursor so we can focus on the game!
+        if(uiManager == null) uiManager = GetComponentInChildren<UIManager>(true);
+        SetState(PlayerState.Playing);
     }
 
     // This happens many, many times every second, like the player always thinking what to do next!
     void Update()
+    {
+        if(state == PlayerState.Playing)
+        {
+            UpdatePlaying();
+        }
+        else if(state == PlayerState.UI)
+        {
+            UpdateUI();
+        }
+        // Open/Close Inventory with I key using UIManager (D2, D6)
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            OpenInventory();
+        }
+    }
+
+    void UpdatePlaying()
     {
         bool isRunning = false; // We start by saying the player is not running
 
@@ -83,6 +112,47 @@ public class PlayerController : MonoBehaviour
             rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit); // Don't let the player look too far up or down
             playerCamera.transform.localRotation = Quaternion.Euler(rotationX, 0, 0); // The camera looks up and down
             transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0); // The player turns left and right
+        }
+    }
+
+    void UpdateUI()
+    {
+        if (Input.GetKeyDown(KeyCode.X) && state == PlayerState.UI) //X for now because escape is annoying and doesn't do shit right in editor ~S
+        {
+            //close all UI panels
+            uiManager.EnableInventoryUI(false);
+            uiManager.EnableCraftingUI(false);
+            //unlock cursor
+            uiManager.EnableUI(false);
+        }
+    }
+
+    // Open the inventory panel ~S
+    private void OpenInventory()
+    {
+        if (uiManager != null)
+        {
+            uiManager.EnableInventoryUI(true);
+            SetState(PlayerState.UI);
+            uiManager.EnableUI(true);
+        }
+        else
+        {
+            Debug.LogWarning("PlayerController OpenInventory(): UIManager not found under player for Inventory toggle (D2, D6)", this);
+        }
+    }
+
+    public void SetState(PlayerState newState)
+    {
+        state = newState;
+        switch (state)
+        {
+            case PlayerState.Playing:
+                canMove = true;
+                break;
+            case PlayerState.UI:
+                canMove = false;
+                break;
         }
     }
 }
