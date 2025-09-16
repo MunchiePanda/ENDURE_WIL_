@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class testObject : MonoBehaviour, IInteractable
+public class testObject : MonoBehaviour//, IInteractable
 {
-
+    /*
     [SerializeField] string message = "Press E to Change Colour";
 
     bool isRed;
@@ -53,4 +53,5 @@ public class testObject : MonoBehaviour, IInteractable
             material.color = color;
         }
     }
+    */
 }

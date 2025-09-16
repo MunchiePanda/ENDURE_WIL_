@@ -1,8 +1,9 @@
 using UnityEditor.VersionControl;
 using UnityEngine;
 
-public class testObject2 : MonoBehaviour, IInteractable
+public class testObject2 : MonoBehaviour//, IInteractable
 {
+    /*
     [SerializeField] string message = "Press E to Kill Me";
 
     public string prompt => message;
@@ -33,4 +34,5 @@ public class testObject2 : MonoBehaviour, IInteractable
     {
         material.color= originalColour;
     }
+    */
 }

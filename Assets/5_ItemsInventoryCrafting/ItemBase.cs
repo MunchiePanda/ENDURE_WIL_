@@ -9,9 +9,13 @@ public class ItemBase : ScriptableObject
     public Sprite itemImage;
     public ItemType itemType;   //@Mik, this can be replaced with interface type ~Sio
     
-    //OnValidate is called when entering play mode, script is attched to a GameObject, and the scriptable object is changed
+    // OnValidate runs in the Editor when scripts recompile, the asset is created/imported, or serialized values change in the Inspector. It does not run in builds.
     private void OnValidate()
     {
+        if (string.IsNullOrWhiteSpace(itemName))
+        {
+            itemName = "Item " + name;
+        }
         // Generate hash-based ID from item name
         if (!string.IsNullOrEmpty(itemName))
         {

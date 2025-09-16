@@ -21,6 +21,11 @@ public class Inventory : MonoBehaviour
     public int TotalItemQuantity => items.Values.Sum();
     public bool IsFull => TotalItemQuantity >= maxInventorySize;
     
+#if UNITY_EDITOR
+    // Editor-only read-only view of items for custom inspector display
+    public System.Collections.Generic.IReadOnlyDictionary<ItemBase, int> DebugItems => items;
+#endif
+    
     // Add items to inventory
     public bool AddItem(ItemBase item, int quantity = 1)
     {
