@@ -97,6 +97,7 @@ public class InventoryUIManager : MonoBehaviour
         ItemUIManager itemUiManager = itemUiObject.GetComponent<ItemUIManager>();
         if (itemUiManager != null)
         {
+            itemUiManager.Initialize(inventory);
             itemUiManager.UpdateItemUI(item, quantity);
             ItemUiMap[item] = itemUiManager;
         }

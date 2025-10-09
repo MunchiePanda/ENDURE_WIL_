@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using ENDURE;
 
 public class Inventory : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class Inventory : MonoBehaviour
     
     [Header("Inventory Contents")]
     [SerializeField] private Dictionary<ItemBase, int> items = new Dictionary<ItemBase, int>();
+    [SerializeField] private EquipmentManager equipmentManager; // Tracks equipped items (no removal from inventory)
+    [SerializeField] private CharacterManager character;         // Target for applying effects (Player or other)
     
     // Events for inventory changes (Delegates)
     // @Ang 2 UI - These can be used to update the UI
@@ -81,6 +84,88 @@ public class Inventory : MonoBehaviour
         }
         
         return false;
+    }
+
+    // Use or Equip an item based on its usage category
+    public bool UseItem(ItemBase item)
+    {
+        if (item == null) return false;
+        if (!items.ContainsKey(item)) return false;
+
+        switch (item.usageCategory)
+        {
+            case ItemUsageCategory.Consumable:
+                if (ApplyConsumableEffect(item))
+                {
+                    // Consuming removes one from inventory
+                    return RemoveItem(item, 1);
+                }
+                return false;
+            case ItemUsageCategory.Equipable:
+                if (equipmentManager == null)
+                {
+                    equipmentManager = GetComponent<EquipmentManager>();
+                    if (equipmentManager == null)
+                    {
+                        Debug.LogWarning("Inventory.UseItem(): No EquipmentManager found.");
+                        return false;
+                    }
+                }
+                return equipmentManager.ToggleEquip(item, character);
+            case ItemUsageCategory.Interactable:
+                Debug.Log($"Inventory.UseItem(): '{item.itemName}' is interactable, handle via world interaction.");
+                return false;
+            case ItemUsageCategory.None:
+            default:
+                Debug.Log($"Inventory.UseItem(): '{item.itemName}' cannot be used.");
+                return false;
+        }
+    }
+
+    private bool ApplyConsumableEffect(ItemBase item)
+    {
+        if (character == null)
+        {
+            character = GetComponentInParent<CharacterManager>();
+            if (character == null)
+            {
+                Debug.LogWarning("Inventory.ApplyConsumableEffect(): No CharacterManager found.");
+                return false;
+            }
+        }
+
+        // Route effect to appropriate stat
+        switch (item.effectType)
+        {
+            case ItemEffectType.Health:
+                character.Heal(item.effectValue);
+                return true;
+            case ItemEffectType.Stamina:
+                character.RestoreStamina(item.effectValue);
+                return true;
+            case ItemEffectType.Hunger:
+                if (character is PlayerManager pm)
+                {
+                    pm.IncreaseHunger(item.effectValue);
+                    return true;
+                }
+                Debug.LogWarning("Inventory.ApplyConsumableEffect(): Hunger effect requires PlayerManager.");
+                return false;
+            case ItemEffectType.SystemExposure:
+                if (character is PlayerManager pm2)
+                {
+                    pm2.ReduceSystemExposure(item.effectValue);
+                    return true;
+                }
+                Debug.LogWarning("Inventory.ApplyConsumableEffect(): SystemExposure effect requires PlayerManager.");
+                return false;
+            case ItemEffectType.None:
+                Debug.LogWarning($"Inventory.ApplyConsumableEffect(): Item '{item.itemName}' has no effect type.");
+                return false;
+            default:
+                Debug.LogWarning($"Inventory.ApplyConsumableEffect(): Effect '{item.effectType}' is not consumable.");
+                return false;
+        }
     }
     
     // Get quantity of specific item

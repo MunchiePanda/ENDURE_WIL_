@@ -15,6 +15,17 @@ namespace ENDURE
         public Stat Hunger { get => hungerField; set => hungerField = value; }
         public Stat SystemExposure { get => systemExposureField; set => systemExposureField = value; }
 
+        // Instant stat helpers for consumables affecting player-specific stats
+        public void ReduceSystemExposure(float amount)
+        {
+            systemExposureField.ReduceStat(amount);
+        }
+
+        public void IncreaseHunger(float amount)
+        {
+            hungerField.IncreaseStat(amount);
+        }
+
         // We want to do special things when applying attributes, so we change the rule from CharacterManager!
         protected override void ApplyAttributeEffect(Attribute attribute)
         {

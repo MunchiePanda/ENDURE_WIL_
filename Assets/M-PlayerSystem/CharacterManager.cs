@@ -39,6 +39,23 @@ namespace ENDURE
             Destroy(gameObject); // Make the character disappear from the game!
         }
 
+        // Public entry-point to apply attribute effects from items or systems
+        public virtual void ApplyAttribute(Attribute attribute)
+        {
+            ApplyAttributeEffect(attribute);
+        }
+
+        // Helpers for instant stat changes (consumables)
+        public void Heal(float amount)
+        {
+            healthField.IncreaseStat(amount);
+        }
+
+        public void RestoreStamina(float amount)
+        {
+            staminaField.IncreaseStat(amount);
+        }
+
         // This special method helps us apply power-up effects to our stats!
         protected virtual void ApplyAttributeEffect(Attribute attribute)
         {
