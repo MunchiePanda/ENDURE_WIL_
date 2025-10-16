@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: dca2ec261cb2cf949be2ca0148a958b7
+timeCreated: 1468382406
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 67195
+  packageName: Procedural Room Dungeon Generator
+  packageVersion: 1.2
+  assetPath: Assets/Room Dungeon Generator/03.Prefabs/Wall.prefab
+  uploadId: 139876

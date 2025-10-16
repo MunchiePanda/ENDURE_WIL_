@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 95db01f4cefe31642b5d1b8efb959a2d
+timeCreated: 1468093245
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 67195
+  packageName: Procedural Room Dungeon Generator
+  packageVersion: 1.2
+  assetPath: Assets/Room Dungeon Generator/03.Prefabs/Corridor.prefab
+  uploadId: 139876

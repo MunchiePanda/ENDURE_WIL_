@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8c560120e88ed8f4daf55861382734fb
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - uiPanelPrefabRef: {instanceID: 0}
+  - promptTextRef: {instanceID: 0}
+  - interactableCollider: {instanceID: 0}
+  - interactableCanvasPrefab: {fileID: 6359311447410554469, guid: ca2323ae73ef9aa4094c4419411078b9, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
