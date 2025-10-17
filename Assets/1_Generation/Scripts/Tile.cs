@@ -20,7 +20,7 @@ namespace ENDURE
 		public float runDegradationAmount = 0.5f;
 		public float regenerationDelay = 5f;
 		public float regenerationSpeed = 0.1f;
-		public bool enableRegeneration = false; // Temporarily disable regeneration to test
+		public bool enableRegeneration = true;
 		
 		[Header("Current State")]
 		public float degradationLevel = 0f;
@@ -41,72 +41,48 @@ namespace ENDURE
 			
 			if (meshRenderer == null) Debug.LogError("Tile missing MeshRenderer!");
 			if (tileCollider == null) Debug.LogError("Tile missing Collider!");
-			
-			// Debug: Log each tile's unique identity
-			Debug.Log($"TILE CREATED: {name} at {Coordinates} - Instance ID: {GetInstanceID()}");
-			Debug.Log($"MeshRenderer Instance ID: {(meshRenderer != null ? meshRenderer.GetInstanceID() : -1)}");
-			Debug.Log($"Collider Instance ID: {(tileCollider != null ? tileCollider.GetInstanceID() : -1)}");
 		}
 		
 		public void DegradeTile(float amount)
 		{
 			if (isBroken) return; // Can't degrade further if already broken
 			
-			Debug.Log($"=== DEGRADING TILE {Coordinates} by {amount} ===");
-			Debug.Log($"Tile Instance ID: {GetInstanceID()}");
-			Debug.Log($"Previous degradation level: {degradationLevel}");
-			
 			degradationLevel += amount;
 			degradationLevel = Mathf.Clamp01(degradationLevel);
 			
-			Debug.Log($"Tile {Coordinates} (ID: {GetInstanceID()}) degraded by {amount}. Current level: {degradationLevel}");
+			Debug.Log($"Tile {Coordinates} degraded by {amount}. Level: {degradationLevel:F2}");
 			
 			if (degradationLevel >= 1f)
 			{
-				Debug.Log($"*** TILE {Coordinates} (ID: {GetInstanceID()}) REACHED BREAKING POINT! BREAKING NOW... ***");
+				Debug.Log($"*** TILE {Coordinates} BREAKING! ***");
 				BreakTile();
-			}
-			else
-			{
-				Debug.Log($"Tile {Coordinates} still intact. Degradation: {degradationLevel}/1.0");
 			}
 		}
 		
 		private void BreakTile()
 		{
-			isBroken = true;
-			currentState = TileState.Broken;
+			Debug.Log($"=== BREAKING TILE {Coordinates} - CHECKING PARENT HIERARCHY ===");
 			
-			Debug.Log($"=== BREAKING TILE {Coordinates} ===");
-			Debug.Log($"Tile Instance ID: {GetInstanceID()}");
-			Debug.Log($"GameObject Name: {gameObject.name}");
-			Debug.Log($"Collider before: {(tileCollider != null ? tileCollider.enabled.ToString() : "NULL")}");
-			Debug.Log($"Renderer before: {(meshRenderer != null ? meshRenderer.enabled.ToString() : "NULL")}");
-			Debug.Log($"Renderer GameObject: {(meshRenderer != null ? meshRenderer.gameObject.name : "NULL")}");
-			Debug.Log($"Renderer Material: {(meshRenderer != null ? meshRenderer.material.name : "NULL")}");
+			// Debug the parent hierarchy
+			Debug.Log($"Tile {Coordinates} parent: {(transform.parent != null ? transform.parent.name : "NULL")}");
+			Debug.Log($"Tile {Coordinates} parent parent: {(transform.parent != null && transform.parent.parent != null ? transform.parent.parent.name : "NULL")}");
+			Debug.Log($"Tile {Coordinates} parent parent parent: {(transform.parent != null && transform.parent.parent != null && transform.parent.parent.parent != null ? transform.parent.parent.parent.name : "NULL")}");
 			
-			// TEMPORARILY DISABLE ONLY THE COLLIDER TO TEST
-			if (tileCollider != null) 
+			// Check if parent has any components that might be shared
+			if (transform.parent != null)
 			{
-				tileCollider.enabled = false;
-				Debug.Log($"Collider disabled for tile {Coordinates} (ID: {GetInstanceID()})");
+				Debug.Log($"Parent '{transform.parent.name}' has {transform.parent.GetComponents<Component>().Length} components");
+				foreach (Component comp in transform.parent.GetComponents<Component>())
+				{
+					Debug.Log($"  - {comp.GetType().Name}");
+				}
 			}
 			
-			// DON'T DISABLE THE RENDERER YET - TEST IF COLLIDER ALONE CAUSES THE ISSUE
-			// if (meshRenderer != null) 
-			// {
-			//     meshRenderer.enabled = false;
-			//     Debug.Log($"Renderer disabled for tile {Coordinates} (ID: {GetInstanceID()})");
-			// }
-			
-			Debug.Log($"Tile {Coordinates} (ID: {GetInstanceID()}) BROKEN! (Renderer still enabled for testing)");
-			
-			// Start regeneration if enabled
-			if (enableRegeneration)
+			// Test: Only disable the renderer
+			if (meshRenderer != null) 
 			{
-				if (regenerationCoroutine != null)
-					StopCoroutine(regenerationCoroutine);
-				regenerationCoroutine = StartCoroutine(RegenerateCoroutine());
+				meshRenderer.enabled = false;
+				Debug.Log($"Renderer disabled for tile {Coordinates}");
 			}
 		}
 		

@@ -28,12 +28,13 @@ namespace ENDURE
         [HideInInspector]
         public bool canMove = true; // This is like a switch, true means the player can move, false means they can't!
 
-        // Tile degradation system
-        private Tile currentTile;
-        private Tile previousTile;
-        public bool isRunning = false; // Made public for tile degradation system
-        private float lastTileInteractionTime = 0f;
-        private float tileInteractionCooldown = 0.1f; // Minimum time between tile interactions
+		// New tile degradation system - track all tiles in scene
+		private Tile[] allTiles;
+		private Tile currentTile;
+		private Tile previousTile;
+		public bool isRunning = false;
+		private float lastTileInteractionTime = 0f;
+		private float tileInteractionCooldown = 0.1f;
 
         [SerializeField]
         private float cameraYOffset = 0.4f; // This moves the camera a little bit up so we can see better
@@ -58,6 +59,15 @@ namespace ENDURE
             Cursor.visible = false; // We hide the mouse cursor so we can focus on the game!
             if (uiManager == null) uiManager = GetComponentInChildren<UIManager>(true);
             SetState(PlayerState.Playing);
+            
+            // Find all tiles in the scene
+            FindAllTiles();
+        }
+        
+        private void FindAllTiles()
+        {
+            allTiles = FindObjectsOfType<Tile>();
+            Debug.Log($"Found {allTiles.Length} tiles in the scene");
         }
 
         // This happens many, many times every second, like the player always thinking what to do next!
@@ -169,36 +179,37 @@ namespace ENDURE
          // Tile degradation system methods
          private void DetectTileInteraction()
          {
-             // Cast ray downward to detect current tile
-             RaycastHit hit;
-             if (Physics.Raycast(transform.position, Vector3.down, out hit, 2f))
+             // Find the closest tile to the player
+             Tile closestTile = FindClosestTile();
+             
+             if (closestTile != null && closestTile != previousTile)
              {
-                 Debug.Log($"Raycast hit: {hit.collider.name} at distance {hit.distance}");
-                 // Look for Tile component on the parent object (since the script is on the parent, not the child Quad)
-                 Tile tile = hit.collider.GetComponentInParent<Tile>();
-                 if (tile != null)
+                 Debug.Log($"NEW TILE DETECTED: {closestTile.name} at coordinates {closestTile.Coordinates}");
+                 OnTileEntered(closestTile);
+                 previousTile = closestTile;
+             }
+         }
+         
+         private Tile FindClosestTile()
+         {
+             if (allTiles == null || allTiles.Length == 0) return null;
+             
+             Tile closestTile = null;
+             float closestDistance = float.MaxValue;
+             
+             foreach (Tile tile in allTiles)
+             {
+                 if (tile == null || tile.isBroken) continue; // Skip null or broken tiles
+                 
+                 float distance = Vector3.Distance(transform.position, tile.transform.position);
+                 if (distance < closestDistance && distance < 2f) // Only consider tiles within 2 units
                  {
-                     Debug.Log($"Found Tile component on parent of {hit.collider.name}, previous tile: {(previousTile != null ? previousTile.name : "null")}");
-                     if (tile != previousTile)
-                     {
-                         Debug.Log($"NEW TILE DETECTED: {tile.name} at coordinates {tile.Coordinates}");
-                         OnTileEntered(tile);
-                         previousTile = tile;
-                     }
-                     else
-                     {
-                         Debug.Log($"Same tile as before: {tile.name} - skipping");
-                     }
-                 }
-                 else
-                 {
-                     Debug.Log($"No Tile component found on parent of {hit.collider.name}");
+                     closestDistance = distance;
+                     closestTile = tile;
                  }
              }
-             else
-             {
-                 Debug.Log("No raycast hit detected");
-             }
+             
+             return closestTile;
          }
 
         private void OnTileEntered(Tile tile)
