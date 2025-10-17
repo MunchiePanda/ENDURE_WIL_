@@ -69,10 +69,12 @@ namespace ENDURE
 			newTile.transform.parent = _tilesObject.transform;
 			newTile.transform.localPosition = RoomMapManager.TileSize * new Vector3(coordinates.x - Coordinates.x - Size.x * 0.5f + 0.5f, 0f, coordinates.z - Coordinates.z - Size.z * 0.5f + 0.5f);
 
-			// Apply the floor material
+			// Apply the floor material - create instance to avoid sharing
 			if (Setting != null && Setting.floor != null)
 			{
-				newTile.transform.GetChild(0).GetComponent<Renderer>().material = Setting.floor;
+				// Create a material instance so each tile has its own material
+				Material tileMaterial = new Material(Setting.floor);
+				newTile.transform.GetChild(0).GetComponent<Renderer>().material = tileMaterial;
 			}
 			else
 			{
