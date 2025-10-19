@@ -55,6 +55,11 @@ public class UIManager : MonoBehaviour
         EnableUI(enable);
     }
 
+    public void ToggleQuestOverviewUI()
+    {
+        questOverviewUIManager.ToggleQuestOverviewUI();
+    }
+
     public void EnableUI(bool enable)
     {
         Cursor.visible = enable;

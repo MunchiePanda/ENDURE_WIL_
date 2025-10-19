@@ -21,8 +21,8 @@ MonoBehaviour:
     objectiveComplete: 0
   - item: {fileID: 11400000, guid: cc5330d35c0b6ae4e8cbb8b16463fa2e, type: 2}
     quantity: 2
-    currentQuantity: 0
-    objectiveComplete: 0
-  rewardItem: {fileID: 0}
-  rewardQuantity: 0
+    currentQuantity: 4
+    objectiveComplete: 1
+  rewardItem: {fileID: 11400000, guid: 6c0480c7db761c047bee6206eaa23c75, type: 2}
+  rewardQuantity: 2
   rewardRecipie: {fileID: 0}

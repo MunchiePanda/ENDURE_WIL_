@@ -67,6 +67,10 @@ public class PlayerController : MonoBehaviour
         {
             OpenInventory();
         }
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            ToggleQuestOverview();
+        }
     }
 
     void UpdatePlaying()
@@ -139,6 +143,18 @@ public class PlayerController : MonoBehaviour
         else
         {
             Debug.LogWarning("PlayerController OpenInventory(): UIManager not found under player for Inventory toggle (D2, D6)", this);
+        }
+    }
+
+    private void ToggleQuestOverview()
+    {
+        if (uiManager != null)
+        {
+            uiManager.ToggleQuestOverviewUI();
+        }
+        else
+        {
+            Debug.LogWarning("PlayerController OpenInventory(): UIManager not found under player for Quest Overview toggle (D2, D9)", this);
         }
     }
 

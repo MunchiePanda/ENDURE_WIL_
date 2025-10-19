@@ -18,7 +18,7 @@ public class QuestOverviewUIManager : MonoBehaviour
     {
         if(questManager == null) questManager = GetComponentInParent<QuestManager>();
         if (questManager == null) Debug.Log("QuestOverviewUIManager Start() QuestManager is null.");
-        btn_toggleQuesOverview.onClick.AddListener(OnToggleButtonClicked);  //bind button click
+        btn_toggleQuesOverview.onClick.AddListener(ToggleQuestOverviewUI);  //bind button click
 
         EnableQuestOverviewUI(true);
     }
@@ -61,7 +61,7 @@ public class QuestOverviewUIManager : MonoBehaviour
         txt_questObjectives.text = objectivesText;
     }
 
-    void OnToggleButtonClicked()
+    public void ToggleQuestOverviewUI()
     {
         EnableQuestOverviewUI(!isEnabled);  //inverse enabaled
     }
