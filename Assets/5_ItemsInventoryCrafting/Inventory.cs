@@ -100,7 +100,7 @@ public class Inventory : MonoBehaviour
     {
         return items.ToList();
     }
-    
+
     // Clear entire inventory
     public void ClearInventory()
     {

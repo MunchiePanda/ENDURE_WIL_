@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcd39007e780b724e92aa1a099258cf7, type: 3}
+  m_Name: Quest_Berries
+  m_EditorClassIdentifier: 
+  questName: 
+  questDescription: 
+  questObjectives:
+  - item: {fileID: 11400000, guid: b8bf2e765d03e034db927c91f26faf59, type: 2}
+    quantity: 1
+    currentQuantity: 0
+    objectiveComplete: 0
+  - item: {fileID: 11400000, guid: cc5330d35c0b6ae4e8cbb8b16463fa2e, type: 2}
+    quantity: 2
+    currentQuantity: 0
+    objectiveComplete: 0
+  rewardItem: {fileID: 0}
+  rewardQuantity: 0
+  rewardRecipie: {fileID: 0}

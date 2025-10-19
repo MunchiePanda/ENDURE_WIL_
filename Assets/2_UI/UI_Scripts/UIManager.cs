@@ -12,6 +12,10 @@ public class UIManager : MonoBehaviour
     public InventoryUIManager inventoryUIManager;
     public GameObject panel_CraftingMenu;          // Crafting panel root
     public CraftingUIManager craftingUIManager;
+    public GameObject panel_QuestOverviewUI;        //Quest overview
+    public QuestOverviewUIManager questOverviewUIManager;
+    public GameObject panel_QuestgiverUI;       //questgiver
+    public QuestGiverUIManager questgiverUIManager;
 
     // @Mik $ PlayerSystems - impliment the toggle UI visibilty for inventory and keybinds
 
@@ -42,6 +46,12 @@ public class UIManager : MonoBehaviour
     public void EnableCraftingUI(bool enable)
     {
         panel_CraftingMenu.SetActive(enable);
+        EnableUI(enable);
+    }
+
+    public void EnableQuestOverviewUI(bool enable)
+    {
+        EnableQuestOverviewUI(enable);
         EnableUI(enable);
     }
 
