@@ -18,9 +18,6 @@ namespace ENDURE
 		[Header("Degradation Settings")]
 		public float walkDegradationAmount = 0.2f;
 		public float runDegradationAmount = 0.5f;
-		public float regenerationDelay = 5f;
-		public float regenerationSpeed = 0.1f;
-		public bool enableRegeneration = true;
 		
 		[Header("Current State")]
 		public float degradationLevel = 0f;
@@ -29,7 +26,7 @@ namespace ENDURE
 		
 		private MeshRenderer meshRenderer;
 		private Collider tileCollider;
-		private Coroutine regenerationCoroutine;
+		private Material originalMaterial;
 
 		public void Start()
 		{
@@ -41,6 +38,19 @@ namespace ENDURE
 			
 			if (meshRenderer == null) Debug.LogError("Tile missing MeshRenderer!");
 			if (tileCollider == null) Debug.LogError("Tile missing Collider!");
+			
+			// Disable static batching to prevent material sharing
+			gameObject.isStatic = false;
+			if (meshRenderer != null)
+			{
+				meshRenderer.gameObject.isStatic = false;
+				
+				// Create a unique material instance for THIS tile only
+				originalMaterial = new Material(meshRenderer.sharedMaterial);
+				meshRenderer.material = originalMaterial;
+				
+				Debug.Log($"Tile {Coordinates} Start() - Created unique material instance ID: {originalMaterial.GetInstanceID()}");
+			}
 		}
 		
 		public void DegradeTile(float amount)
@@ -52,65 +62,75 @@ namespace ENDURE
 			
 			Debug.Log($"Tile {Coordinates} degraded by {amount}. Level: {degradationLevel:F2}");
 			
+			// Update visual appearance based on degradation level
+			UpdateVisualState();
+			
+			// Update state machine
 			if (degradationLevel >= 1f)
 			{
 				Debug.Log($"*** TILE {Coordinates} BREAKING! ***");
+				SetState(TileState.Broken);
 				BreakTile();
+			}
+			else if (degradationLevel > 0f)
+			{
+				SetState(TileState.Degrading);
 			}
 		}
 		
 		private void BreakTile()
 		{
-			Debug.Log($"=== BREAKING TILE {Coordinates} - CHECKING PARENT HIERARCHY ===");
+			Debug.Log($"=== BREAKING TILE {Coordinates} ===");
+			Debug.Log($"About to destroy: {gameObject.name} (InstanceID: {gameObject.GetInstanceID()})");
 			
-			// Debug the parent hierarchy
-			Debug.Log($"Tile {Coordinates} parent: {(transform.parent != null ? transform.parent.name : "NULL")}");
-			Debug.Log($"Tile {Coordinates} parent parent: {(transform.parent != null && transform.parent.parent != null ? transform.parent.parent.name : "NULL")}");
-			Debug.Log($"Tile {Coordinates} parent parent parent: {(transform.parent != null && transform.parent.parent != null && transform.parent.parent.parent != null ? transform.parent.parent.parent.name : "NULL")}");
+			isBroken = true;
 			
-			// Check if parent has any components that might be shared
-			if (transform.parent != null)
+			if (tileCollider != null)
 			{
-				Debug.Log($"Parent '{transform.parent.name}' has {transform.parent.GetComponents<Component>().Length} components");
-				foreach (Component comp in transform.parent.GetComponents<Component>())
-				{
-					Debug.Log($"  - {comp.GetType().Name}");
-				}
+				tileCollider.enabled = false;
 			}
 			
-			// Test: Only disable the renderer
-			if (meshRenderer != null) 
+			StartCoroutine(DestroyTileAfterDelay());
+		}
+		
+		private IEnumerator DestroyTileAfterDelay()
+		{
+			yield return new WaitForSeconds(0.1f);
+			
+			Debug.Log($"DESTROYING TILE {Coordinates} NOW - GameObject: {gameObject.name}");
+			Destroy(this.gameObject);
+		}
+		
+		private void OnDestroy()
+		{
+			Debug.Log($"Tile {Coordinates} OnDestroy called");
+		}
+		
+		private void SetState(TileState newState)
+		{
+			if (currentState != newState)
 			{
-				meshRenderer.enabled = false;
-				Debug.Log($"Renderer disabled for tile {Coordinates}");
+				TileState previousState = currentState;
+				currentState = newState;
+				Debug.Log($"Tile {Coordinates} state changed from {previousState} to {newState}");
 			}
 		}
 		
-		private IEnumerator RegenerateCoroutine()
+		private void UpdateVisualState()
 		{
-			Debug.Log($"Tile {Coordinates} starting regeneration in {regenerationDelay} seconds...");
-			yield return new WaitForSeconds(regenerationDelay);
+			if (meshRenderer == null || originalMaterial == null) return;
 			
-			Debug.Log($"Tile {Coordinates} regenerating...");
+			// ALWAYS create a new material instance to ensure no sharing
+			Material currentMaterial = new Material(originalMaterial);
+			meshRenderer.material = currentMaterial;
 			
-			// Gradually restore the tile
-			while (degradationLevel > 0f)
-			{
-				degradationLevel -= regenerationSpeed * Time.deltaTime;
-				degradationLevel = Mathf.Clamp01(degradationLevel);
-				yield return null;
-			}
+			// Adjust color based on degradation level
+			Color baseColor = originalMaterial.color;
+			Color degradedColor = Color.Lerp(baseColor, Color.gray, degradationLevel);
+			currentMaterial.color = degradedColor;
 			
-			// Fully restore the tile
-			degradationLevel = 0f;
-			isBroken = false;
-			currentState = TileState.Intact;
-			
-			// Re-enable components
-			if (tileCollider != null) tileCollider.enabled = true;
-			if (meshRenderer != null) meshRenderer.enabled = true;
-			
-			Debug.Log($"Tile {Coordinates} fully regenerated!");
+			Debug.Log($"Tile {Coordinates} - NEW material instance created, color: {degradedColor} (degradation: {degradationLevel:F2})");
 		}
+		
 	}
 }

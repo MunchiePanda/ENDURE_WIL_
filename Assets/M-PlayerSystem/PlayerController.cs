@@ -39,6 +39,10 @@ namespace ENDURE
         [SerializeField]
         private float cameraYOffset = 0.4f; // This moves the camera a little bit up so we can see better
         private Camera playerCamera; // This is like our player's eyes, what we see in the game!
+        
+        [Header("Camera Culling Fix")]
+        [Tooltip("Fix camera culling so floor remains visible when falling through broken tiles")]
+        public bool fixCameraCulling = true;
 
         [SerializeField]
         private UIManager uiManager; // This is like our player's UI manager, what we use to open and close the inventory panel!
@@ -54,6 +58,12 @@ namespace ENDURE
                                         // We put the camera in the right spot, a little above the player's head
             playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y + cameraYOffset, transform.position.z);
             playerCamera.transform.SetParent(transform); // The camera stays with the player, like a friend!
+            
+            // Apply camera culling fix if enabled
+            if (fixCameraCulling && playerCamera != null)
+            {
+                ApplyCameraCullingFix();
+            }
                                                          // Lock cursor so it doesn't leave the game window, like a treasure hidden in a box!
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false; // We hide the mouse cursor so we can focus on the game!
@@ -199,7 +209,7 @@ namespace ENDURE
              
              foreach (Tile tile in allTiles)
              {
-                 if (tile == null || tile.isBroken) continue; // Skip null or broken tiles
+                 if (tile == null) continue; // Skip null tiles (destroyed tiles)
                  
                  float distance = Vector3.Distance(transform.position, tile.transform.position);
                  if (distance < closestDistance && distance < 2f) // Only consider tiles within 2 units
@@ -222,10 +232,11 @@ namespace ENDURE
 
             Debug.Log($"=== ON TILE ENTERED: {tile.name} at {tile.Coordinates} ===");
             Debug.Log($"Tile Instance ID: {tile.GetInstanceID()}");
+            Debug.Log($"Tile GameObject: {tile.gameObject.name}");
             Debug.Log($"Tile degradation level: {tile.degradationLevel}");
             Debug.Log($"Tile is broken: {tile.isBroken}");
 
-            // Don't degrade broken tiles
+            // Don't degrade broken tiles (though they should be destroyed now)
             if (tile.isBroken)
             {
                 Debug.Log($"Player stepped on broken tile {tile.Coordinates} - skipping degradation");
@@ -246,6 +257,18 @@ namespace ENDURE
             lastTileInteractionTime = Time.time;
 
             Debug.Log($"=== TILE DEGRADATION COMPLETE: {tile.Coordinates} ===");
+        }
+        
+        private void ApplyCameraCullingFix()
+        {
+            if (playerCamera == null) return;
+            
+            // Adjust camera settings to prevent floor culling when falling
+            playerCamera.nearClipPlane = 0.1f; // Closer near plane
+            playerCamera.farClipPlane = 2000f; // Further far plane
+            playerCamera.fieldOfView = 75f; // Wider field of view
+            
+            Debug.Log("Camera culling fix applied - floor should remain visible when falling through broken tiles");
         }
     }
 }

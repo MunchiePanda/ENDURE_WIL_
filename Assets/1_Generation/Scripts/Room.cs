@@ -67,6 +67,9 @@ namespace ENDURE
 			newTile.Coordinates = coordinates;
 			newTile.name = "Tile " + coordinates.x + ", " + coordinates.z;
 			newTile.transform.parent = _tilesObject.transform;
+			
+			// Debug: Make tiles visible in hierarchy
+			Debug.Log($"Created individual tile: {newTile.name} at position {newTile.transform.position}");
 			newTile.transform.localPosition = RoomMapManager.TileSize * new Vector3(coordinates.x - Coordinates.x - Size.x * 0.5f + 0.5f, 0f, coordinates.z - Coordinates.z - Size.z * 0.5f + 0.5f);
 
 			// Apply the floor material - create instance to avoid sharing
@@ -74,7 +77,16 @@ namespace ENDURE
 			{
 				// Create a material instance so each tile has its own material
 				Material tileMaterial = new Material(Setting.floor);
-				newTile.transform.GetChild(0).GetComponent<Renderer>().material = tileMaterial;
+				Renderer tileRenderer = newTile.transform.GetChild(0).GetComponent<Renderer>();
+				if (tileRenderer != null)
+				{
+					tileRenderer.material = tileMaterial;
+					Debug.Log($"Applied material {tileMaterial.name} to tile {coordinates} renderer");
+				}
+				else
+				{
+					Debug.LogError($"No renderer found on tile {coordinates} child object!");
+				}
 			}
 			else
 			{
