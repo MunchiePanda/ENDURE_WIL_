@@ -6,6 +6,9 @@ public class EnemyBehaviour : MonoBehaviour     ///PLEASE DO NOT ADD MORE COMMEN
 {
     [Header("Enemy Hearing")]
     [SerializeField] bool canHear = true;               //Default to True
+    [SerializeField] float hearingRange = 10f;
+    public float hearingSensitivity = 1f;
+    private Vector3 lastheardPos;
 
     /* Enemy sight will have a Raycast to "see" in front of them
      * Enemy will also have a Field of View so That its not Only in the Line Of the Raycast
@@ -64,6 +67,7 @@ public class EnemyBehaviour : MonoBehaviour     ///PLEASE DO NOT ADD MORE COMMEN
        
     }
 
+
     //Will Update this so that it works without CanSee (if using only hearning)
     void StateTransitions()         //Called in Update ( Controls the Transitions between each state.
     {
@@ -95,6 +99,17 @@ public class EnemyBehaviour : MonoBehaviour     ///PLEASE DO NOT ADD MORE COMMEN
                 currentState = EnemyState.Chasing; 
             }
 
+        }
+    }
+
+    public void HearNoise(Vector3 noisePos, float noiseVol)                 //Method is Called if Player Makes a Noise
+    {
+        float dist = Vector3.Distance(transform.position, noisePos);
+
+        if(dist <= hearingRange * noiseVol * hearingSensitivity)
+        {
+            Debug.Log($"{gameObject.name} heard something!");
+            lastheardPos = noisePos;
         }
     }
 
