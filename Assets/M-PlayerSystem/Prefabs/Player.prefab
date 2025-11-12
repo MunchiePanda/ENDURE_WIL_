@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -3740544930044674623}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -82,7 +82,11 @@ MonoBehaviour:
   lookSpeed: 2
   lookXLimit: 45
   canMove: 1
+  isRunning: 0
   cameraYOffset: 0.4
+  fixCameraCulling: 1
+  uiManager: {fileID: 0}
+  state: 0
 --- !u!114 &2760587132470942539
 MonoBehaviour:
   m_ObjectHideFlags: 0
