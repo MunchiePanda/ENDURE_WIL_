@@ -15,41 +15,55 @@ public class InventoryUIManager : MonoBehaviour
     // Lookup: map each ItemBase to its instantiated ItemUIManager for fast update/remove without searching children
     private readonly Dictionary<ItemBase, ItemUIManager> ItemUiMap = new Dictionary<ItemBase, ItemUIManager>();
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
-        // Wire up the close button to hide the inventory panel
-        if (btn_CloseInventory != null)
-        {
-            btn_CloseInventory.onClick.AddListener(CloseInventory);
-        }
-
-        if (uiManager == null)
-        {
-            uiManager = GetComponentInParent<UIManager>();
-            if (uiManager == null)
-            {
-                Debug.LogWarning("CraftingUIManager Start(): No UIManager found in parent hierarchy (D2, D5)");
-            }
-        }
-        //Get Inventory from the attached player if not assigned
+        // Get Inventory from the attached player if not assigned
         if (inventory == null)
         {
             inventory = GetComponentInParent<Inventory>();
             if (inventory == null)
             {
-                Debug.LogWarning("InventoryUIManager Start(): No player inventory found (D2, D6)");
+                Debug.LogWarning("InventoryUIManager Awake(): No player inventory found (D2, D6)");
                 return;
             }
         }
-        // Subscribe to inventory add events so UI reflects changes
+
+        // Subscribe to inventory events (happens even if panel is disabled)
         if (inventory != null)
         {
             inventory.OnItemAdded += AddItem;
             inventory.OnItemRemoved += RemoveItem;
             inventory.OnItemQuantityChanged += ChangeItemQuantity;
+            Debug.Log($"InventoryUIManager subscribed to inventory on {inventory.gameObject.name}");
         }
     }
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        // Wire up the close button
+        if (btn_CloseInventory != null)
+        {
+            btn_CloseInventory.onClick.AddListener(CloseInventory);
+        }
+
+        // Get UIManager reference
+        if (uiManager == null)
+        {
+            uiManager = GetComponentInParent<UIManager>();
+            if (uiManager == null)
+            {
+                Debug.LogWarning("InventoryUIManager Start(): No UIManager found in parent hierarchy (D2, D5)");
+            }
+        }
+
+        // Debug verification
+        if (inventory != null)
+        {
+            Debug.Log($"InventoryUIManager Start(): Connected to inventory with {inventory.CurrentItemCount} items");
+        }
+    }
+
 
     // Update is called once per frame
     void Update()

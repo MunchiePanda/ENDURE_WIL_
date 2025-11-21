@@ -4,65 +4,77 @@ using ENDURE;
 
 public class PlayerUIManager : MonoBehaviour
 {
-    // Player stat sliders under group_PlayerStats
     public Slider slider_Health;
     public Slider slider_Stamina;
     public Slider slider_SystemExposure;
     public Slider slider_Hunger;
 
-    [SerializeField] private PlayerManager playerManager; // Source of player stats
+    [SerializeField] private PlayerManager playerManager;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Awake()
+    {
+        if (playerManager == null)
+        {
+            playerManager = GetComponentInParent<PlayerManager>();
+        }
+
+        if (slider_Health == null)
+            slider_Health = transform.Find("slider_Health")?.GetComponent<Slider>();
+        if (slider_Stamina == null)
+            slider_Stamina = transform.Find("slider_Stamina")?.GetComponent<Slider>();
+        if (slider_SystemExposure == null)
+            slider_SystemExposure = transform.Find("slider_SystemExposure")?.GetComponent<Slider>();
+        if (slider_Hunger == null)
+            slider_Hunger = transform.Find("slider_Hunger")?.GetComponent<Slider>();
+
+        Debug.Log($"PlayerUIManager Awake - Sliders found: Health={slider_Health != null}, Stamina={slider_Stamina != null}, Exposure={slider_SystemExposure != null}, Hunger={slider_Hunger != null}");
+    }
+
     void Start()
     {
-        // Initialize slider ranges from player stats
         if (playerManager != null)
         {
-            SetupSlider(slider_Health, playerManager.Health);
-            SetupSlider(slider_Stamina, playerManager.Stamina);
-            SetupSlider(slider_SystemExposure, playerManager.SystemExposure);
-            SetupSlider(slider_Hunger, playerManager.Hunger);
+            Debug.Log($"PlayerUIManager Start - Health: {playerManager.Health.current}/{playerManager.Health.max}");
+            Debug.Log($"PlayerUIManager Start - Stamina: {playerManager.Stamina.current}/{playerManager.Stamina.max}");
+            Debug.Log($"PlayerUIManager Start - Exposure: {playerManager.SystemExposure.current}/{playerManager.SystemExposure.max}");
+            Debug.Log($"PlayerUIManager Start - Hunger: {playerManager.Hunger.current}/{playerManager.Hunger.max}");
+
+            InitializeSlider(slider_Health, playerManager.Health);
+            InitializeSlider(slider_Stamina, playerManager.Stamina);
+            InitializeSlider(slider_SystemExposure, playerManager.SystemExposure);
+            InitializeSlider(slider_Hunger, playerManager.Hunger);
         }
     }
 
-    // Update is called once per frame
     void Update()
-    {
-        UpdateSliders();
-    }
-
-    //Updates all sliders
-    private void UpdateSliders()
     {
         if (playerManager == null) return;
 
-        UpdateSlider(slider_Health, playerManager.Health);
-        UpdateSlider(slider_Stamina, playerManager.Stamina);
-        UpdateSlider(slider_SystemExposure, playerManager.SystemExposure);
-        UpdateSlider(slider_Hunger, playerManager.Hunger);
+        UpdateSliderValue(slider_Health, playerManager.Health);
+        UpdateSliderValue(slider_Stamina, playerManager.Stamina);
+        UpdateSliderValue(slider_SystemExposure, playerManager.SystemExposure);
+        UpdateSliderValue(slider_Hunger, playerManager.Hunger);
     }
 
-    // Configure slider min/max and initial value based on Stat
-    private void SetupSlider(Slider slider, Stat stat)
+    private void InitializeSlider(Slider slider, Stat stat)
     {
         if (slider == null) return;
+
         slider.minValue = stat.min;
         slider.maxValue = stat.max;
-        slider.value = Mathf.Clamp(stat.current, stat.min, stat.max);
-        if (slider.gameObject != null) slider.gameObject.SetActive(!stat.isHidden);
+        slider.value = stat.current;
+        slider.gameObject.SetActive(!stat.isHidden);
+
+        Debug.Log($"Initialized {slider.name}: value={slider.value}, min={slider.minValue}, max={slider.maxValue}");
     }
 
-    // Update slider value and visibility each frame
-    private void UpdateSlider(Slider slider, Stat stat)
+    private void UpdateSliderValue(Slider slider, Stat stat)
     {
         if (slider == null) return;
-        
-        if (slider.minValue != stat.min) slider.minValue = stat.min;
-        if (slider.maxValue != stat.max) slider.maxValue = stat.max;
 
         slider.value = stat.current;
-        
-        bool shouldBeActive = !stat.isHidden;
-        if (slider.gameObject.activeSelf != shouldBeActive) slider.gameObject.SetActive(shouldBeActive);
+
+        if (slider.gameObject.activeSelf != !stat.isHidden)
+            slider.gameObject.SetActive(!stat.isHidden);
     }
 }

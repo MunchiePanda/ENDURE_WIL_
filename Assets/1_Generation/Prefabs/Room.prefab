@@ -63,8 +63,9 @@ MonoBehaviour:
   - {fileID: 3018655451596531605, guid: 0f88459be5cad0047832c28aad0678b5, type: 3}
   minEnemiesPerRoom: 0
   maxEnemiesPerRoom: 2
-  itemPrefabs: []
-  minItemsPerRoom: 1
-  maxItemsPerRoom: 3
+  itemPrefabs:
+  - {fileID: 2675720976549494293, guid: 2da1c2324ee2c854683fa03558b42e1b, type: 3}
+  minItemsPerRoom: 5
+  maxItemsPerRoom: 10
   minPatrolPointsPerRoom: 2
   maxPatrolPointsPerRoom: 5

@@ -16,6 +16,8 @@ namespace ENDURE
         public Stat SystemExposure { get => systemExposureField; set => systemExposureField = value; }
 
         // We want to do special things when applying attributes, so we change the rule from CharacterManager!
+
+
         protected override void ApplyAttributeEffect(Attribute attribute)
         {
             // First, let the main CharacterManager brain do its part for general stats.
