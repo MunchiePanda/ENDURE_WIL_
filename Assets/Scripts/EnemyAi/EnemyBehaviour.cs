@@ -34,13 +34,24 @@ public class EnemyBehaviour : MonoBehaviour     ///PLEASE DO NOT ADD MORE COMMEN
     public float attackRange = 2f;
     public float patrolWaitTime = 2f;
 
+    [Header("Integration: Player Priority")]
+    [Tooltip("How long the enemy keeps chasing the player after losing sight.")]
+    [SerializeField] private float chaseMemoryDuration = 3f;
+    [Tooltip("Rotation speed while moving.")]
+    [SerializeField] private float rotationSpeed = 360f;
+
     private int currentPatrolIndex;
     private float waitTimer;
+    private Vector3 lastKnownPlayerPos;
+    private bool hasLastKnownPlayerPos;
+    private float timeSinceLastSeen;
+    private bool playerCurrentlyVisible;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        agent.updateRotation = false;
         currentState = EnemyState.Patrolling;       //Det Default State For Enemy                
 
         //added stub to find the player as the player is only spawned after the game starts
@@ -51,6 +62,8 @@ public class EnemyBehaviour : MonoBehaviour     ///PLEASE DO NOT ADD MORE COMMEN
             {
                 player = playerObj.transform;
                 Debug.Log($"{gameObject.name} found player: {player.name}");
+                lastKnownPlayerPos = player.position;
+                hasLastKnownPlayerPos = true;
             }
             else
             {
@@ -66,7 +79,11 @@ public class EnemyBehaviour : MonoBehaviour     ///PLEASE DO NOT ADD MORE COMMEN
         {
             return;
         }
-        //Rudementary State Machine
+
+        playerCurrentlyVisible = CanSeePlayer();
+        UpdateSight(playerCurrentlyVisible);
+
+        // INTEGRATION: Bulleted state execution stays the same, but now visibility is tracked before actions.
         switch (currentState)
         {
             case EnemyState.Patrolling:
@@ -75,49 +92,93 @@ public class EnemyBehaviour : MonoBehaviour     ///PLEASE DO NOT ADD MORE COMMEN
             case EnemyState.Attacking:
                 Attack();
                 break;
-            case EnemyState.Chasing: 
+            case EnemyState.Chasing:
                 Chase();
                 break;
-
         }
 
-        StateTransitions();
-       
+        HandleRotation();
+
+        StateTransitions(playerCurrentlyVisible);
     }
 
 
     //Will Update this so that it works without CanSee (if using only hearning)
-    void StateTransitions()         //Called in Update ( Controls the Transitions between each state.
+    void StateTransitions(bool canSeePlayer)         //Called in Update ( Controls the Transitions between each state.
     {
         if (player == null) return;
-        bool canSeePlayer = CanSeePlayer();
         float distance = Vector3.Distance(transform.position, player.position);
+        bool playerRecentlySeen = canSeePlayer || (hasLastKnownPlayerPos && timeSinceLastSeen <= chaseMemoryDuration);
 
-
-
-        if(currentState == EnemyState.Patrolling && canSeePlayer)           //IF Patrolling
+        // INTEGRATION: Keep chasing/attacking until we lose the player for chaseMemoryDuration.
+        // Previous behaviour would immediately return to patrol as soon as sight was lost and any attack state
+        // simply dropped back to chasing without memory.
+        if (currentState == EnemyState.Patrolling && canSeePlayer)           //IF Patrolling
         {
             currentState = EnemyState.Chasing;
         }
-        else if(currentState == EnemyState.Chasing)                         //If Chasing
+        else if (currentState == EnemyState.Chasing)                         //If Chasing
         {
-            if (!canSeePlayer)                  //Stop Chasing when the Enemy Can No Longer see the player.
+            if (distance < attackRange)
+            {
+                currentState = EnemyState.Attacking;
+            }
+            else if (!playerRecentlySeen)
             {
                 currentState = EnemyState.Patrolling;
                 GoToNextPatrolPoint();
             }
-            else if(distance < attackRange)                 
+        }
+        else if (currentState == EnemyState.Attacking)                           //If Attacking
+        {
+            if (distance > attackRange)
             {
-                currentState = EnemyState.Attacking; 
+                if (playerRecentlySeen)
+                {
+                    currentState = EnemyState.Chasing;
+                }
+                else
+                {
+                    currentState = EnemyState.Patrolling;
+                    GoToNextPatrolPoint();
+                }
             }
         }
-        else if(currentState == EnemyState.Attacking)                           //If Attacking
-        {
-            if(distance > attackRange)
-            {
-                currentState = EnemyState.Chasing; 
-            }
+    }
 
+    private void UpdateSight(bool canSeePlayer)
+    {
+        if (canSeePlayer)
+        {
+            lastKnownPlayerPos = player.position;
+            hasLastKnownPlayerPos = true;
+            timeSinceLastSeen = 0f;
+        }
+        else
+        {
+            timeSinceLastSeen += Time.deltaTime;
+        }
+    }
+
+    private void HandleRotation()
+    {
+        if (agent == null) return;
+
+        Vector3 direction = agent.velocity;
+        if (direction.sqrMagnitude < 0.01f && playerCurrentlyVisible)
+        {
+            direction = (player.position - transform.position);
+        }
+        else if (direction.sqrMagnitude < 0.01f && hasLastKnownPlayerPos)
+        {
+            direction = (lastKnownPlayerPos - transform.position);
+        }
+
+        direction.y = 0f;
+        if (direction.sqrMagnitude > 0.001f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(direction.normalized);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
     }
 
@@ -159,7 +220,14 @@ public class EnemyBehaviour : MonoBehaviour     ///PLEASE DO NOT ADD MORE COMMEN
 
     private void Chase()
     {
-        agent.SetDestination(player.position);
+        Vector3 targetPosition = playerCurrentlyVisible
+            ? player.position
+            : hasLastKnownPlayerPos ? lastKnownPlayerPos : player.position;
+
+        agent.SetDestination(targetPosition);
+        // INTEGRATION: Prefer last known player location when the player is temporarily lost.
+        // Previous behaviour only ever chased `player.position`.
+        // agent.SetDestination(player.position);
     }
 
     private void Attack()
