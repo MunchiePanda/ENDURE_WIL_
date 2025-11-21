@@ -66,3 +66,5 @@ MonoBehaviour:
   itemPrefabs: []
   minItemsPerRoom: 1
   maxItemsPerRoom: 3
+  minPatrolPointsPerRoom: 2
+  maxPatrolPointsPerRoom: 5

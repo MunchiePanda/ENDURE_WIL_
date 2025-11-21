@@ -43,11 +43,29 @@ public class EnemyBehaviour : MonoBehaviour     ///PLEASE DO NOT ADD MORE COMMEN
         agent = GetComponent<NavMeshAgent>();
         currentState = EnemyState.Patrolling;       //Det Default State For Enemy                
 
+        //added stub to find the player as the player is only spawned after the game starts
+        if (player == null)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null)
+            {
+                player = playerObj.transform;
+                Debug.Log($"{gameObject.name} found player: {player.name}");
+            }
+            else
+            {
+                Debug.LogWarning($"{gameObject.name} could not find player! Make sure player has 'Player' tag.");
+            }
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (player == null) //No Player Assigned
+        {
+            return;
+        }
         //Rudementary State Machine
         switch (currentState)
         {
@@ -71,6 +89,7 @@ public class EnemyBehaviour : MonoBehaviour     ///PLEASE DO NOT ADD MORE COMMEN
     //Will Update this so that it works without CanSee (if using only hearning)
     void StateTransitions()         //Called in Update ( Controls the Transitions between each state.
     {
+        if (player == null) return;
         bool canSeePlayer = CanSeePlayer();
         float distance = Vector3.Distance(transform.position, player.position);
 

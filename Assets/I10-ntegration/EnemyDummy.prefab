@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8519990796665888416}
   - component: {fileID: 7865971287279277723}
   - component: {fileID: 9138997328924211425}
+  - component: {fileID: 1566718370883596141}
   m_Layer: 0
   m_Name: EnemyDummy
   m_TagString: Untagged
@@ -98,6 +99,20 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &1566718370883596141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3018655451596531605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d29313b447d50548ad282d566ca5a49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxWaitTime: 5
+  checkInterval: 0.2
 --- !u!1 &5844034881321018583
 GameObject:
   m_ObjectHideFlags: 0

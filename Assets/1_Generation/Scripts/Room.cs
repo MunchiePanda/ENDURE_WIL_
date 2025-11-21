@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.AI;
 using System.Collections;
 using System.Collections.Generic;
 using ENDURE;
@@ -16,6 +17,7 @@ namespace ENDURE
         private GameObject _wallsObject;
         private GameObject _enemiesObject;
         private GameObject _itemsObject;
+        private GameObject _patrolPointsObject;
         public Tile TilePrefab;
         private Tile[,] _tiles;
         public GameObject WallPrefab;
@@ -36,6 +38,10 @@ namespace ENDURE
         public GameObject[] itemPrefabs;
         public int minItemsPerRoom = 1;
         public int maxItemsPerRoom = 3;
+
+        [Header("Patrol Points")]
+        public int minPatrolPointsPerRoom = 2;
+        public int maxPatrolPointsPerRoom = 5;
 
         public void Init(Map map)
         {
@@ -181,8 +187,80 @@ namespace ENDURE
             yield return null;
         }
 
+        private List<Transform> CreatePatrolPoints()
+        {
+            _patrolPointsObject = new GameObject("PatrolPoints");
+            _patrolPointsObject.transform.parent = transform;
+            _patrolPointsObject.transform.localPosition = Vector3.zero;
+
+            int patrolPointCount = Random.Range(minPatrolPointsPerRoom, maxPatrolPointsPerRoom + 1);
+            List<Transform> patrolPoints = new List<Transform>();
+
+            float minDistanceBetweenPoints = Mathf.Max(Size.x, Size.z) * 0.25f;
+            int maxAttempts = 30;
+
+            for (int i = 0; i < patrolPointCount; i++)
+            {
+                Vector3 randomLocalPosition = Vector3.zero;
+                bool validPositionFound = false;
+                int attempts = 0;
+
+                while (!validPositionFound && attempts < maxAttempts)
+                {
+                    randomLocalPosition = new Vector3(
+                        Random.Range(-Size.x * 0.75f, Size.x * 0.75f),
+                        0f,
+                        Random.Range(-Size.z * 0.75f, Size.z * 0.75f)
+                    );
+
+                    validPositionFound = true;
+
+                    foreach (Transform existingPoint in patrolPoints)
+                    {
+                        float distance = Vector3.Distance(randomLocalPosition, existingPoint.localPosition);
+                        if (distance < minDistanceBetweenPoints)
+                        {
+                            validPositionFound = false;
+                            break;
+                        }
+                    }
+
+                    attempts++;
+                }
+
+                if (!validPositionFound && attempts >= maxAttempts)
+                {
+                    Debug.LogWarning($"Could not find spread position for patrol point {i + 1}, using random position");
+                }
+
+                GameObject patrolPoint = new GameObject($"PatrolPoint {i + 1}");
+                patrolPoint.transform.parent = _patrolPointsObject.transform;
+                patrolPoint.transform.localPosition = randomLocalPosition;
+
+                PatrolPoint patrolComponent = patrolPoint.AddComponent<PatrolPoint>();
+
+                NavMeshHit hit;
+                if (NavMesh.SamplePosition(patrolPoint.transform.position, out hit, 15f, NavMesh.AllAreas))
+                {
+                    patrolPoint.transform.position = hit.position;
+                }
+                else
+                {
+                    Debug.LogWarning($"Patrol point {i + 1} could not find NavMesh, keeping at {patrolPoint.transform.position}");
+                }
+
+                patrolPoints.Add(patrolPoint.transform);
+            }
+
+            Debug.Log($"Created {patrolPointCount} patrol points in room {Num} with spacing ~{minDistanceBetweenPoints:F1} units");
+            return patrolPoints;
+        }
+
+
         public IEnumerator CreateMonsters()
         {
+            List<Transform> availablePatrolPoints = CreatePatrolPoints();
+
             if (enemyPrefabs != null && enemyPrefabs.Length > 0)
             {
                 _enemiesObject = new GameObject("Enemies");
@@ -195,7 +273,7 @@ namespace ENDURE
                 {
                     GameObject enemyPrefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
 
-                    Vector3 randomPosition = new Vector3(
+                    Vector3 randomLocalPosition = new Vector3(
                         Random.Range(-Size.x * 0.4f, Size.x * 0.4f),
                         0f,
                         Random.Range(-Size.z * 0.4f, Size.z * 0.4f)
@@ -204,7 +282,65 @@ namespace ENDURE
                     GameObject newEnemy = Instantiate(enemyPrefab);
                     newEnemy.name = $"Enemy {i + 1}";
                     newEnemy.transform.parent = _enemiesObject.transform;
-                    newEnemy.transform.localPosition = randomPosition;
+                    newEnemy.transform.localPosition = randomLocalPosition;
+
+                    NavMeshAgent agent = newEnemy.GetComponent<NavMeshAgent>();
+                    if (agent != null)
+                    {
+                        agent.enabled = false;
+
+                        Vector3 worldPosition = newEnemy.transform.position;
+
+                        NavMeshHit hit;
+                        if (NavMesh.SamplePosition(worldPosition, out hit, 15f, NavMesh.AllAreas))
+                        {
+                            newEnemy.transform.position = hit.position;
+                            Debug.Log($"{newEnemy.name} snapped to NavMesh at {hit.position}");
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"{newEnemy.name} could not find nearby NavMesh! Trying center of room...");
+
+                            if (NavMesh.SamplePosition(transform.position, out hit, 20f, NavMesh.AllAreas))
+                            {
+                                newEnemy.transform.position = hit.position;
+                                Debug.Log($"{newEnemy.name} placed at room center NavMesh position");
+                            }
+                            else
+                            {
+                                Debug.LogError($"{newEnemy.name} NO NAVMESH FOUND IN ENTIRE ROOM!");
+                            }
+                        }
+
+                        agent.enabled = true;
+                    }
+
+                    EnemyBehaviour enemyBehaviour = newEnemy.GetComponent<EnemyBehaviour>();
+                    if (enemyBehaviour != null && availablePatrolPoints.Count > 0)
+                    {
+                        int pointsToAssign = Mathf.Min(Random.Range(2, 5), availablePatrolPoints.Count);
+                        Transform[] assignedPoints = new Transform[pointsToAssign];
+
+                        List<Transform> tempPoints = new List<Transform>(availablePatrolPoints);
+                        for (int j = 0; j < pointsToAssign; j++)
+                        {
+                            int randomIndex = Random.Range(0, tempPoints.Count);
+                            assignedPoints[j] = tempPoints[randomIndex];
+
+                            PatrolPoint patrolComp = tempPoints[randomIndex].GetComponent<PatrolPoint>();
+                            if (patrolComp != null)
+                            {
+                                patrolComp.isAssigned = true;
+                            }
+
+                            tempPoints.RemoveAt(randomIndex);
+                        }
+
+                        enemyBehaviour.patrolPoints = assignedPoints;
+                        Debug.Log($"{newEnemy.name} assigned {pointsToAssign} patrol points");
+                    }
+
+                    yield return null;
                 }
             }
 

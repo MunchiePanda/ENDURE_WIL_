@@ -133,73 +133,101 @@ namespace ENDURE
 			}
 
 
-		// Generate Rooms and Corridors
-		public IEnumerator Generate()
-		{
-			Stopwatch stopwatch = new Stopwatch();
-			stopwatch.Start();
-				_tilesTypes = new TileType[MapSize.x, MapSize.z];
-				_rooms = new List<Room>();
+        // Generate Rooms and Corridors
+        public IEnumerator Generate()
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            _tilesTypes = new TileType[MapSize.x, MapSize.z];
+            _rooms = new List<Room>();
 
-				// Generate Rooms
-				for (int i = 0; i < RoomCount; i++)
-				{
-					Room roomInstance = CreateRoom();
-					if (roomInstance == null)
-					{
-						RoomCount = _rooms.Count;
-						Debug.Log("Cannot make more rooms!");
-						Debug.Log("Created Rooms : " + RoomCount);
-						break;
-					}
-					roomInstance.Setting = RoomSettings[Random.Range(0, RoomSettings.Length)];
-					StartCoroutine(roomInstance.Generate());
+            // Generate Rooms (WITHOUT enemies/items yet)
+            for (int i = 0; i < RoomCount; i++)
+            {
+                Room roomInstance = CreateRoom();
+                if (roomInstance == null)
+                {
+                    RoomCount = _rooms.Count;
+                    Debug.Log("Cannot make more rooms!");
+                    Debug.Log("Created Rooms : " + RoomCount);
+                    break;
+                }
+                roomInstance.Setting = RoomSettings[Random.Range(0, RoomSettings.Length)];
+                StartCoroutine(roomInstance.Generate());
 
-					// Generate Player or Monster
-					if (_hasPlayer)
-						yield return roomInstance.CreateMonsters();
-					else
-					{
-						yield return roomInstance.CreatePlayer();
-						_hasPlayer = true;
-					}
-					yield return null;
-				}
-				Debug.Log("Every rooms are generated");
+                // Only spawn player in first room
+                if (!_hasPlayer)
+                {
+                    yield return roomInstance.CreatePlayer();
+                    _hasPlayer = true;
+                }
 
-				// Delaunay Triangulation
-				yield return BowyerWatson();
+                yield return null;
+            }
+            Debug.Log("Every rooms are generated");
 
-				// Minimal Spanning Tree
-				yield return PrimMST();
-				Debug.Log("Every rooms are minimally connected");
+            // Delaunay Triangulation
+            yield return BowyerWatson();
 
-				// Generate Corridors
-				foreach (Corridor corridor in _corridors)
-				{
-					StartCoroutine(corridor.Generate());
-					yield return null;
-				}
-				Debug.Log("Every corridors are generated");
+            // Minimal Spanning Tree
+            yield return PrimMST();
+            Debug.Log("Every rooms are minimally connected");
 
-				// Generate Walls
-				yield return WallCheck();
-				foreach (Room room in _rooms)
-				{
-					yield return room.CreateWalls();
-				}
-				foreach (Corridor corridor in _corridors)
-				{
-					yield return corridor.CreateWalls();
-				}
-				Debug.Log("Every walls are generated");
+            // Generate Corridors
+            foreach (Corridor corridor in _corridors)
+            {
+                StartCoroutine(corridor.Generate());
+                yield return null;
+            }
+            Debug.Log("Every corridors are generated");
 
-				// Generate Roof
-				yield return GenerateRoof();
-			} 
+            // Generate Walls
+            yield return WallCheck();
+            foreach (Room room in _rooms)
+            {
+                yield return room.CreateWalls();
+            }
+            foreach (Corridor corridor in _corridors)
+            {
+                yield return corridor.CreateWalls();
+            }
+            Debug.Log("Every walls are generated");
+
+            Debug.Log("Dungeon structure complete - ready for NavMesh baking");
+
+            // WAIT for NavMesh to be baked
+            yield return new WaitForSeconds(2f);
+
+            // Verify NavMesh is ready
+            int waitAttempts = 0;
+            while (!DungeonNavMeshManager.IsNavMeshReady && waitAttempts < 20)
+            {
+                Debug.Log($"Waiting for NavMesh... (attempt {waitAttempts + 1})");
+                yield return new WaitForSeconds(0.5f);
+                waitAttempts++;
+            }
+
+            if (DungeonNavMeshManager.IsNavMeshReady)
+            {
+                Debug.Log("NavMesh confirmed ready - spawning enemies and items...");
+
+                // NOW spawn enemies and items in all rooms
+                foreach (Room room in _rooms)
+                {
+                    yield return room.CreateMonsters();
+                }
+                Debug.Log("All enemies and items spawned!");
+            }
+            else
+            {
+                Debug.LogError("NavMesh failed to bake! Skipping enemy spawn.");
+            }
+
+        }
 
 
-		public IEnumerator GenerateRoof()
+
+        public IEnumerator GenerateRoof()
 		{
 			// Iterate through all tiles in the map
 			for (int x = 0; x < MapSize.x; x++)
