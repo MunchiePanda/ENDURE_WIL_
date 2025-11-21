@@ -174,7 +174,7 @@ GameObject:
   - component: {fileID: 1977213336312778302}
   m_Layer: 0
   m_Name: Capsule
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -406,6 +406,10 @@ PrefabInstance:
       propertyPath: slider_SystemExposure
       value: 
       objectReference: {fileID: 6314361210716043615}
+    - target: {fileID: 1406693600492536801, guid: d9086c74462f08e43a76f510606b9624, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0.000028832843
+      objectReference: {fileID: 0}
     - target: {fileID: 2256986644363842930, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -452,15 +456,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3812330804401556723, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_Size
-      value: 1
+      value: 0.99951696
       objectReference: {fileID: 0}
     - target: {fileID: 4062813405136551938, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000016976279
+      value: -0.000017839438
       objectReference: {fileID: 0}
     - target: {fileID: 4598982602031995289, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5020489207906036075, guid: d9086c74462f08e43a76f510606b9624, type: 3}
+      propertyPath: m_Size
+      value: 0.99947655
       objectReference: {fileID: 0}
     - target: {fileID: 5602324742740751442, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchorMax.x
