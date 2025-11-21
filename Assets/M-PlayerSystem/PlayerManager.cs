@@ -39,5 +39,10 @@ namespace ENDURE
                 // Other attribute types are handled by the base CharacterManager
             }
         }
+
+        public override void TakeDamage(float damage)
+        {
+            base.TakeDamage(damage);
+        }
     }
 }

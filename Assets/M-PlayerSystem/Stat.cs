@@ -15,8 +15,9 @@ namespace ENDURE
         // This makes the number go down, like when you get hurt!
         public void ReduceStat(float reduction)
         {
+            float modifier = Mathf.Approximately(statModifier, 0f) ? 1f : statModifier;
             // We make sure the reduction respects the statModifier
-            current -= reduction * statModifier;
+            current -= reduction * modifier;
             // The number can't go below its smallest value
             if (current < min)
             {

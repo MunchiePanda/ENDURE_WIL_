@@ -24,9 +24,9 @@ namespace ENDURE
         // This is what happens when the character gets hurt!
         public virtual void TakeDamage(float damage) // "virtual" means other brains (like PlayerManager) can change this rule!
         {
-            Health.ReduceStat(damage); // Make health go down!
-            Debug.Log($"{gameObject.name} took {damage} damage. Current Health: {Health.current}");
-            if (Health.current <= Health.min)
+            healthField.ReduceStat(damage); // Make health go down!
+            Debug.Log($"{gameObject.name} took {damage} damage. Current Health: {healthField.current}");
+            if (healthField.current <= healthField.min)
             {
                 Die(); // Oh no, if health is too low, they fall down!
             }
@@ -73,6 +73,16 @@ namespace ENDURE
                     Debug.LogWarning($"Unknown AttributeType: {attribute.type}");
                     break;
             }
+        }
+
+        public void DrainStamina(float amount)
+        {
+            staminaField.ReduceStat(amount);
+        }
+
+        public void RegainStamina(float amount)
+        {
+            staminaField.IncreaseStat(amount);
         }
     }
 }

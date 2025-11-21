@@ -36,7 +36,8 @@ public class EnemyAttackHandler : MonoBehaviour
         if (enemyBehaviour.player != null)
         {
             player = enemyBehaviour.player;
-            playerCharacterManager = player.GetComponent<ENDURE.CharacterManager>();
+            //playerCharacterManager = player.GetComponent<ENDURE.CharacterManager>();
+            playerCharacterManager = player.GetComponentInParent<ENDURE.PlayerManager>();
         }
     }
 
@@ -67,5 +68,7 @@ public class EnemyAttackHandler : MonoBehaviour
         {
             Debug.LogWarning($"{gameObject.name} tried to attack but player has no CharacterManager!");
         }
+        
+
     }
 }

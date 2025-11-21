@@ -24,6 +24,23 @@ public class UIManager : MonoBehaviour
         {
             Debug.LogWarning("UIManager Start(): No PlayerController found in parent hierarchy (D2, D6)");
         }
+        else
+        {
+            if (playerUIManager == null)
+            {
+                playerUIManager = GetComponentInChildren<PlayerUIManager>(true);
+            }
+
+            var playerManager = playerController.GetComponent<PlayerManager>();
+            if (playerUIManager != null)
+            {
+                playerUIManager.SetPlayerManager(playerManager);
+            }
+            else
+            {
+                Debug.LogWarning("UIManager Start(): PlayerUIManager not found.");
+            }
+        }
         EnableInventoryUI(false);
         EnableCraftingUI(false);
     }

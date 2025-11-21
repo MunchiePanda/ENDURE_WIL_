@@ -85,7 +85,7 @@ MonoBehaviour:
   isRunning: 0
   cameraYOffset: 0.4
   fixCameraCulling: 1
-  uiManager: {fileID: 0}
+  uiManager: {fileID: 7846050707125768826}
   state: 0
 --- !u!114 &2760587132470942539
 MonoBehaviour:
@@ -509,7 +509,7 @@ PrefabInstance:
       objectReference: {fileID: 6314361210716043615}
     - target: {fileID: 1406693600492536801, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.00005850258
+      value: 0.0010003474
       objectReference: {fileID: 0}
     - target: {fileID: 2256986644363842930, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchorMax.x
@@ -557,11 +557,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3812330804401556723, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_Size
-      value: 1
+      value: 0.99999624
       objectReference: {fileID: 0}
     - target: {fileID: 4062813405136551938, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.00006443149
+      value: 0.0002841144
       objectReference: {fileID: 0}
     - target: {fileID: 4598982602031995289, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchorMax.y
@@ -569,7 +569,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5020489207906036075, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_Size
-      value: 1
+      value: 0.99994314
       objectReference: {fileID: 0}
     - target: {fileID: 5602324742740751442, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchorMax.x
@@ -683,6 +683,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7846050707125768826 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8279712701813730889, guid: d9086c74462f08e43a76f510606b9624, type: 3}
+  m_PrefabInstance: {fileID: 2163336792760826931}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac18068d3d8af9c47be00701edf18984, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &8520141325718837245 stripped

@@ -20,10 +20,13 @@ namespace ENDURE
         public float gravity = 20.0f; // This pulls the player down to the ground, so they don't float away!
         public float lookSpeed = 2.0f; // How fast the player can look around with their eyes
         public float lookXLimit = 45.0f; // How far up and down the player can look
+        [SerializeField] private float staminaDrainPerSecond = 10f;
+        [SerializeField] private float staminaRegenPerSecond = 5f;
 
         CharacterController characterController; // This helps the player walk and not go through walls
         Vector3 moveDirection = Vector3.zero; // This tells the player where to go
         float rotationX = 0; // This remembers where the player is looking up and down
+        private PlayerManager playerManager;
 
         [HideInInspector]
         public bool canMove = true; // This is like a switch, true means the player can move, false means they can't!
@@ -69,6 +72,12 @@ namespace ENDURE
             Cursor.visible = false; // We hide the mouse cursor so we can focus on the game!
             if (uiManager == null) uiManager = GetComponentInChildren<UIManager>(true);
             SetState(PlayerState.Playing);
+        
+        playerManager = GetComponent<PlayerManager>();
+        if (playerManager == null)
+        {
+            Debug.LogWarning("PlayerController Start(): PlayerManager component missing on player.");
+        }
             
             // Find all tiles in the scene
             FindAllTiles();
@@ -100,16 +109,18 @@ namespace ENDURE
 
         void UpdatePlaying()
         {
-            // If we press the Left Shift key, the player starts to run super fast!
-            isRunning = Input.GetKey(KeyCode.LeftShift);
+            bool wantsToRun = Input.GetKey(KeyCode.LeftShift);
+            bool staminaAvailable = playerManager != null ? playerManager.Stamina.current > playerManager.Stamina.min : true;
+            isRunning = wantsToRun && staminaAvailable;
 
             // If the player is on the ground, we figure out where they want to go
             Vector3 forward = transform.TransformDirection(Vector3.forward); // This is like pointing straight ahead
             Vector3 right = transform.TransformDirection(Vector3.right); // This is like pointing to the side
 
             // We figure out how fast the player should move, depending on if they are walking or running
-            float curSpeedX = canMove ? (isRunning ? runningSpeed : walkingSpeed) * Input.GetAxis("Vertical") : 0; // How fast forward/backward
-            float curSpeedY = canMove ? (isRunning ? runningSpeed : walkingSpeed) * Input.GetAxis("Horizontal") : 0; // How fast left/right
+            float targetSpeed = isRunning ? runningSpeed : walkingSpeed;
+            float curSpeedX = canMove ? targetSpeed * Input.GetAxis("Vertical") : 0; // How fast forward/backward
+            float curSpeedY = canMove ? targetSpeed * Input.GetAxis("Horizontal") : 0; // How fast left/right
             float movementDirectionY = moveDirection.y; // We remember if the player was going up or down
             moveDirection = (forward * curSpeedX) + (right * curSpeedY); // This tells the player where to go on the ground
 
@@ -127,6 +138,18 @@ namespace ENDURE
             if (!characterController.isGrounded)
             {
                 moveDirection.y -= gravity * Time.deltaTime; // They fall down, whoosh!
+            }
+
+            if (playerManager != null)
+            {
+                if (isRunning)
+                {
+                    playerManager.DrainStamina(staminaDrainPerSecond * Time.deltaTime);
+                }
+                else if (playerManager.Stamina.current < playerManager.Stamina.max)
+                {
+                    playerManager.RegainStamina(staminaRegenPerSecond * Time.deltaTime);
+                }
             }
 
             // We tell the player to move!

@@ -13,20 +13,7 @@ public class PlayerUIManager : MonoBehaviour
 
     void Awake()
     {
-        if (playerManager == null)
-        {
-            playerManager = GetComponentInParent<PlayerManager>();
-        }
-
-        if (slider_Health == null)
-            slider_Health = transform.Find("slider_Health")?.GetComponent<Slider>();
-        if (slider_Stamina == null)
-            slider_Stamina = transform.Find("slider_Stamina")?.GetComponent<Slider>();
-        if (slider_SystemExposure == null)
-            slider_SystemExposure = transform.Find("slider_SystemExposure")?.GetComponent<Slider>();
-        if (slider_Hunger == null)
-            slider_Hunger = transform.Find("slider_Hunger")?.GetComponent<Slider>();
-
+        EnsureSliderReferences();
         Debug.Log($"PlayerUIManager Awake - Sliders found: Health={slider_Health != null}, Stamina={slider_Stamina != null}, Exposure={slider_SystemExposure != null}, Hunger={slider_Hunger != null}");
     }
 
@@ -34,15 +21,7 @@ public class PlayerUIManager : MonoBehaviour
     {
         if (playerManager != null)
         {
-            Debug.Log($"PlayerUIManager Start - Health: {playerManager.Health.current}/{playerManager.Health.max}");
-            Debug.Log($"PlayerUIManager Start - Stamina: {playerManager.Stamina.current}/{playerManager.Stamina.max}");
-            Debug.Log($"PlayerUIManager Start - Exposure: {playerManager.SystemExposure.current}/{playerManager.SystemExposure.max}");
-            Debug.Log($"PlayerUIManager Start - Hunger: {playerManager.Hunger.current}/{playerManager.Hunger.max}");
-
-            InitializeSlider(slider_Health, playerManager.Health);
-            InitializeSlider(slider_Stamina, playerManager.Stamina);
-            InitializeSlider(slider_SystemExposure, playerManager.SystemExposure);
-            InitializeSlider(slider_Hunger, playerManager.Hunger);
+            InitializeAllSliders();
         }
     }
 
@@ -56,6 +35,21 @@ public class PlayerUIManager : MonoBehaviour
         UpdateSliderValue(slider_Hunger, playerManager.Hunger);
     }
 
+    public void SetPlayerManager(PlayerManager manager)
+    {
+        if (manager == null)
+        {
+            Debug.LogWarning("PlayerUIManager.SetPlayerManager(): supplied PlayerManager was null.");
+            return;
+        }
+
+        if (playerManager == manager) return;
+
+        playerManager = manager;
+        InitializeAllSliders();
+        Debug.Log($"PlayerUIManager connected to PlayerManager on {manager.gameObject.name}.");
+    }
+
     private void InitializeSlider(Slider slider, Stat stat)
     {
         if (slider == null) return;
@@ -66,6 +60,28 @@ public class PlayerUIManager : MonoBehaviour
         slider.gameObject.SetActive(!stat.isHidden);
 
         Debug.Log($"Initialized {slider.name}: value={slider.value}, min={slider.minValue}, max={slider.maxValue}");
+    }
+
+    private void InitializeAllSliders()
+    {
+        if (playerManager == null) return;
+
+        InitializeSlider(slider_Health, playerManager.Health);
+        InitializeSlider(slider_Stamina, playerManager.Stamina);
+        InitializeSlider(slider_SystemExposure, playerManager.SystemExposure);
+        InitializeSlider(slider_Hunger, playerManager.Hunger);
+    }
+
+    private void EnsureSliderReferences()
+    {
+        if (slider_Health == null)
+            slider_Health = transform.Find("slider_Health")?.GetComponent<Slider>();
+        if (slider_Stamina == null)
+            slider_Stamina = transform.Find("slider_Stamina")?.GetComponent<Slider>();
+        if (slider_SystemExposure == null)
+            slider_SystemExposure = transform.Find("slider_SystemExposure")?.GetComponent<Slider>();
+        if (slider_Hunger == null)
+            slider_Hunger = transform.Find("slider_Hunger")?.GetComponent<Slider>();
     }
 
     private void UpdateSliderValue(Slider slider, Stat stat)
