@@ -97,7 +97,6 @@ public class FootstepManager : MonoBehaviour
     {
         float speed = controller.velocity.magnitude;
 
-
         if(minMoveSpeed > speed)
         {
             //We Moving But
@@ -121,7 +120,6 @@ public class FootstepManager : MonoBehaviour
         }
 
             TryPlayFootsteps();
-
     }
 
     private void TryPlayFootsteps()
@@ -144,7 +142,6 @@ public class FootstepManager : MonoBehaviour
         SurfaceType surfaceType = defaultSurface;   //Just in Case
         FootstepSurface surface = hit.collider.gameObject.GetComponent<FootstepSurface>();
 
-
         if(audioSource.isPlaying == true && audioSource.clip == footsteps[surface.surfaceType][audioIndex])
         {
             //Already doing the right things
@@ -154,10 +151,8 @@ public class FootstepManager : MonoBehaviour
         //Switch to the Audio Clip from the Person Walking.
         audioSource.clip = footsteps[surface.surfaceType][audioIndex];
 
-
         //Audio source is set to Loop.
         audioSource.Play();
-
 
     }
 
