@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 7e70f4178e4906e49bd4d86f6050ce4e
+guid: ad30ec7712c93764695c4d826dd864bd
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,8 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: ConiferousPlantsMat
-    second: {fileID: 2100000, guid: c3f0bd744f99ca042b09435f8c4fba27, type: 2}
+      name: SorrelMat
+    second: {fileID: 2100000, guid: f7030d5b3c156b94091173bf314912f5, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
