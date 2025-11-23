@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1566718370883596141}
   m_Layer: 0
   m_Name: EnemyDummy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -63,20 +63,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canHear: 1
-  hearingRange: 10
-  hearingSensitivity: 1
+  hearingRange: 20
+  hearingSensitivity: 1.2
   canSee: 1
   eyes: {fileID: 1491963512532456256}
   sightRange: 10
   fieldOfView: 60
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   player: {fileID: 0}
   currentState: 0
   patrolPoints: []
   attackRange: 2
   patrolWaitTime: 2
+  chaseMemoryDuration: 3
+  rotationSpeed: 360
 --- !u!195 &9138997328924211425
 NavMeshAgent:
   m_ObjectHideFlags: 0

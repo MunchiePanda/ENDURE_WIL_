@@ -124,9 +124,10 @@ public class FootstepManager : MonoBehaviour
 
     private void TryPlayFootsteps()
     {
+
         if(footsteps == null)
         {
-            Debug.LogWarning("Footstep Disctionary is Null");
+            Debug.LogWarning("Footstep Dictionary is Null");
             return;
         }
 
@@ -135,6 +136,8 @@ public class FootstepManager : MonoBehaviour
         if (!Physics.Raycast(ray, out RaycastHit hit, raycastDistance, groundLayers))
         {
             //Not Grounded (Don't Play)
+            Debug.Log("No Ground");
+
             audioSource.Stop();
             return;
         }
