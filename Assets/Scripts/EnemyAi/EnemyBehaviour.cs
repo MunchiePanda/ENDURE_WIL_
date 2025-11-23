@@ -205,11 +205,11 @@ public class EnemyBehaviour : MonoBehaviour     ///PLEASE DO NOT ADD MORE COMMEN
             //Checks if in Line Of Sight. and Not behind an Obstacle and Not too Far away
             if (Physics.Raycast(eyes.position, directionToPlayer, out RaycastHit hit, sightRange, ~obstacleLayer))      //(~) means, Everything But This Obstacle Layer //This makes it so players can "hide" behind Obstacles
             {
-                Debug.Log(hit.transform.gameObject.tag);
+                //Debug.Log(hit.transform.gameObject.tag);
 
                 if (hit.transform.CompareTag("Player"))
                 {
-                    Debug.Log("Raycast hit Player");
+                    //Debug.Log("Raycast hit Player");
                     return true;
                 }
             }
