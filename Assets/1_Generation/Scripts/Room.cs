@@ -383,6 +383,39 @@ namespace ENDURE
             player.name = "Player";
             player.transform.parent = transform.parent;
             player.transform.localPosition = transform.localPosition;
+
+            // Disable player movement/gravity until properly positioned
+            var playerController = player.GetComponent<ENDURE.PlayerController>();
+            if (playerController != null)
+            {
+                playerController.canMove = false;
+            }
+
+            // Disable CharacterController temporarily to prevent falling
+            var characterController = player.GetComponent<CharacterController>();
+            if (characterController != null)
+            {
+                characterController.enabled = false;
+            }
+
+            // Wait a frame to ensure player is positioned
+            yield return null;
+
+            // Re-enable CharacterController
+            if (characterController != null)
+            {
+                characterController.enabled = true;
+            }
+
+            // Wait a bit more to ensure player lands on floor
+            yield return new WaitForSeconds(0.1f);
+
+            // Re-enable player movement
+            if (playerController != null)
+            {
+                playerController.canMove = true;
+            }
+
             yield return null;
         }
     }

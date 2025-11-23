@@ -24,14 +24,6 @@ namespace ENDURE
             BeginGame();
         }
 
-        void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                RestartGame();
-            }
-        }
-
         private void BeginGame()
         {
             mapInstance = Instantiate(mapPrefap);

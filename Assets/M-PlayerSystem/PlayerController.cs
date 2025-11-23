@@ -259,7 +259,7 @@ namespace ENDURE
             Debug.Log($"Tile degradation level: {tile.degradationLevel}");
             Debug.Log($"Tile is broken: {tile.isBroken}");
 
-            // Don't degrade broken tiles (though they should be destroyed now)
+            // Don't degrade broken tiles
             if (tile.isBroken)
             {
                 Debug.Log($"Player stepped on broken tile {tile.Coordinates} - skipping degradation");

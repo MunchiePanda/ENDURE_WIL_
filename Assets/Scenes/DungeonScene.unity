@@ -414,6 +414,10 @@ PrefabInstance:
       propertyPath: MinRoomSize
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 8908215750820412394, guid: 1973052be41090f4f96accbdf48de324, type: 3}
+      propertyPath: TileSizeFactor
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

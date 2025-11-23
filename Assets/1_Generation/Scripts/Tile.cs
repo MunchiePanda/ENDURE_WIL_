@@ -19,6 +19,13 @@ namespace ENDURE
 		public float walkDegradationAmount = 0.2f;
 		public float runDegradationAmount = 0.5f;
 		
+		[Header("Regeneration Settings")]
+		[Tooltip("How fast the tile regenerates per second (0.1 = 10% per second)")]
+		public float regenerationRate = 0.1f;
+		
+		[Tooltip("How long to wait after last step before regeneration starts (in seconds)")]
+		public float regenerationDelay = 2f;
+		
 		[Header("Current State")]
 		public float degradationLevel = 0f;
 		public bool isBroken = false;
@@ -27,6 +34,8 @@ namespace ENDURE
 		private MeshRenderer meshRenderer;
 		private Collider tileCollider;
 		private Material originalMaterial;
+		private float lastDegradationTime = 0f;
+		private bool isRegenerating = false;
 
 		public void Start()
 		{
@@ -60,6 +69,9 @@ namespace ENDURE
 			degradationLevel += amount;
 			degradationLevel = Mathf.Clamp01(degradationLevel);
 			
+			lastDegradationTime = Time.time;
+			isRegenerating = false;
+			
 			Debug.Log($"Tile {Coordinates} degraded by {amount}. Level: {degradationLevel:F2}");
 			
 			// Update visual appearance based on degradation level
@@ -75,6 +87,42 @@ namespace ENDURE
 			else if (degradationLevel > 0f)
 			{
 				SetState(TileState.Degrading);
+			}
+			else
+			{
+				SetState(TileState.Intact);
+			}
+		}
+		
+		void Update()
+		{
+			// Don't regenerate if broken
+			if (isBroken) return;
+			
+			// Check if enough time has passed since last degradation to start regenerating
+			if (degradationLevel > 0f && Time.time - lastDegradationTime >= regenerationDelay)
+			{
+				if (!isRegenerating)
+				{
+					isRegenerating = true;
+					Debug.Log($"Tile {Coordinates} started regenerating");
+				}
+				
+				// Regenerate over time
+				degradationLevel -= regenerationRate * Time.deltaTime;
+				degradationLevel = Mathf.Clamp01(degradationLevel);
+				
+				// Update visual state as it regenerates
+				UpdateVisualState();
+				
+				// If fully regenerated, return to intact state
+				if (degradationLevel <= 0f)
+				{
+					degradationLevel = 0f;
+					SetState(TileState.Intact);
+					isRegenerating = false;
+					Debug.Log($"Tile {Coordinates} fully regenerated");
+				}
 			}
 		}
 		
