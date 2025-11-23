@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyBehaviour : MonoBehaviour     ///PLEASE DO NOT ADD MORE COMMENTS, IF STRUGGLE -> ASK
+public class EnemyBehaviour : MonoBehaviour     
 {
     [Header("Enemy Hearing")]
     [SerializeField] bool canHear = true;               //Default to True
@@ -12,6 +12,9 @@ public class EnemyBehaviour : MonoBehaviour     ///PLEASE DO NOT ADD MORE COMMEN
 
     /* Enemy sight will have a Raycast to "see" in front of them
      * Enemy will also have a Field of View so That its not Only in the Line Of the Raycast
+     * 
+     * Hearing is slightly different. Will move to the last heard position. Get far enough and will continue doing its normal thing
+     * Hearing range changes based on whether or not the player is running or walking because running is louder. Volume of running and walking is changed in Footstep Manager
      */
 
     [Header("Enemy Sight")]
@@ -27,7 +30,7 @@ public class EnemyBehaviour : MonoBehaviour     ///PLEASE DO NOT ADD MORE COMMEN
     [Header("Enemy Behaviour (Regardless of Sight Or Sound")]
     public Transform player;
     private NavMeshAgent agent;
-    public enum EnemyState {Patrolling, Chasing, Attacking}
+    public enum EnemyState {Patrolling, Chasing, Attacking, Investigating}
     public EnemyState currentState = EnemyState.Patrolling;
 
     public Transform[] patrolPoints;
@@ -46,6 +49,8 @@ public class EnemyBehaviour : MonoBehaviour     ///PLEASE DO NOT ADD MORE COMMEN
     private bool hasLastKnownPlayerPos;
     private float timeSinceLastSeen;
     private bool playerCurrentlyVisible;
+    private bool isInvestigating = false;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -83,7 +88,6 @@ public class EnemyBehaviour : MonoBehaviour     ///PLEASE DO NOT ADD MORE COMMEN
         playerCurrentlyVisible = CanSeePlayer();
         UpdateSight(playerCurrentlyVisible);
 
-        // INTEGRATION: Bulleted state execution stays the same, but now visibility is tracked before actions.
         switch (currentState)
         {
             case EnemyState.Patrolling:
@@ -95,6 +99,9 @@ public class EnemyBehaviour : MonoBehaviour     ///PLEASE DO NOT ADD MORE COMMEN
             case EnemyState.Chasing:
                 Chase();
                 break;
+            case EnemyState.Investigating:
+                InvestigateNoise();
+                break;
         }
 
         HandleRotation();
@@ -103,16 +110,26 @@ public class EnemyBehaviour : MonoBehaviour     ///PLEASE DO NOT ADD MORE COMMEN
     }
 
 
-    //Will Update this so that it works without CanSee (if using only hearning)
     void StateTransitions(bool canSeePlayer)         //Called in Update ( Controls the Transitions between each state.
     {
         if (player == null) return;
+
         float distance = Vector3.Distance(transform.position, player.position);
         bool playerRecentlySeen = canSeePlayer || (hasLastKnownPlayerPos && timeSinceLastSeen <= chaseMemoryDuration);
+
+        if (!isInvestigating && !canSeePlayer)
+        {
+            //Currently searching for a noise, break in usual state.
+            //Has not found noise and will add it to patrol.
+            //If catches sight of player, transition state changes
+
+            return;
+        }
 
         // INTEGRATION: Keep chasing/attacking until we lose the player for chaseMemoryDuration.
         // Previous behaviour would immediately return to patrol as soon as sight was lost and any attack state
         // simply dropped back to chasing without memory.
+
         if (currentState == EnemyState.Patrolling && canSeePlayer)           //IF Patrolling
         {
             currentState = EnemyState.Chasing;
@@ -184,14 +201,36 @@ public class EnemyBehaviour : MonoBehaviour     ///PLEASE DO NOT ADD MORE COMMEN
 
     public void HearNoise(Vector3 noisePos, float noiseVol)                 //Method is Called if Player Makes a Noise
     {
+        if(!canHear) return;
+
         float dist = Vector3.Distance(transform.position, noisePos);
 
-        if(dist <= hearingRange * noiseVol * hearingSensitivity)
+        //Debug.Log($"The Distance Between the player and the enemy is {dist} and it needs to be less than {hearingRange * noiseVol * hearingSensitivity}. The Nois Pos is {noisePos} and the enemy pos is {transform.position}");
+
+        if (dist <= hearingRange * noiseVol * hearingSensitivity)
         {
             Debug.Log($"{gameObject.name} heard something!");
             lastheardPos = noisePos;
+
+            currentState = EnemyState.Investigating;
+        }
+
+
+
+    }
+
+    private void InvestigateNoise()
+    {
+        agent.destination = lastheardPos;
+
+        float dist = Vector3.Distance(lastheardPos, transform.position);
+
+        if(dist <= sightRange)
+        {
+            currentState = EnemyState.Patrolling;
         }
     }
+
 
     private bool CanSeePlayer()
     {
@@ -225,6 +264,7 @@ public class EnemyBehaviour : MonoBehaviour     ///PLEASE DO NOT ADD MORE COMMEN
             : hasLastKnownPlayerPos ? lastKnownPlayerPos : player.position;
 
         agent.SetDestination(targetPosition);
+
         // INTEGRATION: Prefer last known player location when the player is temporarily lost.
         // Previous behaviour only ever chased `player.position`.
         // agent.SetDestination(player.position);

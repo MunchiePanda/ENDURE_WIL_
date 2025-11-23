@@ -1,3 +1,4 @@
+using ENDURE;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,7 +13,9 @@ public class FootstepManager : MonoBehaviour
     public class SurfaceAudio
     {
         public SurfaceType surfaceType;
-        public AudioClip clips;       
+
+        [Tooltip("In order: Walking, Running")]
+        public AudioClip[] clips;       
     }
 
     [Header("Detection")]
@@ -23,26 +26,26 @@ public class FootstepManager : MonoBehaviour
 
     public LayerMask groundLayers = ~0;      //Set To Everything
 
-    [Tooltip("Distance the player must move between footsteps.")]
-    public float stepDistance = 2.0f;
-
     [Header("Audio")]
     [Tooltip("Footstep clips for each surface type here.")]
     public SurfaceAudio[] surfaceAudios;
     public SurfaceType defaultSurface = SurfaceType.Default;
 
-    public AudioSource audioSource; //Will Default to Players Audio Sauce
+    [Header("Movement")]
+    private int audioIndex = 0;         //Default to 0 || AKA Walking
+    private PlayerController player;
 
-    private Dictionary<SurfaceType, AudioClip> footsteps;
-    private CharacterController characterController;
-    private Vector3 lastPosition;
+    public AudioSource audioSource;     //Will Default to Players Audio Sauce
+
+    private Dictionary<SurfaceType, AudioClip[]> footsteps;
+    private CharacterController controller;
 
     private void Awake()
     {
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
 
-        footsteps = new Dictionary<SurfaceType, AudioClip>();
+        footsteps = new Dictionary<SurfaceType, AudioClip[]>();
       
         foreach (var audio in surfaceAudios)
         {
@@ -52,8 +55,8 @@ public class FootstepManager : MonoBehaviour
             footsteps[audio.surfaceType] = audio.clips;
         }
 
-        lastPosition = transform.position;
-        characterController = GetComponent<CharacterController>();
+        controller = GetComponent<CharacterController>();
+        player = GetComponent<PlayerController>();
 
     }
 
@@ -61,22 +64,63 @@ public class FootstepManager : MonoBehaviour
     {
         HandleFootsteps();
 
-        Debug.Log($"Foot Step noises are currently playing: {audioSource.isPlaying}");
+        //Shall the monster come for you???
+        if(audioSource.isPlaying)
+        {
+            AlertMonstersNearby();
+        }
+
     }
+
+    private void AlertMonstersNearby()
+    {
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        
+        if(enemies.Length == 0 || enemies == null)
+        {
+            Debug.Log("enemies is empty or null");
+            return;
+        }
+
+        EnemyBehaviour behaviour;
+        
+        foreach(var enemy in enemies)
+        {
+            behaviour = enemy.GetComponent<EnemyBehaviour>();
+            behaviour.HearNoise(transform.position, audioSource.volume);
+        }
+    }
+
+
 
     private void HandleFootsteps()
     {
-        float speed = characterController.velocity.magnitude;
-        //Debug.Log($"Player Speed is {speed}");
+        float speed = controller.velocity.magnitude;
+
 
         if(minMoveSpeed > speed)
         {
+            //We Moving But
             //Not moving fast enough, Make no Sound (Sneaky Sneaky)
             audioSource.Stop();
             return; 
         }
 
-        TryPlayFootsteps();
+        // Check if we are Running??
+        if (player.isRunning == true)
+        {
+            // We are Running Boys
+            audioIndex = 1;
+            audioSource.volume = 1;             //Adjust Volume based on Speed
+        }
+        else
+        {
+            // We are not running, but we do be moving
+            audioIndex = 0;
+            audioSource.volume = 0.5f;
+        }
+
+            TryPlayFootsteps();
 
     }
 
@@ -100,14 +144,16 @@ public class FootstepManager : MonoBehaviour
         SurfaceType surfaceType = defaultSurface;   //Just in Case
         FootstepSurface surface = hit.collider.gameObject.GetComponent<FootstepSurface>();
 
-        if(audioSource.isPlaying == true && audioSource.clip == footsteps[surface.surfaceType])
+
+        if(audioSource.isPlaying == true && audioSource.clip == footsteps[surface.surfaceType][audioIndex])
         {
             //Already doing the right things
             return;
         }
 
         //Switch to the Audio Clip from the Person Walking.
-        audioSource.clip = footsteps[surface.surfaceType];
+        audioSource.clip = footsteps[surface.surfaceType][audioIndex];
+
 
         //Audio source is set to Loop.
         audioSource.Play();
