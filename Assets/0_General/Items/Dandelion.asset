@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 62d286c5b385dd946bd4e6b632390294, type: 3}
-  m_Name: StJohnsWart
+  m_Name: Dandelion
   m_EditorClassIdentifier: 
-  itemID: -1547468208
-  itemName: Item StJohnsWart
+  itemID: 1288940892
+  itemName: Dandelion
   itemImage: {fileID: 0}
   itemType: 3

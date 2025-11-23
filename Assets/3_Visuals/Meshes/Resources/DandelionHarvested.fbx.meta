@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 369c6370f1bf4bb48a8ab6037253171a
+guid: 425e508f2863cc545b1717051e048a8d
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,8 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: ConiferousPlantsMat
-    second: {fileID: 2100000, guid: c3f0bd744f99ca042b09435f8c4fba27, type: 2}
+      name: FlowerpackMat
+    second: {fileID: 2100000, guid: af4cac14af90d6840ae32a984d34d353, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
