@@ -3,7 +3,17 @@ guid: af9beee73939fce4ea9afd517cc40bd6
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: ConsoleMat
+    second: {fileID: 2100000, guid: fb9593ff0b5032d448a8bcad998b9d4e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: ConsoleScreenMat
+    second: {fileID: 2100000, guid: eb758bf8d4c04bb49bce62ac09d35ef7, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
