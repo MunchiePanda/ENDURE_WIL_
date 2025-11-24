@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using ENDURE;
 
 public class InventoryUIManager : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class InventoryUIManager : MonoBehaviour
 
     public GameObject itemUIPrefab;            // Prefab for individual item UI
     [SerializeField] private Inventory inventory;    // Source inventory to listen to
+    [SerializeField] private PlayerManager playerManager;
     // Lookup: map each ItemBase to its instantiated ItemUIManager for fast update/remove without searching children
     private readonly Dictionary<ItemBase, ItemUIManager> ItemUiMap = new Dictionary<ItemBase, ItemUIManager>();
 
@@ -26,6 +28,11 @@ public class InventoryUIManager : MonoBehaviour
                 Debug.LogWarning("InventoryUIManager Awake(): No player inventory found (D2, D6)");
                 return;
             }
+        }
+
+        if (playerManager == null)
+        {
+            playerManager = GetComponentInParent<PlayerManager>();
         }
 
         // Subscribe to inventory events (happens even if panel is disabled)
@@ -55,6 +62,11 @@ public class InventoryUIManager : MonoBehaviour
             {
                 Debug.LogWarning("InventoryUIManager Start(): No UIManager found in parent hierarchy (D2, D5)");
             }
+        }
+
+        if (playerManager == null && uiManager != null && uiManager.playerController != null)
+        {
+            playerManager = uiManager.playerController.GetComponent<PlayerManager>();
         }
 
         // Debug verification
@@ -111,6 +123,7 @@ public class InventoryUIManager : MonoBehaviour
         ItemUIManager itemUiManager = itemUiObject.GetComponent<ItemUIManager>();
         if (itemUiManager != null)
         {
+            itemUiManager.Initialize(this);
             itemUiManager.UpdateItemUI(item, quantity);
             ItemUiMap[item] = itemUiManager;
         }
@@ -156,4 +169,7 @@ public class InventoryUIManager : MonoBehaviour
     {
         uiManager.EnableInventoryUI(true);
     }
+
+    public Inventory Inventory => inventory;
+    public PlayerManager PlayerManager => playerManager;
 }

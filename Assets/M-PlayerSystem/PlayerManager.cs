@@ -44,5 +44,38 @@ namespace ENDURE
         {
             base.TakeDamage(damage);
         }
+
+        public bool ApplyItemStat(ItemStatTarget target, float amount)
+        {
+            switch (target)
+            {
+                case ItemStatTarget.Health:
+                    AdjustStat(ref healthField, amount);
+                    return true;
+                case ItemStatTarget.Stamina:
+                    AdjustStat(ref staminaField, amount);
+                    return true;
+                case ItemStatTarget.Hunger:
+                    AdjustStat(ref hungerField, amount);
+                    return true;
+                case ItemStatTarget.SystemExposure:
+                    AdjustStat(ref systemExposureField, amount);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private void AdjustStat(ref Stat stat, float amount)
+        {
+            if (amount >= 0f)
+            {
+                stat.IncreaseStat(amount);
+            }
+            else
+            {
+                stat.ReduceStat(Mathf.Abs(amount));
+            }
+        }
     }
 }

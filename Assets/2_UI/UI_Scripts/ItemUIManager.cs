@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using ENDURE;
 
 public class ItemUIManager : MonoBehaviour
 {
@@ -10,35 +11,134 @@ public class ItemUIManager : MonoBehaviour
     public TMP_Text txt_itemQuantity;          // Current quantity display
     public Button btn_itemAction;              // Action button (e.g., Use / Equip)
     public TMP_Text txt_itemActionText;        // Label inside the action button
+    public ItemBase item;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private InventoryUIManager owner;
+
+    private void Awake()
     {
-        
+        owner = GetComponentInParent<InventoryUIManager>();
+        if (btn_itemAction != null)
+        {
+            btn_itemAction.onClick.AddListener(OnItemActionClicked);
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnDestroy()
     {
-        
+        if (btn_itemAction != null)
+        {
+            btn_itemAction.onClick.RemoveListener(OnItemActionClicked);
+        }
+    }
+
+    public void Initialize(InventoryUIManager inventoryOwner)
+    {
+        owner = inventoryOwner;
+        UpdateActionButtonState();
     }
 
     // Update the UI to reflect the current item (called by Inventory/ InventoryUI)
     public void UpdateItemUI(ItemBase item, int itemQuantity)
     {
-        img_ItemIcon.sprite = item.itemImage;
-        txt_itemName.text = item.itemName;
-        txt_itemQuantity.text = itemQuantity.ToString();
+        this.item = item;
+        if (img_ItemIcon != null) img_ItemIcon.sprite = item.itemImage;
+        if (txt_itemName != null) txt_itemName.text = item.itemName;
+        if (txt_itemQuantity != null) txt_itemQuantity.text = itemQuantity.ToString();
 
-    /* @Ang 6 Interactable - this needs to be implimented
-        if(item implimets IItemAction)  //if the item implements the IItemAction interface, set its Action text
+        UpdateActionButtonState();
+    }
+
+    private void UpdateActionButtonState()
+    {
+        if (btn_itemAction == null) return;
+
+        bool isConsumable = item != null && item.itemType == ItemType.Consumable;
+        bool isArmor = item != null && item.itemType == ItemType.Armor;
+        bool shouldShowAction = isConsumable || isArmor;
+
+        btn_itemAction.gameObject.SetActive(shouldShowAction);
+
+        if (!shouldShowAction || item == null)
         {
-            txt_itemActionText.text = item.itemActionText;
+            return;
         }
-        else    //if the item does not implement the IItemAction interface, hide the action button
+
+        string label = string.IsNullOrWhiteSpace(item.actionLabel)
+            ? (isArmor ? "Equip" : "Use")
+            : item.actionLabel;
+
+        if (txt_itemActionText != null)
         {
-            btn_itemAction.gameObject.SetActive(false);
+            txt_itemActionText.text = label;
         }
-    */
-    }  
+
+        btn_itemAction.interactable = owner != null && owner.Inventory != null;
+    }
+
+    private void OnItemActionClicked()
+    {
+        if (item == null || owner == null || owner.Inventory == null)
+        {
+            Debug.LogWarning("ItemUIManager: Cannot perform action because dependencies are missing.");
+            return;
+        }
+
+        switch (item.itemType)
+        {
+            case ItemType.Consumable:
+                if (TryApplyConsumableEffect())
+                {
+                    owner.Inventory.RemoveItem(item, 1);
+                }
+                break;
+            case ItemType.Armor:
+                Debug.Log($"ItemUIManager: Equip logic for '{item.itemName}' not implemented yet.");
+                break;
+            default:
+                Debug.Log($"ItemUIManager: Item '{item.itemName}' has no action.");
+                break;
+        }
+    }
+
+    private bool TryApplyConsumableEffect()
+    {
+        var playerManager = owner != null ? owner.PlayerManager : null;
+
+        if (playerManager == null)
+        {
+            Debug.LogWarning("ItemUIManager: No PlayerManager found to apply consumable effect.");
+            return false;
+        }
+
+        if (item.statEffects == null || item.statEffects.Length == 0)
+        {
+            Debug.LogWarning($"ItemUIManager: Consumable '{item.itemName}' has no stat effects defined.");
+            return false;
+        }
+
+        bool appliedAny = false;
+        foreach (var effect in item.statEffects)
+        {
+            if (effect.target == ItemStatTarget.None || Mathf.Approximately(effect.value, 0f))
+            {
+                continue;
+            }
+
+            bool applied = playerManager.ApplyItemStat(effect.target, effect.value);
+            appliedAny |= applied;
+
+            if (!applied)
+            {
+                Debug.LogWarning($"ItemUIManager: Failed to apply {effect.target} effect ({effect.value}) from '{item.itemName}'.");
+            }
+        }
+
+        if (!appliedAny)
+        {
+            Debug.LogWarning($"ItemUIManager: No valid stat effects applied for '{item.itemName}'.");
+        }
+
+        return appliedAny;
+    }
 }
