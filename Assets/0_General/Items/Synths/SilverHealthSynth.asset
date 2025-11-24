@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62d286c5b385dd946bd4e6b632390294, type: 3}
   m_Name: SilverHealthSynth
   m_EditorClassIdentifier: 
-  itemID: 315142147
-  itemName: Silver Synth
+  itemID: 624876259
+  itemName: Silver Health Synth
   itemImage: {fileID: 0}
   itemType: 2
   statEffects:

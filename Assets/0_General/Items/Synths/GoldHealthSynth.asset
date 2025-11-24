@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62d286c5b385dd946bd4e6b632390294, type: 3}
   m_Name: GoldHealthSynth
   m_EditorClassIdentifier: 
-  itemID: 1267469770
-  itemName: Gold Synth
+  itemID: 1221905936
+  itemName: 'Gold Health Synth '
   itemImage: {fileID: 0}
   itemType: 2
   statEffects:

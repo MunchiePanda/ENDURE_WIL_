@@ -92,6 +92,12 @@ MonoBehaviour:
   VisualAsset: {fileID: 159108931595930162}
   beforeInteractModel: {fileID: 4435905794242638309}
   afterInteractModel: {fileID: 437205163200715899}
+  highlightedObject: {fileID: 4958709750875139572}
+  orignalMats:
+  - {fileID: 6844676777322478897, guid: d3d797ed67bd58b429ffbc268b570c0e, type: 3}
+  outlineMats:
+  - {fileID: 6844676777322478897, guid: d3d797ed67bd58b429ffbc268b570c0e, type: 3}
+  - {fileID: 2100000, guid: 9101edc98d4106f428fe445eebe85008, type: 2}
 --- !u!33 &2929057608186327149
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -298,5 +304,10 @@ Transform:
 --- !u!1 &4435905794242638309 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: ac4b17b1ec418994ea192ac64ed4c681, type: 3}
+  m_PrefabInstance: {fileID: 3553033345050922164}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4958709750875139572 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8475221712190660928, guid: ac4b17b1ec418994ea192ac64ed4c681, type: 3}
   m_PrefabInstance: {fileID: 3553033345050922164}
   m_PrefabAsset: {fileID: 0}

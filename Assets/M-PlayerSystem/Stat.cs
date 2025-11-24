@@ -37,6 +37,11 @@ namespace ENDURE
             }
         }
 
+        public void IncreaseMaxStat(float increase)
+        {
+            max += increase;
+        }
+
         // This is a special moment when the number reaches its smallest point.
         // We don't do anything here for now, but we could make the player faint or something!
         private void OnMinReached()

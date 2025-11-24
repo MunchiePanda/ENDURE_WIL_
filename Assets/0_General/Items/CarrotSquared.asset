@@ -19,4 +19,4 @@ MonoBehaviour:
   statEffects:
   - target: 3
     value: 25
-  actionLabel: Use
+  actionLabel: Eat
