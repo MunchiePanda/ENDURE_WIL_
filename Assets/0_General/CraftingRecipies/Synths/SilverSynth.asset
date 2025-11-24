@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b30aea747533e234ebe1d9f27250b8bb, type: 3}
+  m_Name: SilverSynth
+  m_EditorClassIdentifier: 
+  craftedItem: {fileID: 11400000, guid: 21b7818a320daa448929ff18765dd4ba, type: 2}
+  craftQuantity: 1
+  requiredIngredients:
+  - item: {fileID: 11400000, guid: 060dbded60840be428c38805d97c0c49, type: 2}
+    quantity: 3
+  - item: {fileID: 11400000, guid: 24e199446eea1f040859d419944b7220, type: 2}
+    quantity: 1

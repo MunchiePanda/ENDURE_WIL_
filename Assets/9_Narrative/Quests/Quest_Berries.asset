@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcd39007e780b724e92aa1a099258cf7, type: 3}
   m_Name: Quest_Berries
   m_EditorClassIdentifier: 
-  questName: 
-  questDescription: 
+  questName: Chef's Kiss
+  questDescription: OI, Come here, I've got a new recipe to show you but I will need
+    you to get some supplies for me first, if that's okay.
   questObjectives:
   - item: {fileID: 11400000, guid: b8bf2e765d03e034db927c91f26faf59, type: 2}
     quantity: 1
