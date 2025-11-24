@@ -5,10 +5,38 @@ using static UnityEngine.Rendering.VolumeComponent;
 
 public class QuestManager : MonoBehaviour
 {
+    public static QuestManager Instance { get; private set; }
     public Quest currentQuest;
     //public List<Quest> ongoingQuests;
 
     public Inventory inventory;
+
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else if (Instance != this)
+        {
+            // Keep the first instance; optional: DontDestroyOnLoad(Instance);
+            // Destroying duplicates avoids ambiguity when searching.
+            Destroy(gameObject);
+            return;
+        }
+    }
+
+    public static bool TryGet(out QuestManager questManager)
+    {
+        questManager = Instance;
+        if (questManager != null) return true;
+#if UNITY_2023_1_OR_NEWER
+        questManager = Object.FindFirstObjectByType<QuestManager>(FindObjectsInactive.Include);
+#else
+        questManager = FindObjectOfType<QuestManager>(true);
+#endif
+        return questManager != null;
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
