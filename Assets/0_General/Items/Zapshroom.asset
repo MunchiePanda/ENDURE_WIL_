@@ -15,4 +15,10 @@ MonoBehaviour:
   itemID: 637312919
   itemName: Zapshroom
   itemImage: {fileID: 0}
-  itemType: 3
+  itemType: 2
+  statEffects:
+  - target: 2
+    value: 5
+  - target: 1
+    value: -2
+  actionLabel: Use

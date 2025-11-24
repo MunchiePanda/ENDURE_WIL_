@@ -112,6 +112,8 @@ namespace ENDURE
 			/// </summary>
 			private bool _hasPlayer = false;
 
+			private bool _sceneExitSpawned = false;
+
 			/// <summary>
 			/// Reference to the first room where the player should spawn.
 			/// </summary>
@@ -209,6 +211,13 @@ namespace ENDURE
                 Debug.Log("Player spawned after dungeon generation complete");
             }
 
+            if (!_sceneExitSpawned && _firstRoom != null)
+            {
+                yield return _firstRoom.CreateSceneExit();
+                _sceneExitSpawned = true;
+                Debug.Log("Scene exit spawned in starting room");
+            }
+
             Debug.Log("Dungeon structure complete - ready for NavMesh baking");
 
             // WAIT for NavMesh to be baked
@@ -230,6 +239,11 @@ namespace ENDURE
                 // NOW spawn enemies and items in all rooms
                 foreach (Room room in _rooms)
                 {
+                    if (room == _firstRoom)
+                    {
+                        Debug.Log($"Skipping enemy spawn in starting room '{room.name}' to keep player spawn safe.");
+                        continue;
+                    }
                     yield return room.CreateMonsters();
                 }
 

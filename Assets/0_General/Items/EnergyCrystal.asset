@@ -16,3 +16,5 @@ MonoBehaviour:
   itemName: Energy Crystal
   itemImage: {fileID: 0}
   itemType: 3
+  statEffects: []
+  actionLabel: Use

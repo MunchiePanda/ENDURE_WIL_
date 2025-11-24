@@ -11,9 +11,21 @@ namespace ENDURE
         [SerializeField] private Stat hungerField;        // How hungry our player is!
         [SerializeField] private Stat systemExposureField; // How much danger our player is in from the environment!
 
+        [Header("System Exposure Settings")]
+        [Tooltip("Enable the ambient exposure timer (acts as a soft dungeon timer).")]
+        [SerializeField] private bool systemExposureEnabled = true;
+        [Tooltip("How many seconds it takes for system exposure to drain from full to zero.")]
+        [SerializeField] private float exposureDurationSeconds = 180f;
+        [Tooltip("Damage per second applied to health once exposure hits zero.")]
+        [SerializeField] private float exposureDamagePerSecond = 5f;
+        [Tooltip("Refill system exposure to max when the level starts.")]
+        [SerializeField] private bool resetExposureOnStart = true;
+
         // We make these public so other scripts can see them
         public Stat Hunger { get => hungerField; set => hungerField = value; }
         public Stat SystemExposure { get => systemExposureField; set => systemExposureField = value; }
+
+        private float exposureDrainPerSecond = 0f;
 
         // We want to do special things when applying attributes, so we change the rule from CharacterManager!
 
@@ -43,6 +55,53 @@ namespace ENDURE
         public override void TakeDamage(float damage)
         {
             base.TakeDamage(damage);
+        }
+
+        private void Start()
+        {
+            InitializeSystemExposure();
+        }
+
+        private void Update()
+        {
+            if (!systemExposureEnabled) return;
+            HandleSystemExposure(Time.deltaTime);
+        }
+
+        private void InitializeSystemExposure()
+        {
+            exposureDrainPerSecond = 0f;
+            if (!systemExposureEnabled)
+            {
+                return;
+            }
+
+            if (resetExposureOnStart)
+            {
+                systemExposureField.current = systemExposureField.max;
+            }
+
+            if (exposureDurationSeconds > 0f && systemExposureField.max > 0f)
+            {
+                exposureDrainPerSecond = systemExposureField.max / exposureDurationSeconds;
+            }
+        }
+
+        private void HandleSystemExposure(float deltaTime)
+        {
+            if (systemExposureField.current > systemExposureField.min && exposureDrainPerSecond > 0f)
+            {
+                float drainAmount = exposureDrainPerSecond * deltaTime;
+                systemExposureField.ReduceStat(drainAmount);
+            }
+            else if (systemExposureField.current <= systemExposureField.min + 0.001f)
+            {
+                float damage = Mathf.Max(0f, exposureDamagePerSecond) * deltaTime;
+                if (damage > 0f)
+                {
+                    TakeDamage(damage);
+                }
+            }
         }
 
         public bool ApplyItemStat(ItemStatTarget target, float amount)

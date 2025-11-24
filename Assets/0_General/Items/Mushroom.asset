@@ -16,3 +16,9 @@ MonoBehaviour:
   itemName: Mushroom
   itemImage: {fileID: 0}
   itemType: 2
+  statEffects:
+  - target: 1
+    value: -5
+  - target: 3
+    value: 2
+  actionLabel: Use

@@ -16,3 +16,5 @@ MonoBehaviour:
   itemName: Dandelion
   itemImage: {fileID: 0}
   itemType: 3
+  statEffects: []
+  actionLabel: Use

@@ -19,6 +19,7 @@ namespace ENDURE
         private GameObject _itemsObject;
         private GameObject _plantPropsObject;
         private GameObject _patrolPointsObject;
+        private GameObject _sceneTransitionObject;
         public Tile TilePrefab;
         private Tile[,] _tiles;
         public GameObject WallPrefab;
@@ -29,6 +30,16 @@ namespace ENDURE
         private Map _map;
 
         public GameObject PlayerPrefab;
+
+        [Header("Scene Exit")]
+        [Tooltip("Prefab for the scene transition interactable that returns the player to the hub/village.")]
+        public GameObject sceneTransitionPrefab;
+        [Tooltip("Scene name to load when using the exit. Leave empty to use prefab defaults.")]
+        public string sceneTransitionTargetSceneName;
+        [Tooltip("Build index override if scene name is empty. Set to -1 to ignore.")]
+        public int sceneTransitionTargetSceneBuildIndex = -1;
+        [Tooltip("Distance away from the wall when placing the exit interactable.")]
+        public float sceneTransitionWallOffset = 1.5f;
 
         [Header("Enemy Spawning")]
         public GameObject[] enemyPrefabs;
@@ -554,6 +565,53 @@ namespace ENDURE
             if (playerController != null)
             {
                 playerController.canMove = true;
+            }
+
+            yield return null;
+        }
+
+        public IEnumerator CreateSceneExit()
+        {
+            if (sceneTransitionPrefab == null)
+            {
+                Debug.LogWarning($"Room {Num} CreateSceneExit(): sceneTransitionPrefab not assigned.");
+                yield break;
+            }
+
+            if (_sceneTransitionObject != null)
+            {
+                yield break;
+            }
+
+            _sceneTransitionObject = Instantiate(sceneTransitionPrefab);
+            _sceneTransitionObject.name = "SceneExit";
+            _sceneTransitionObject.transform.parent = transform;
+
+            float halfWidth = Size.x * RoomMapManager.TileSize * 0.5f;
+            float localX = -halfWidth + Mathf.Max(0.5f, sceneTransitionWallOffset);
+            Vector3 localPosition = new Vector3(localX, 0f, 0f);
+            _sceneTransitionObject.transform.localPosition = localPosition;
+
+            // Snap to NavMesh when available
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(_sceneTransitionObject.transform.position, out hit, 5f, NavMesh.AllAreas))
+            {
+                _sceneTransitionObject.transform.position = hit.position;
+                _sceneTransitionObject.transform.localPosition = transform.InverseTransformPoint(hit.position);
+            }
+
+            SceneTransitionInteractable interactable = _sceneTransitionObject.GetComponent<SceneTransitionInteractable>();
+            if (interactable != null)
+            {
+                if (!string.IsNullOrEmpty(sceneTransitionTargetSceneName))
+                {
+                    interactable.targetSceneName = sceneTransitionTargetSceneName;
+                }
+
+                if (sceneTransitionTargetSceneBuildIndex >= 0)
+                {
+                    interactable.targetSceneBuildIndex = sceneTransitionTargetSceneBuildIndex;
+                }
             }
 
             yield return null;
