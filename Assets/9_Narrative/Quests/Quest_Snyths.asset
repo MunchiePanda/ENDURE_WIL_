@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcd39007e780b724e92aa1a099258cf7, type: 3}
+  m_Name: Quest_Snyths
+  m_EditorClassIdentifier: 
+  questName: The Sickness
+  questDescription: People are feeling ill around here and are in need of Health
+    Synths. If you woudn't mind bringing me some ingrediants, I can teach you how
+    to make some. ingrediants to make medicine.
+  questObjectives:
+  - item: {fileID: 11400000, guid: ce9972a8d2a7a244b9cd4119f79732d2, type: 2}
+    quantity: 9
+    currentQuantity: 0
+    objectiveComplete: 0
+  - item: {fileID: 11400000, guid: ce9972a8d2a7a244b9cd4119f79732d2, type: 2}
+    quantity: 3
+    currentQuantity: 0
+    objectiveComplete: 0
+  rewardItem: {fileID: 0}
+  rewardQuantity: 0
+  rewardRecipie: {fileID: 11400000, guid: 5a39b74cf89dd934d94a6b45832ce186, type: 2}

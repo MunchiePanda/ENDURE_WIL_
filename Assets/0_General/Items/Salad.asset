@@ -15,4 +15,8 @@ MonoBehaviour:
   itemID: 190225431
   itemName: Salad
   itemImage: {fileID: 0}
-  itemType: 0
+  itemType: 2
+  statEffects:
+  - target: 3
+    value: 3
+  actionLabel: Eat
