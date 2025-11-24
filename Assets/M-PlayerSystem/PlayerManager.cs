@@ -24,11 +24,16 @@ namespace ENDURE
         [Tooltip("Scene names where system exposure should drain (e.g., dungeon scenes). Leave empty to drain in all scenes.")]
         [SerializeField] private string[] exposureDrainScenes = new string[] { "Dungeon", "TutorialScene" };
 
+        [Header("Death Settings")]
+        [Tooltip("Reference to DeathUIManager. If null, will try to find it automatically.")]
+        [SerializeField] private DeathUIManager deathUIManager;
+
         // We make these public so other scripts can see them
         public Stat Hunger { get => hungerField; set => hungerField = value; }
         public Stat SystemExposure { get => systemExposureField; set => systemExposureField = value; }
 
         private float exposureDrainPerSecond = 0f;
+        private bool isDead = false;
 
         // We want to do special things when applying attributes, so we change the rule from CharacterManager!
 
@@ -57,12 +62,47 @@ namespace ENDURE
 
         public override void TakeDamage(float damage)
         {
+            if (isDead) return; // Don't take damage if already dead
+            
             base.TakeDamage(damage);
+        }
+
+        public override void Die()
+        {
+            if (isDead) return; // Prevent multiple death calls
+            
+            isDead = true;
+            Debug.Log($"{gameObject.name} has died!");
+            
+            // Disable player controller
+            var playerController = GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                playerController.canMove = false;
+                playerController.SetState(PlayerController.PlayerState.UI);
+            }
+            
+            // Show death UI instead of destroying the player
+            if (deathUIManager != null)
+            {
+                deathUIManager.ShowDeathScreen("You Died");
+            }
+            else
+            {
+                Debug.LogWarning("PlayerManager: DeathUIManager not found! Player will be destroyed.");
+                Destroy(gameObject); // Fallback to default behavior
+            }
         }
 
         private void Start()
         {
             InitializeSystemExposure();
+            
+            // Find DeathUIManager if not assigned
+            if (deathUIManager == null)
+            {
+                deathUIManager = FindObjectOfType<DeathUIManager>();
+            }
         }
 
         private void Update()

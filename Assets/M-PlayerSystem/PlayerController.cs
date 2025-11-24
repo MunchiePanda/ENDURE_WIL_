@@ -112,6 +112,12 @@ namespace ENDURE
         // This happens many, many times every second, like the player always thinking what to do next!
         void Update()
         {
+            // Don't process input if game is paused or time is stopped
+            if (Time.timeScale <= 0f)
+            {
+                return;
+            }
+
             if (state == PlayerState.Playing)
             {
                 UpdatePlaying();

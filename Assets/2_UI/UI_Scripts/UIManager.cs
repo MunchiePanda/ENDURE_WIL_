@@ -17,6 +17,8 @@ public class UIManager : MonoBehaviour
     public QuestOverviewUIManager questOverviewUIManager;
     public GameObject panel_QuestgiverUI;       //questgiver
     public QuestGiverUIManager questgiverUIManager;
+    public PauseUIManager pauseUIManager;
+    public DeathUIManager deathUIManager;
 
     // @Mik $ PlayerSystems - impliment the toggle UI visibilty for inventory and keybinds
 
@@ -47,6 +49,16 @@ public class UIManager : MonoBehaviour
         }
         EnableInventoryUI(false);
         EnableCraftingUI(false);
+
+        // Find pause and death UI managers if not assigned
+        if (pauseUIManager == null)
+        {
+            pauseUIManager = GetComponentInChildren<PauseUIManager>(true);
+        }
+        if (deathUIManager == null)
+        {
+            deathUIManager = GetComponentInChildren<DeathUIManager>(true);
+        }
     }
 
     // Update is called once per frame
