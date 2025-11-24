@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 62d286c5b385dd946bd4e6b632390294, type: 3}
-  m_Name: Carrot
+  m_Name: StJohnsWort
   m_EditorClassIdentifier: 
-  itemID: 1209145989
-  itemName: Carrot
+  itemID: 330897860
+  itemName: St. John's Wort
   itemImage: {fileID: 0}
   itemType: 2
   statEffects:
-  - target: 3
-    value: 4
+  - target: 1
+    value: 1
   actionLabel: Eat

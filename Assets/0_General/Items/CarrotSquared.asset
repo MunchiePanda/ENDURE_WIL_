@@ -16,3 +16,7 @@ MonoBehaviour:
   itemName: CarrotSquared
   itemImage: {fileID: 0}
   itemType: 0
+  statEffects:
+  - target: 3
+    value: 25
+  actionLabel: Use

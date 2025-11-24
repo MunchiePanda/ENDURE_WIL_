@@ -16,3 +16,7 @@ MonoBehaviour:
   itemName: Mushroom
   itemImage: {fileID: 0}
   itemType: 2
+  statEffects:
+  - target: 3
+    value: 2
+  actionLabel: Eat
