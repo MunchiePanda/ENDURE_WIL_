@@ -120,10 +120,10 @@ namespace ENDURE
             {
                 UpdateUI();
             }
-            // Open/Close Inventory with I key using UIManager (D2, D6)
+            // Toggle Inventory with I key (D2, D6)
             if (Input.GetKeyDown(KeyCode.I))
             {
-                OpenInventory();
+                ToggleInventory();
             }
             if (Input.GetKeyDown(KeyCode.Q))
             {
@@ -239,6 +239,25 @@ namespace ENDURE
             else
             {
                 Debug.LogWarning("PlayerController OpenInventory(): UIManager not found under player for Inventory toggle (D2, D6)", this);
+            }
+        }
+
+        private void ToggleInventory()
+        {
+            if (uiManager == null || uiManager.panel_Inventory == null)
+            {
+                OpenInventory();
+                return;
+            }
+
+            bool currentlyOpen = uiManager.panel_Inventory.activeSelf;
+            if (currentlyOpen)
+            {
+                uiManager.EnableInventoryUI(false);
+            }
+            else
+            {
+                OpenInventory();
             }
         }
 

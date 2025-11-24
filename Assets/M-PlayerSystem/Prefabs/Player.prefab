@@ -79,6 +79,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c055fcb9292fabd44acdd980dbee2422, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sneakingSpeed: 3.75
   walkingSpeed: 7.5
   runningSpeed: 11.5
   jumpSpeed: 8
@@ -89,6 +90,7 @@ MonoBehaviour:
   staminaRegenPerSecond: 5
   canMove: 1
   isRunning: 0
+  isSneaking: 0
   cameraYOffset: 0.4
   fixCameraCulling: 1
   uiManager: {fileID: 7846050707125768826}
@@ -144,6 +146,10 @@ MonoBehaviour:
     current: 100
     statModifier: 0
     isHidden: 0
+  systemExposureEnabled: 1
+  exposureDurationSeconds: 180
+  exposureDamagePerSecond: 5
+  resetExposureOnStart: 1
 --- !u!114 &3913368919580340128
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -662,6 +668,14 @@ PrefabInstance:
       propertyPath: m_AnchorMin.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 526339980168835399, guid: d9086c74462f08e43a76f510606b9624, type: 3}
+      propertyPath: uiManager
+      value: 
+      objectReference: {fileID: 7846050707125768826}
+    - target: {fileID: 526339980168835399, guid: d9086c74462f08e43a76f510606b9624, type: 3}
+      propertyPath: playerInventory
+      value: 
+      objectReference: {fileID: 3913368919580340128}
     - target: {fileID: 586247655214109862, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -780,7 +794,7 @@ PrefabInstance:
       objectReference: {fileID: 6314361210716043615}
     - target: {fileID: 1406693600492536801, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000035564783
+      value: -0.0000050673
       objectReference: {fileID: 0}
     - target: {fileID: 2256986644363842930, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchorMax.x
@@ -828,19 +842,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3812330804401556723, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_Size
-      value: 0.9997741
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4062813405136551938, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000009922937
+      value: -0.000020877846
       objectReference: {fileID: 0}
+    - target: {fileID: 4419609139411196369, guid: d9086c74462f08e43a76f510606b9624, type: 3}
+      propertyPath: inventory
+      value: 
+      objectReference: {fileID: 3913368919580340128}
+    - target: {fileID: 4419609139411196369, guid: d9086c74462f08e43a76f510606b9624, type: 3}
+      propertyPath: uiManager
+      value: 
+      objectReference: {fileID: 7846050707125768826}
+    - target: {fileID: 4419609139411196369, guid: d9086c74462f08e43a76f510606b9624, type: 3}
+      propertyPath: playerManager
+      value: 
+      objectReference: {fileID: 2760587132470942539}
     - target: {fileID: 4598982602031995289, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5020489207906036075, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_Size
-      value: 0.9997554
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5020489207906036075, guid: d9086c74462f08e43a76f510606b9624, type: 3}
+      propertyPath: m_Value
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5602324742740751442, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchorMax.x

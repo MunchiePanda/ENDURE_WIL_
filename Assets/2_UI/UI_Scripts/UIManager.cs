@@ -69,7 +69,11 @@ public class UIManager : MonoBehaviour
 
     public void EnableQuestOverviewUI(bool enable)
     {
-        EnableQuestOverviewUI(enable);
+        if (panel_QuestOverviewUI != null)
+        {
+            panel_QuestOverviewUI.SetActive(enable);
+        }
+
         EnableUI(enable);
     }
 
