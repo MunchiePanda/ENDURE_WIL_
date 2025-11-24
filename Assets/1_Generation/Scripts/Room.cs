@@ -17,6 +17,7 @@ namespace ENDURE
         private GameObject _wallsObject;
         private GameObject _enemiesObject;
         private GameObject _itemsObject;
+        private GameObject _plantPropsObject;
         private GameObject _patrolPointsObject;
         public Tile TilePrefab;
         private Tile[,] _tiles;
@@ -38,6 +39,17 @@ namespace ENDURE
         public GameObject[] itemPrefabs;
         public int minItemsPerRoom = 1;
         public int maxItemsPerRoom = 3;
+
+        [Header("Plant Props Spawning")]
+        [Tooltip("Decorative plant props to spawn on floor tiles (no colliders)")]
+        public GameObject[] plantPropPrefabs;
+        [Tooltip("Minimum number of plant props per room")]
+        public int minPlantPropsPerRoom = 2;
+        [Tooltip("Maximum number of plant props per room")]
+        public int maxPlantPropsPerRoom = 6;
+        [Tooltip("Foliage density multiplier (0 = no plants, 1 = full density, 2 = double density)")]
+        [Range(0f, 2f)]
+        public float foliageDensity = 1f;
 
         [Header("Patrol Points")]
         public int minPatrolPointsPerRoom = 2;
@@ -345,6 +357,7 @@ namespace ENDURE
             }
 
             yield return CreateItems();
+            yield return CreatePlantProps();
         }
 
         private IEnumerator CreateItems()
@@ -356,21 +369,148 @@ namespace ENDURE
                 _itemsObject.transform.localPosition = Vector3.zero;
 
                 int itemCount = Random.Range(minItemsPerRoom, maxItemsPerRoom + 1);
+                List<Vector3> usedPositions = new List<Vector3>();
+                float minDistanceBetweenItems = 1.5f; // Minimum distance between items
+                int maxAttempts = 50; // Maximum attempts to find a valid position
 
                 for (int i = 0; i < itemCount; i++)
                 {
                     GameObject itemPrefab = itemPrefabs[Random.Range(0, itemPrefabs.Length)];
 
-                    Vector3 randomPosition = new Vector3(
-                        Random.Range(-Size.x * 0.4f, Size.x * 0.4f),
-                        1f,
-                        Random.Range(-Size.z * 0.4f, Size.z * 0.4f)
+                    // Position on floor tiles - use actual tile positions for better placement
+                    Vector3 localPosition = Vector3.zero;
+                    bool validPositionFound = false;
+                    int attempts = 0;
+
+                    while (!validPositionFound && attempts < maxAttempts)
+                    {
+                        if (_tiles != null && Size.x > 0 && Size.z > 0)
+                        {
+                            // Pick a random tile to place the item on
+                            int randomX = Random.Range(0, Size.x);
+                            int randomZ = Random.Range(0, Size.z);
+                            Tile randomTile = _tiles[randomX, randomZ];
+                            
+                            if (randomTile != null)
+                            {
+                                // Get tile's local position relative to room and add random offset
+                                Vector3 tileLocalPos = randomTile.transform.localPosition;
+                                localPosition = new Vector3(
+                                    tileLocalPos.x + Random.Range(-0.4f, 0.4f),
+                                    tileLocalPos.y, // On the floor
+                                    tileLocalPos.z + Random.Range(-0.4f, 0.4f)
+                                );
+                            }
+                            else
+                            {
+                                // Fallback to random position in room
+                                localPosition = new Vector3(
+                                    Random.Range(-Size.x * 0.4f, Size.x * 0.4f),
+                                    0f,
+                                    Random.Range(-Size.z * 0.4f, Size.z * 0.4f)
+                                );
+                            }
+                        }
+                        else
+                        {
+                            // Fallback if tiles aren't available
+                            localPosition = new Vector3(
+                                Random.Range(-Size.x * 0.4f, Size.x * 0.4f),
+                                0f,
+                                Random.Range(-Size.z * 0.4f, Size.z * 0.4f)
+                            );
+                        }
+
+                        // Check if this position is far enough from other items
+                        validPositionFound = true;
+                        foreach (Vector3 usedPos in usedPositions)
+                        {
+                            if (Vector3.Distance(localPosition, usedPos) < minDistanceBetweenItems)
+                            {
+                                validPositionFound = false;
+                                break;
+                            }
+                        }
+
+                        attempts++;
+                    }
+
+                    // Only spawn if we found a valid position
+                    if (validPositionFound)
+                    {
+                        GameObject newItem = Instantiate(itemPrefab);
+                        newItem.name = $"Item {i + 1}";
+                        newItem.transform.parent = _itemsObject.transform;
+                        newItem.transform.localPosition = localPosition;
+                        float randomScale = Random.Range(1f, 2f);
+                        newItem.transform.localScale = Vector3.one * randomScale;
+                        usedPositions.Add(localPosition);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Could not find valid position for item {i + 1} after {maxAttempts} attempts, skipping.");
+                    }
+                }
+            }
+
+            yield return null;
+        }
+
+        private IEnumerator CreatePlantProps()
+        {
+            if (plantPropPrefabs != null && plantPropPrefabs.Length > 0)
+            {
+                _plantPropsObject = new GameObject("PlantProps");
+                _plantPropsObject.transform.parent = transform;
+                _plantPropsObject.transform.localPosition = Vector3.zero;
+
+                // Apply foliage density multiplier - increase base count for denser, wilder look
+                int basePlantCount = Random.Range(minPlantPropsPerRoom, maxPlantPropsPerRoom + 1);
+                // Multiply by room area to make larger rooms denser, then apply density setting
+                float roomArea = Size.x * Size.z;
+                float areaMultiplier = Mathf.Clamp(roomArea / 25f, 0.5f, 2f); // Scale based on room size
+                int plantCount = Mathf.RoundToInt(basePlantCount * areaMultiplier * foliageDensity);
+
+                for (int i = 0; i < plantCount; i++)
+                {
+                    GameObject plantPrefab = plantPropPrefabs[Random.Range(0, plantPropPrefabs.Length)];
+
+                    // Wild, unkept positioning - spread across entire room area with more randomness
+                    // Use room size to spread plants across the full area
+                    float roomWidth = Size.x * RoomMapManager.TileSize;
+                    float roomDepth = Size.z * RoomMapManager.TileSize;
+                    
+                    // Spread plants across 90% of room area with more variation for wild look
+                    // Add some clustering tendency for natural distribution
+                    float spreadFactor = Random.value < 0.3f ? 0.3f : 0.45f; // 30% chance to cluster more
+                    Vector3 localPosition = new Vector3(
+                        Random.Range(-roomWidth * spreadFactor, roomWidth * spreadFactor),
+                        0f, // On the floor
+                        Random.Range(-roomDepth * spreadFactor, roomDepth * spreadFactor)
                     );
 
-                    GameObject newItem = Instantiate(itemPrefab);
-                    newItem.name = $"Item {i + 1}";
-                    newItem.transform.parent = _itemsObject.transform;
-                    newItem.transform.localPosition = randomPosition;
+                    GameObject newPlant = Instantiate(plantPrefab);
+                    newPlant.name = $"PlantProp {i + 1}";
+                    newPlant.transform.parent = _plantPropsObject.transform;
+                    newPlant.transform.localPosition = localPosition;
+
+                    // Remove all colliders from plant props (allows items to spawn on same tiles)
+                    Collider[] colliders = newPlant.GetComponentsInChildren<Collider>();
+                    foreach (Collider col in colliders)
+                    {
+                        Destroy(col);
+                    }
+
+                    // Wild, unkept rotation - include tilt for overgrown look
+                    float randomYaw = Random.Range(0f, 360f);
+                    float randomPitch = Random.Range(-20f, 20f); // Tilt forward/back for wild look
+                    float randomRoll = Random.Range(-15f, 15f); // Tilt side to side
+                    newPlant.transform.rotation = Quaternion.Euler(randomPitch, randomYaw, randomRoll);
+
+                    // Wild scale variation - much more variation for unkept look, then scale by 3
+                    float scaleVariation = Random.Range(0.5f, 1.8f); // Much wider range for wild appearance
+                    Vector3 originalScale = plantPrefab.transform.localScale;
+                    newPlant.transform.localScale = originalScale * scaleVariation * 3f;
                 }
             }
 

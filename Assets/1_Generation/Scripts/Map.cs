@@ -232,7 +232,14 @@ namespace ENDURE
                 {
                     yield return room.CreateMonsters();
                 }
-                Debug.Log("All enemies and items spawned!");
+
+                // Spawn items and plants in corridors
+                foreach (Corridor corridor in _corridors)
+                {
+                    yield return corridor.CreateItems();
+                    yield return corridor.CreatePlantProps();
+                }
+                Debug.Log("All enemies, items, and plants spawned!");
             }
             else
             {

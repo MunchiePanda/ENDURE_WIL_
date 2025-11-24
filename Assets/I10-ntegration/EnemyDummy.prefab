@@ -77,6 +77,8 @@ MonoBehaviour:
   patrolPoints: []
   attackRange: 2
   patrolWaitTime: 2
+  chaseMemoryDuration: 3
+  rotationSpeed: 360
 --- !u!195 &9138997328924211425
 NavMeshAgent:
   m_ObjectHideFlags: 0
