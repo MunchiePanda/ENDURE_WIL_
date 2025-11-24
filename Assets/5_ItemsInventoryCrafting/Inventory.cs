@@ -5,10 +5,15 @@ using System.Linq;
 public class Inventory : MonoBehaviour
 {
     [Header("Inventory Settings")]
+    [Tooltip("If true, uses PersistentInventoryManager to keep items across scenes. If false, uses local storage (items lost on scene change).")]
+    [SerializeField] private bool usePersistentInventory = true;
+    
     [SerializeField] private int maxInventorySize = 50;
     
-    [Header("Inventory Contents")]
+    [Header("Inventory Contents (Local - only used if usePersistentInventory is false)")]
     [SerializeField] private Dictionary<ItemBase, int> items = new Dictionary<ItemBase, int>();
+    
+    private PersistentInventoryManager persistentManager;
     
     // Events for inventory changes (Delegates)
     // @Ang 2 UI - These can be used to update the UI
@@ -17,18 +22,51 @@ public class Inventory : MonoBehaviour
     public System.Action<ItemBase, int, int> OnItemQuantityChanged; // item, oldQuantity, newQuantity
     
     // Properties
-    public int CurrentItemCount => items.Count;
-    public int TotalItemQuantity => items.Values.Sum();
-    public bool IsFull => TotalItemQuantity >= maxInventorySize;
+    public int CurrentItemCount => usePersistentInventory && persistentManager != null 
+        ? persistentManager.CurrentItemCount 
+        : items.Count;
+    public int TotalItemQuantity => usePersistentInventory && persistentManager != null
+        ? persistentManager.TotalItemQuantity
+        : items.Values.Sum();
+    public bool IsFull => usePersistentInventory && persistentManager != null
+        ? persistentManager.IsFull
+        : TotalItemQuantity >= maxInventorySize;
     
 #if UNITY_EDITOR
     // Editor-only read-only view of items for custom inspector display
-    public System.Collections.Generic.IReadOnlyDictionary<ItemBase, int> DebugItems => items;
+    public System.Collections.Generic.IReadOnlyDictionary<ItemBase, int> DebugItems => usePersistentInventory && persistentManager != null
+        ? persistentManager.DebugItems
+        : items;
 #endif
+
+    private void Awake()
+    {
+        if (usePersistentInventory)
+        {
+            persistentManager = PersistentInventoryManager.Instance;
+            
+            // Subscribe to persistent manager events and forward them
+            persistentManager.OnItemAdded += (item, qty) => OnItemAdded?.Invoke(item, qty);
+            persistentManager.OnItemRemoved += (item, qty) => OnItemRemoved?.Invoke(item, qty);
+            persistentManager.OnItemQuantityChanged += (item, oldQty, newQty) => OnItemQuantityChanged?.Invoke(item, oldQty, newQty);
+            
+            Debug.Log($"Inventory: Connected to PersistentInventoryManager. Current items: {persistentManager.CurrentItemCount}, Total quantity: {persistentManager.TotalItemQuantity}");
+        }
+        else
+        {
+            Debug.Log("Inventory: Using local storage (items will be lost on scene change).");
+        }
+    }
     
     // Add items to inventory
     public bool AddItem(ItemBase item, int quantity = 1)
     {
+        if (usePersistentInventory && persistentManager != null)
+        {
+            return persistentManager.AddItem(item, quantity);
+        }
+        
+        // Local inventory logic (fallback)
         if (item == null || quantity <= 0) return false;
         
         // Check if there is space
@@ -58,6 +96,12 @@ public class Inventory : MonoBehaviour
     // Remove items from inventory
     public bool RemoveItem(ItemBase item, int quantity = 1)
     {
+        if (usePersistentInventory && persistentManager != null)
+        {
+            return persistentManager.RemoveItem(item, quantity);
+        }
+        
+        // Local inventory logic (fallback)
         if (item == null || quantity <= 0 || !items.ContainsKey(item)) return false;
         
         //If item is in inventory, decrease quantity
@@ -86,31 +130,54 @@ public class Inventory : MonoBehaviour
     // Get quantity of specific item
     public int GetItemQuantity(ItemBase item)
     {
+        if (usePersistentInventory && persistentManager != null)
+        {
+            return persistentManager.GetItemQuantity(item);
+        }
         return items.ContainsKey(item) ? items[item] : 0;
     }
     
     // Check if inventory contains item
     public bool HasItem(ItemBase item, int quantity = 1)
     {
+        if (usePersistentInventory && persistentManager != null)
+        {
+            return persistentManager.HasItem(item, quantity);
+        }
         return GetItemQuantity(item) >= quantity;
     }
     
     // Get all items as a list (for UI display)
     public List<KeyValuePair<ItemBase, int>> GetAllItems()
     {
+        if (usePersistentInventory && persistentManager != null)
+        {
+            return persistentManager.GetAllItems();
+        }
         return items.ToList();
     }
 
-    // Clear entire inventory
+    // Clear entire inventory (use with caution - typically only for new game)
     public void ClearInventory()
     {
-        items.Clear();
-        OnItemRemoved?.Invoke(null, 0); // Signal complete clear
+        if (usePersistentInventory && persistentManager != null)
+        {
+            persistentManager.ClearInventory();
+        }
+        else
+        {
+            items.Clear();
+            OnItemRemoved?.Invoke(null, 0); // Signal complete clear
+        }
     }
     
     // Get items by type (filter by ItemType)
     public List<KeyValuePair<ItemBase, int>> GetItemsByType(ItemType type)
     {
+        if (usePersistentInventory && persistentManager != null)
+        {
+            return persistentManager.GetItemsByType(type);
+        }
         return items.Where(kvp => kvp.Key.itemType == type).ToList();
     }
     

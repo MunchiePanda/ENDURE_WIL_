@@ -73,6 +73,9 @@ public class InventoryUIManager : MonoBehaviour
         if (inventory != null)
         {
             Debug.Log($"InventoryUIManager Start(): Connected to inventory with {inventory.CurrentItemCount} items");
+            
+            // Refresh UI with existing items from persistent inventory (important for scene transitions)
+            RefreshUIFromInventory();
         }
     }
 
@@ -113,6 +116,13 @@ public class InventoryUIManager : MonoBehaviour
         if (itemUIPrefab == null || content == null || item == null)
         {
             Debug.LogWarning("InventoryUIManager.AddItem(): Missing references or item is null.");
+            return;
+        }
+
+        // Check if item already exists in UI - if so, just update quantity
+        if (ItemUiMap.TryGetValue(item, out ItemUIManager existingManager) && existingManager != null)
+        {
+            existingManager.UpdateItemUI(item, quantity);
             return;
         }
 
@@ -168,6 +178,40 @@ public class InventoryUIManager : MonoBehaviour
     public void OpenInventory()
     {
         uiManager.EnableInventoryUI(true);
+    }
+
+    /// <summary>
+    /// Refreshes the UI to show all items currently in the inventory.
+    /// Important for scene transitions where items persist but UI needs to be rebuilt.
+    /// </summary>
+    private void RefreshUIFromInventory()
+    {
+        if (inventory == null || itemUIPrefab == null || content == null)
+        {
+            return;
+        }
+
+        // Clear existing UI items
+        foreach (var kvp in ItemUiMap)
+        {
+            if (kvp.Value != null && kvp.Value.gameObject != null)
+            {
+                Destroy(kvp.Value.gameObject);
+            }
+        }
+        ItemUiMap.Clear();
+
+        // Get all items from inventory and create UI for each
+        var allItems = inventory.GetAllItems();
+        foreach (var itemEntry in allItems)
+        {
+            if (itemEntry.Key != null && itemEntry.Value > 0)
+            {
+                AddItem(itemEntry.Key, itemEntry.Value);
+            }
+        }
+
+        Debug.Log($"InventoryUIManager: Refreshed UI with {allItems.Count} items from inventory.");
     }
 
     public Inventory Inventory => inventory;

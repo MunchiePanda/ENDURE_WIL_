@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ENDURE
 {
@@ -20,6 +21,8 @@ namespace ENDURE
         [SerializeField] private float exposureDamagePerSecond = 5f;
         [Tooltip("Refill system exposure to max when the level starts.")]
         [SerializeField] private bool resetExposureOnStart = true;
+        [Tooltip("Scene names where system exposure should drain (e.g., dungeon scenes). Leave empty to drain in all scenes.")]
+        [SerializeField] private string[] exposureDrainScenes = new string[] { "Dungeon", "TutorialScene" };
 
         // We make these public so other scripts can see them
         public Stat Hunger { get => hungerField; set => hungerField = value; }
@@ -65,7 +68,12 @@ namespace ENDURE
         private void Update()
         {
             if (!systemExposureEnabled) return;
-            HandleSystemExposure(Time.deltaTime);
+            
+            // Only deplete exposure in specified scenes (e.g., dungeon)
+            if (ShouldDepleteExposure())
+            {
+                HandleSystemExposure(Time.deltaTime);
+            }
         }
 
         private void InitializeSystemExposure()
@@ -85,6 +93,27 @@ namespace ENDURE
             {
                 exposureDrainPerSecond = systemExposureField.max / exposureDurationSeconds;
             }
+        }
+
+        private bool ShouldDepleteExposure()
+        {
+            // If no scenes specified, drain in all scenes (backward compatibility)
+            if (exposureDrainScenes == null || exposureDrainScenes.Length == 0)
+            {
+                return true;
+            }
+
+            // Check if current scene name matches any in the list
+            string currentSceneName = SceneManager.GetActiveScene().name;
+            foreach (string sceneName in exposureDrainScenes)
+            {
+                if (!string.IsNullOrEmpty(sceneName) && currentSceneName.Contains(sceneName))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void HandleSystemExposure(float deltaTime)
