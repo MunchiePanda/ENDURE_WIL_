@@ -97,7 +97,7 @@ public class FootstepManager : MonoBehaviour
     {
         float speed = controller.velocity.magnitude;
 
-        if(minMoveSpeed > speed)
+        if((player.sneakingSpeed + 0.3f) > speed)
         {
             //We Moving But
             //Not moving fast enough, Make no Sound (Sneaky Sneaky)

@@ -14,12 +14,14 @@ namespace ENDURE
         }
         // These are like the player's super powers and how fast they move!
         [Header("Base setup")]
-        public float walkingSpeed = 7.5f; // How fast the player walks like a normal person
-        public float runningSpeed = 11.5f; // How fast the player runs like a superhero!
-        public float jumpSpeed = 8.0f; // How high the player can jump, *boing*!
-        public float gravity = 20.0f; // This pulls the player down to the ground, so they don't float away!
-        public float lookSpeed = 2.0f; // How fast the player can look around with their eyes
-        public float lookXLimit = 45.0f; // How far up and down the player can look
+        public float sneakingSpeed = 3.75f; // How fast the player sneaks around *Sneaky Sneaky*
+        public float walkingSpeed = 7.5f;   // How fast the player walks like a normal person
+        public float runningSpeed = 11.5f;  // How fast the player runs like a superhero!
+        public float jumpSpeed = 8.0f;      // How high the player can jump, *boing*!
+        public float gravity = 20.0f;       // This pulls the player down to the ground, so they don't float away!
+        public float lookSpeed = 2.0f;      // How fast the player can look around with their eyes
+        public float lookXLimit = 45.0f;    // How far up and down the player can look
+        
         [SerializeField] private float staminaDrainPerSecond = 10f;
         [SerializeField] private float staminaRegenPerSecond = 5f;
 
@@ -36,6 +38,7 @@ namespace ENDURE
 		private Tile currentTile;
 		private Tile previousTile;
 		public bool isRunning = false;
+        public bool isSneaking = false;
 		private float lastTileInteractionTime = 0f;
 		private float tileInteractionCooldown = 0.1f;
 
@@ -109,17 +112,35 @@ namespace ENDURE
 
         void UpdatePlaying()
         {
+            //Running Logic (needs stamina)
             bool wantsToRun = Input.GetKey(KeyCode.LeftShift);
             bool staminaAvailable = playerManager != null ? playerManager.Stamina.current > playerManager.Stamina.min : true;
             isRunning = wantsToRun && staminaAvailable;
+
+            //Sneaking Logic (does not need stamina)
+            isSneaking = Input.GetKey(KeyCode.LeftControl);
 
             // If the player is on the ground, we figure out where they want to go
             Vector3 forward = transform.TransformDirection(Vector3.forward); // This is like pointing straight ahead
             Vector3 right = transform.TransformDirection(Vector3.right); // This is like pointing to the side
 
             // We figure out how fast the player should move, depending on if they are walking or running
-            float targetSpeed = isRunning ? runningSpeed : walkingSpeed;
-            float curSpeedX = canMove ? targetSpeed * Input.GetAxis("Vertical") : 0; // How fast forward/backward
+            float targetSpeed; //= isRunning ? runningSpeed : walkingSpeed;
+
+            if (isRunning)
+            {
+                targetSpeed = runningSpeed;
+            }
+            else if(isSneaking)
+            {
+                targetSpeed = sneakingSpeed;
+            }
+            else
+            {
+                targetSpeed = walkingSpeed;
+            }
+
+                float curSpeedX = canMove ? targetSpeed * Input.GetAxis("Vertical") : 0; // How fast forward/backward
             float curSpeedY = canMove ? targetSpeed * Input.GetAxis("Horizontal") : 0; // How fast left/right
             float movementDirectionY = moveDirection.y; // We remember if the player was going up or down
             moveDirection = (forward * curSpeedX) + (right * curSpeedY); // This tells the player where to go on the ground
