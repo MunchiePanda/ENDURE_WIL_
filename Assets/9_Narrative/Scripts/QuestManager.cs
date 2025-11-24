@@ -54,8 +54,19 @@ public class QuestManager : MonoBehaviour
 
     public void AddQuest(QuestBase questBase)
     {
+        if (questBase == null)
+        {
+            Debug.LogWarning("QuestManager AddQuest(): QuestBase is null!");
+            return;
+        }
+
         currentQuest = new Quest(questBase);
         currentQuest.CheckQuestCompletion(inventory);
+
+        Debug.Log($"QuestManager: Added quest '{questBase.questName}'");
+
+        // Notify UI to update (QuestOverviewUIManager will pick this up in its Update loop)
+        // The UI checks currentQuest in Update(), so it should refresh automatically
 
         //TODO: Impliment multiple quests at one time, so getting a new quest will be added to the ongoingQuests list
     }

@@ -445,6 +445,8 @@ MonoBehaviour:
   questOverviewUIManager: {fileID: 5054188474601540782}
   panel_QuestgiverUI: {fileID: 3186049323804272316}
   questgiverUIManager: {fileID: 7349357298595465299}
+  pauseUIManager: {fileID: 0}
+  deathUIManager: {fileID: 0}
 --- !u!1 &3922890223451788398
 GameObject:
   m_ObjectHideFlags: 0
@@ -1723,7 +1725,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a77a3228ff71bd741881e852e0a7eb1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  quest: {fileID: 0}
+  quest: {fileID: 11400000, guid: 9078d6db92541cd47a0d21d313a2dd9c, type: 2}
   panel_QuestgiverUI: {fileID: 3186049323804272316}
   questDescription: {fileID: 4377135651760846065}
   btn_AcceptQuest: {fileID: 5392124928671851973}
@@ -1771,7 +1773,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 166089988764671429, guid: 46ddbc3ecb5475c48a2619afceeeb0b0, type: 3}
       propertyPath: m_Size
-      value: 1
+      value: 0.9898679
       objectReference: {fileID: 0}
     - target: {fileID: 166089988764671429, guid: 46ddbc3ecb5475c48a2619afceeeb0b0, type: 3}
       propertyPath: m_Value
@@ -1927,7 +1929,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6082069254064486223, guid: 46ddbc3ecb5475c48a2619afceeeb0b0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000037350714
+      value: 0.000016774531
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2061,7 +2063,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4850832302560860493, guid: 56e2f44ccf68033479002f746ed3b493, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000028437042
+      value: -0.000010242978
       objectReference: {fileID: 0}
     - target: {fileID: 4873637525480292567, guid: 56e2f44ccf68033479002f746ed3b493, type: 3}
       propertyPath: m_SizeDelta.x
@@ -2069,7 +2071,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5754337708224746940, guid: 56e2f44ccf68033479002f746ed3b493, type: 3}
       propertyPath: m_Size
-      value: 1
+      value: 0.99064714
       objectReference: {fileID: 0}
     - target: {fileID: 5888551560134359928, guid: 56e2f44ccf68033479002f746ed3b493, type: 3}
       propertyPath: m_AnchorMax.x

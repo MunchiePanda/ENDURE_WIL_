@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using ENDURE;
 
 public class QuestGiverUIManager : MonoBehaviour
 {
@@ -13,11 +14,42 @@ public class QuestGiverUIManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        panel_QuestgiverUI.SetActive(false);
+        if (panel_QuestgiverUI != null)
+        {
+            panel_QuestgiverUI.SetActive(false);
+        }
+        
         if (questDescription != null)
             questDescription.text = quest != null ? GetQuestDescription() : string.Empty;
-        btn_AcceptQuest.onClick.AddListener(OnAcceptQuestButtonClicked);
-        btn_RejectQuest.onClick.AddListener(OnRejectQuestButtonClicked);
+        
+        // Setup button listeners with null checks
+        SetupButtonListeners();
+    }
+
+    private void SetupButtonListeners()
+    {
+        // Remove existing listeners first to prevent duplicates
+        if (btn_AcceptQuest != null)
+        {
+            btn_AcceptQuest.onClick.RemoveListener(OnAcceptQuestButtonClicked);
+            btn_AcceptQuest.onClick.AddListener(OnAcceptQuestButtonClicked);
+            Debug.Log("QuestGiverUIManager: Accept button listener added.");
+        }
+        else
+        {
+            Debug.LogWarning("QuestGiverUIManager: btn_AcceptQuest is null! Button will not work. Make sure it's assigned in the inspector.");
+        }
+
+        if (btn_RejectQuest != null)
+        {
+            btn_RejectQuest.onClick.RemoveListener(OnRejectQuestButtonClicked);
+            btn_RejectQuest.onClick.AddListener(OnRejectQuestButtonClicked);
+            Debug.Log("QuestGiverUIManager: Reject button listener added.");
+        }
+        else
+        {
+            Debug.LogWarning("QuestGiverUIManager: btn_RejectQuest is null! Button will not work. Make sure it's assigned in the inspector.");
+        }
     }
 
     // Update is called once per frame
@@ -58,28 +90,65 @@ public class QuestGiverUIManager : MonoBehaviour
 
     void OnAcceptQuestButtonClicked()
     {
-        QuestManager questManager = QuestManager.Instance;
-        if (questManager == null) questManager = GetComponent<QuestManager>();
-        if (questManager == null) questManager = GetComponentInParent<QuestManager>();
-        if (questManager == null)
+        Debug.Log("QuestGiverUIManager: Accept button clicked!");
+        
+        if (quest == null)
         {
-#if UNITY_2023_1_OR_NEWER
-            questManager = Object.FindFirstObjectByType<QuestManager>(FindObjectsInactive.Include);
-#else
-            questManager = FindObjectOfType<QuestManager>(true);
-#endif
+            Debug.LogWarning("QuestGiverUIManager OnAcceptQuestButtonClicked(): No quest assigned!");
+            CloseQuestPanel();
+            return;
         }
+
+        QuestManager questManager = null;
+        
+        // Try singleton instance first
+        if (QuestManager.TryGet(out questManager))
+        {
+            // Found via singleton or FindObjectOfType
+        }
+        else
+        {
+            // Fallback: search in hierarchy
+            questManager = GetComponent<QuestManager>();
+            if (questManager == null) questManager = GetComponentInParent<QuestManager>();
+            if (questManager == null) questManager = FindObjectOfType<QuestManager>(true);
+        }
+
         if (questManager == null)
         {
-            Debug.LogWarning("QuestgiverManager OnAcceptQuestButtonClicked(): Can't find quest manager.");
+            Debug.LogWarning("QuestGiverUIManager OnAcceptQuestButtonClicked(): Can't find quest manager. Make sure QuestManager is attached to the player or exists in the scene.");
+            CloseQuestPanel();
             return;
         }
 
         questManager.AddQuest(quest);
-        panel_QuestgiverUI.SetActive(false);    //close
-        UIManager uiManager = GetComponent<UIManager>();
-        if (uiManager == null) uiManager = GetComponentInParent<UIManager>();
-        if (uiManager == null)
+        CloseQuestPanel();
+    }
+
+    void OnRejectQuestButtonClicked()
+    {
+        Debug.Log("QuestGiverUIManager: Reject button clicked!");
+        CloseQuestPanel();
+    }
+
+    private void CloseQuestPanel()
+    {
+        if (panel_QuestgiverUI != null)
+        {
+            panel_QuestgiverUI.SetActive(false);
+        }
+
+        // Restore UI state - unlock cursor and restore player movement
+        UIManager uiManager = null;
+        if (GetComponent<UIManager>() != null)
+        {
+            uiManager = GetComponent<UIManager>();
+        }
+        else if (GetComponentInParent<UIManager>() != null)
+        {
+            uiManager = GetComponentInParent<UIManager>();
+        }
+        else
         {
 #if UNITY_2023_1_OR_NEWER
             uiManager = Object.FindFirstObjectByType<UIManager>(FindObjectsInactive.Include);
@@ -87,19 +156,27 @@ public class QuestGiverUIManager : MonoBehaviour
             uiManager = FindObjectOfType<UIManager>(true);
 #endif
         }
-        if (uiManager != null) uiManager.EnableUI(false);
-    }
 
-    void OnRejectQuestButtonClicked()
-    {
-        panel_QuestgiverUI.SetActive(false);    //close
-        UIManager uiManager = GetComponent<UIManager>();
-        if(uiManager == null) uiManager = GetComponentInParent<UIManager>();
-#if UNITY_2023_1_OR_NEWER
-        if (uiManager == null) uiManager = Object.FindFirstObjectByType<UIManager>(FindObjectsInactive.Include);
-#else
-        if (uiManager == null) uiManager = FindObjectOfType<UIManager>(true);
-#endif
-        if (uiManager != null) uiManager.EnableUI(false);
+        if (uiManager != null)
+        {
+            uiManager.EnableUI(false);
+        }
+        else
+        {
+            // Fallback: manually restore cursor state if UIManager not found
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            
+            // Try to restore player state
+            var player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                var playerController = player.GetComponent<PlayerController>();
+                if (playerController != null)
+                {
+                    playerController.SetState(PlayerController.PlayerState.Playing);
+                }
+            }
+        }
     }
 }

@@ -98,13 +98,35 @@ public class UIManager : MonoBehaviour
     {
         Cursor.visible = enable;
         Cursor.lockState = enable ? CursorLockMode.None : CursorLockMode.Locked;
-        if (enable) //if ui is enabled, set player state to UI
+        
+        // Only set player state if playerController exists
+        if (playerController != null)
         {
-            playerController.SetState(PlayerController.PlayerState.UI);
+            if (enable) //if ui is enabled, set player state to UI
+            {
+                playerController.SetState(PlayerController.PlayerState.UI);
+            }
+            else //else set player state to Playing
+            {
+                playerController.SetState(PlayerController.PlayerState.Playing);
+            }
         }
-        else if (!enable)    //else set player state to Playing
+        else if (enable == false)
         {
-            playerController.SetState(PlayerController.PlayerState.Playing);
+            // If disabling UI but no playerController, try to find it
+            if (this.playerController == null)
+            {
+                this.playerController = GetComponentInParent<PlayerController>();
+                if (this.playerController == null)
+                {
+                    this.playerController = FindObjectOfType<PlayerController>(true);
+                }
+            }
+            
+            if (this.playerController != null)
+            {
+                this.playerController.SetState(PlayerController.PlayerState.Playing);
+            }
         }
     }
 

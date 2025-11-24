@@ -16,9 +16,29 @@ public class QuestOverviewUIManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        if(questManager == null) questManager = GetComponentInParent<QuestManager>();
-        if (questManager == null) Debug.Log("QuestOverviewUIManager Start() QuestManager is null.");
-        btn_toggleQuesOverview.onClick.AddListener(ToggleQuestOverviewUI);  //bind button click
+        // Try to find QuestManager using multiple methods
+        if (questManager == null)
+        {
+            if (QuestManager.TryGet(out questManager))
+            {
+                // Found via singleton or FindObjectOfType
+            }
+            else
+            {
+                questManager = GetComponentInParent<QuestManager>();
+                if (questManager == null) questManager = FindObjectOfType<QuestManager>();
+            }
+        }
+
+        if (questManager == null)
+        {
+            Debug.LogWarning("QuestOverviewUIManager Start(): QuestManager is null. Make sure QuestManager is attached to the player or exists in the scene.");
+        }
+
+        if (btn_toggleQuesOverview != null)
+        {
+            btn_toggleQuesOverview.onClick.AddListener(ToggleQuestOverviewUI);  //bind button click
+        }
 
         EnableQuestOverviewUI(true);
     }

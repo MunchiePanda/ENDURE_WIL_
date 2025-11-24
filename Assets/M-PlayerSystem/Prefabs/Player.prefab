@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 3927751050757405762}
   - component: {fileID: 228613472908644565}
   - component: {fileID: 3230612993050273106}
+  - component: {fileID: 3284361308873345459}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -333,6 +334,19 @@ MonoBehaviour:
     - {fileID: 8300000, guid: abdf3367acf1cbd418f7d31180b7545d, type: 3}
   defaultSurface: 0
   audioSource: {fileID: 0}
+--- !u!114 &3284361308873345459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1828309862799263484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ada56f9c59c89b46a71e801884dbabc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inventory: {fileID: 3913368919580340128}
 --- !u!1 &4947934322732176283
 GameObject:
   m_ObjectHideFlags: 0
@@ -850,7 +864,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4062813405136551938, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000018875626
+      value: -0.000034642628
       objectReference: {fileID: 0}
     - target: {fileID: 4419609139411196369, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: inventory
@@ -876,6 +890,14 @@ PrefabInstance:
       propertyPath: m_Value
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5054188474601540782, guid: d9086c74462f08e43a76f510606b9624, type: 3}
+      propertyPath: questManager
+      value: 
+      objectReference: {fileID: 3284361308873345459}
+    - target: {fileID: 5549622802863226953, guid: d9086c74462f08e43a76f510606b9624, type: 3}
+      propertyPath: quest
+      value: 
+      objectReference: {fileID: 11400000, guid: 6ebb6e5ac4cb5bb43ad512d18ac75842, type: 2}
     - target: {fileID: 5602324742740751442, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0

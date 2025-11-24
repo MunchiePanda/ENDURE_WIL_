@@ -9,21 +9,31 @@ public class QuestgiverNPCBinder : MonoBehaviour
     public QuestgiverManager questgiverManager; // Reference to the UI panel's manager (e.g., from UI_Canvas)
     public QuestGiverUIManager questGiverUiManager; // Support older/new UI manager script names
 
+    private void Start()
+    {
+        // Try to find managers early so they're ready when needed
+        TryResolvePanelManagers();
+    }
+
     public void SetQuestOnPanel()
     {
+        // Try to resolve managers again in case they weren't available at Start
         if (!TryResolvePanelManagers())
         {
             // Defer assignment: panel may be instantiated on open; store pending quest for pickup in OnEnable
             SetPendingQuest(npcQuest);
+            Debug.Log($"QuestgiverNPCBinder: Could not find QuestgiverManager or QuestGiverUIManager. Quest '{npcQuest?.questName}' stored as pending.");
             return; // no warning; this is a valid path when UI instantiates on demand
         }
         if (questgiverManager != null)
         {
             questgiverManager.SetQuest(npcQuest);
+            Debug.Log($"QuestgiverNPCBinder: Set quest '{npcQuest?.questName}' on QuestgiverManager.");
         }
         else if (questGiverUiManager != null)
         {
             questGiverUiManager.SetQuest(npcQuest);
+            Debug.Log($"QuestgiverNPCBinder: Set quest '{npcQuest?.questName}' on QuestGiverUIManager.");
         }
     }
 
@@ -31,6 +41,19 @@ public class QuestgiverNPCBinder : MonoBehaviour
     {
         if (questgiverManager != null || questGiverUiManager != null) return true;
 
+        // Method 1: Try UIManager first (most reliable if player spawns with UI)
+        UIManager uiManager = FindObjectOfType<UIManager>(true);
+        if (uiManager != null)
+        {
+            // Check if UIManager has a QuestGiverUIManager reference
+            if (uiManager.questgiverUIManager != null)
+            {
+                questGiverUiManager = uiManager.questgiverUIManager;
+                return true;
+            }
+        }
+
+        // Method 2: Direct FindObjectOfType search (including inactive)
 #if UNITY_2023_1_OR_NEWER
         questgiverManager = Object.FindFirstObjectByType<QuestgiverManager>(FindObjectsInactive.Include);
         if (questgiverManager == null)
@@ -43,7 +66,7 @@ public class QuestgiverNPCBinder : MonoBehaviour
 #endif
         if (questgiverManager != null || questGiverUiManager != null) return true;
 
-        // Fallback: search under any Canvas
+        // Method 3: Search under any Canvas (UI is usually under a Canvas)
         var canvases = FindObjectsOfType<Canvas>(true);
         foreach (var canvas in canvases)
         {
@@ -56,6 +79,17 @@ public class QuestgiverNPCBinder : MonoBehaviour
                 return true;
             }
         }
+
+        // Method 4: Search in player hierarchy (UI might be under player)
+        var player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            questgiverManager = player.GetComponentInChildren<QuestgiverManager>(true);
+            if (questgiverManager == null)
+                questGiverUiManager = player.GetComponentInChildren<QuestGiverUIManager>(true);
+            if (questgiverManager != null || questGiverUiManager != null) return true;
+        }
+
         return false;
     }
 
