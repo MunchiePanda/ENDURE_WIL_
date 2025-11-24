@@ -232,7 +232,14 @@ namespace ENDURE
                 {
                     yield return room.CreateMonsters();
                 }
-                Debug.Log("All enemies and items spawned!");
+
+                // Spawn items and plants in corridors
+                foreach (Corridor corridor in _corridors)
+                {
+                    yield return corridor.CreateItems();
+                    yield return corridor.CreatePlantProps();
+                }
+                Debug.Log("All enemies, items, and plants spawned!");
             }
             else
             {
@@ -279,7 +286,7 @@ namespace ENDURE
 						roofTile.name = $"Roof ({coordinates.x}, {coordinates.z})";
 						roofTile.transform.parent = roofParent.transform;
 
-						// Position the roof tile directly above the floor tile
+        // Position the roof tile directly above the floor tile
 						if (floorTile != null)
 						{
 							// Use the floor tile's world position and place roof above it
@@ -295,24 +302,24 @@ namespace ENDURE
 						else
 						{
 							// Fallback: use coordinate-based positioning
-							Vector3 floorPosition = CoordinatesToPosition(coordinates);
-							roofTile.transform.localPosition = new Vector3(
-								floorPosition.x * RoomMapManager.TileSize,
-								14.0f, // Height of the roof above the floor
-								floorPosition.z * RoomMapManager.TileSize
-							);
+        Vector3 floorPosition = CoordinatesToPosition(coordinates);
+        roofTile.transform.localPosition = new Vector3(
+            floorPosition.x * RoomMapManager.TileSize,
+            14.0f, // Height of the roof above the floor
+            floorPosition.z * RoomMapManager.TileSize
+        );
 						}
 
-						// Scale the roof tile to match the floor tile size
-						roofTile.transform.localScale = new Vector3(RoomMapManager.TileSize, 0.2f, RoomMapManager.TileSize);
+        // Scale the roof tile to match the floor tile size
+        roofTile.transform.localScale = new Vector3(RoomMapManager.TileSize, 0.2f, RoomMapManager.TileSize);
 
-						// Apply the roof material from the first room's settings
-						if (_rooms.Count > 0 && _rooms[0].Setting != null && _rooms[0].Setting.roof != null)
-						{
-							roofTile.GetComponent<Renderer>().material = _rooms[0].Setting.roof;
-						}
-						else
-						{
+        // Apply the roof material from the first room's settings
+        if (_rooms.Count > 0 && _rooms[0].Setting != null && _rooms[0].Setting.roof != null)
+        {
+            roofTile.GetComponent<Renderer>().material = _rooms[0].Setting.roof;
+        }
+        else
+        {
 							// Fallback: use default material or create a simple one
 							// Don't use Shader.Find as it may not work in URP/HDRP
 							Renderer renderer = roofTile.GetComponent<Renderer>();
@@ -327,7 +334,7 @@ namespace ENDURE
 						if ((x * MapSize.z + z) % 10 == 0)
 						{
 							yield return null;
-						}
+        }
 					}
 				}
 			}

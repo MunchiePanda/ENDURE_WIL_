@@ -48,17 +48,17 @@ MonoBehaviour:
   RoomCount: 15
   RoomSettings:
   - floor: {fileID: 2100000, guid: 6eccf6120ec8f3c43b72547ef05cf6b8, type: 2}
-    wall: {fileID: 2100000, guid: 16e983eb6a0df1b44bd328d73d17b047, type: 2}
-    roof: {fileID: 0}
+    wall: {fileID: 2100000, guid: b003d7bc0b3cdcf4c98eeae1a03ae026, type: 2}
+    roof: {fileID: 2100000, guid: 6eccf6120ec8f3c43b72547ef05cf6b8, type: 2}
   - floor: {fileID: 2100000, guid: 6eccf6120ec8f3c43b72547ef05cf6b8, type: 2}
-    wall: {fileID: 2100000, guid: 1fdfd93b9104acf439d358356d774319, type: 2}
-    roof: {fileID: 0}
+    wall: {fileID: 2100000, guid: b003d7bc0b3cdcf4c98eeae1a03ae026, type: 2}
+    roof: {fileID: 2100000, guid: 6eccf6120ec8f3c43b72547ef05cf6b8, type: 2}
   - floor: {fileID: 2100000, guid: 6eccf6120ec8f3c43b72547ef05cf6b8, type: 2}
-    wall: {fileID: 2100000, guid: f9def51f619aa6e4bac5e36283d349af, type: 2}
-    roof: {fileID: 0}
+    wall: {fileID: 2100000, guid: b003d7bc0b3cdcf4c98eeae1a03ae026, type: 2}
+    roof: {fileID: 2100000, guid: 6eccf6120ec8f3c43b72547ef05cf6b8, type: 2}
   - floor: {fileID: 2100000, guid: 6eccf6120ec8f3c43b72547ef05cf6b8, type: 2}
-    wall: {fileID: 2100000, guid: 27a72d111843d134091b31e1eb766267, type: 2}
-    roof: {fileID: 0}
+    wall: {fileID: 2100000, guid: b003d7bc0b3cdcf4c98eeae1a03ae026, type: 2}
+    roof: {fileID: 2100000, guid: 6eccf6120ec8f3c43b72547ef05cf6b8, type: 2}
   MapSize:
     x: 100
     z: 100
