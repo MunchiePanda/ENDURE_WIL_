@@ -415,10 +415,10 @@ namespace ENDURE
                         {
                             // Fallback if tiles aren't available
                             localPosition = new Vector3(
-                                Random.Range(-Size.x * 0.4f, Size.x * 0.4f),
+                        Random.Range(-Size.x * 0.4f, Size.x * 0.4f),
                                 0f,
-                                Random.Range(-Size.z * 0.4f, Size.z * 0.4f)
-                            );
+                        Random.Range(-Size.z * 0.4f, Size.z * 0.4f)
+                    );
                         }
 
                         // Check if this position is far enough from other items
@@ -438,9 +438,9 @@ namespace ENDURE
                     // Only spawn if we found a valid position
                     if (validPositionFound)
                     {
-                        GameObject newItem = Instantiate(itemPrefab);
-                        newItem.name = $"Item {i + 1}";
-                        newItem.transform.parent = _itemsObject.transform;
+                    GameObject newItem = Instantiate(itemPrefab);
+                    newItem.name = $"Item {i + 1}";
+                    newItem.transform.parent = _itemsObject.transform;
                         newItem.transform.localPosition = localPosition;
                         float randomScale = Random.Range(1f, 2f);
                         newItem.transform.localScale = Vector3.one * randomScale;

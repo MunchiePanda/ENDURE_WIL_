@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -57,6 +58,14 @@ namespace ENDURE.Tutorial
         public KeyCode inventoryKey = KeyCode.I;
         public KeyCode interactKey = KeyCode.E;
 
+        [Header("Completion")]
+        [Tooltip("Invoked when all tutorial steps have been completed.")]
+        public UnityEvent onTutorialCompleted;
+        [Tooltip("If true, automatically load the specified scene after the final step.")]
+        public bool loadNextSceneOnComplete = false;
+        [Tooltip("Scene name to load when the tutorial finishes.")]
+        public string nextSceneName;
+
         private int currentStepIndex = -1;
         private TutorialStep activeStep;
         private bool tutorialRunning;
@@ -104,12 +113,7 @@ namespace ENDURE.Tutorial
 
             if (currentStepIndex >= steps.Count)
             {
-                tutorialRunning = false;
-                activeStep = null;
-                if (promptText != null)
-                {
-                    promptText.text = string.Empty;
-                }
+                HandleTutorialComplete();
                 return;
             }
 
@@ -207,6 +211,30 @@ namespace ENDURE.Tutorial
         {
             tutorialRunning = false;
             AdvanceStep();
+        }
+
+        private void HandleTutorialComplete()
+        {
+            tutorialRunning = false;
+            activeStep = null;
+            if (promptText != null)
+            {
+                promptText.text = string.Empty;
+            }
+
+            onTutorialCompleted?.Invoke();
+
+            if (loadNextSceneOnComplete && !string.IsNullOrEmpty(nextSceneName))
+            {
+                try
+                {
+                    SceneManager.LoadScene(nextSceneName);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"TutorialManager: Failed to load scene '{nextSceneName}'. Exception: {ex.Message}");
+                }
+            }
         }
 
         /// <summary>
