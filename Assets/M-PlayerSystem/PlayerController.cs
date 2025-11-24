@@ -53,6 +53,21 @@ namespace ENDURE
         [SerializeField]
         private UIManager uiManager; // This is like our player's UI manager, what we use to open and close the inventory panel!
 
+        [Header("Torch Settings")]
+        public bool enableTorch = true;
+        public KeyCode torchToggleKey = KeyCode.F;
+        public bool torchStartsOn = true;
+        public float torchIntensity = 3f;
+        public float torchRange = 18f;
+        [Range(1f, 120f)]
+        public float torchSpotAngle = 60f;
+        public Color torchColor = new Color(1f, 0.95f, 0.85f);
+        public Vector3 torchLocalPosition = new Vector3(0.2f, -0.15f, 0.4f);
+        public Vector3 torchLocalRotation = new Vector3(0f, 0f, 0f);
+
+        private Light torchLight;
+        private bool torchIsOn;
+
         [Header("State")]
         public PlayerState state = PlayerState.Playing; // What mode the player is in
 
@@ -70,6 +85,8 @@ namespace ENDURE
             {
                 ApplyCameraCullingFix();
             }
+
+            SetupTorch();
                                                          // Lock cursor so it doesn't leave the game window, like a treasure hidden in a box!
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false; // We hide the mouse cursor so we can focus on the game!
@@ -107,6 +124,15 @@ namespace ENDURE
             if (Input.GetKeyDown(KeyCode.I))
             {
                 OpenInventory();
+            }
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                ToggleQuestOverview();
+            }
+
+            if (enableTorch && Input.GetKeyDown(torchToggleKey))
+            {
+                ToggleTorch();
             }
         }
 
@@ -216,6 +242,18 @@ namespace ENDURE
             }
         }
 
+        private void ToggleQuestOverview()
+        {
+            if (uiManager != null)
+            {
+                uiManager.ToggleQuestOverviewUI();
+            }
+            else
+            {
+                Debug.LogWarning("PlayerController ToggleQuestOverview(): UIManager not found under player for Quest Overview toggle (D2, D9)", this);
+            }
+        }
+
         public void SetState(PlayerState newState)
         {
             state = newState;
@@ -313,6 +351,47 @@ namespace ENDURE
             playerCamera.fieldOfView = 75f; // Wider field of view
             
             Debug.Log("Camera culling fix applied - floor should remain visible when falling through broken tiles");
+        }
+
+        private void SetupTorch()
+        {
+            if (!enableTorch)
+            {
+                return;
+            }
+
+            if (playerCamera == null)
+            {
+                Debug.LogWarning("PlayerController: Cannot set up torch because playerCamera is null.");
+                return;
+            }
+
+            GameObject torchObject = new GameObject("PlayerTorch");
+            torchObject.transform.SetParent(playerCamera.transform);
+            torchObject.transform.localPosition = torchLocalPosition;
+            torchObject.transform.localRotation = Quaternion.Euler(torchLocalRotation);
+
+            torchLight = torchObject.AddComponent<Light>();
+            torchLight.type = LightType.Spot;
+            torchLight.intensity = torchIntensity;
+            torchLight.range = torchRange;
+            torchLight.spotAngle = torchSpotAngle;
+            torchLight.color = torchColor;
+            torchLight.shadows = LightShadows.Soft;
+
+            torchIsOn = torchStartsOn;
+            torchLight.enabled = torchIsOn;
+        }
+
+        private void ToggleTorch()
+        {
+            if (torchLight == null)
+            {
+                return;
+            }
+
+            torchIsOn = !torchIsOn;
+            torchLight.enabled = torchIsOn;
         }
     }
 }

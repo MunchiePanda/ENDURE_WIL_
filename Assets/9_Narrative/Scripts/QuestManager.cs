@@ -1,0 +1,52 @@
+using NUnit.Framework;
+using System.Collections.Generic;
+using UnityEngine;
+using static UnityEngine.Rendering.VolumeComponent;
+
+public class QuestManager : MonoBehaviour
+{
+    public Quest currentQuest;
+    //public List<Quest> ongoingQuests;
+
+    public Inventory inventory;
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        if (inventory == null) inventory = GetComponent<Inventory>();
+        if (inventory == null) inventory = GetComponentInParent<Inventory>();
+        if (inventory == null) Debug.LogWarning("QuestManager Start(): inventory is null.");
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
+    public void AddQuest(QuestBase questBase)
+    {
+        currentQuest = new Quest(questBase);
+        currentQuest.CheckQuestCompletion(inventory);
+
+        //TODO: Impliment multiple quests at one time, so getting a new quest will be added to the ongoingQuests list
+    }
+
+    public void UpdateCurrentQuest()
+    {
+        if (currentQuest.CheckQuestCompletion(inventory))   //CheckQuestCompletion also runs the updates
+        {
+            CompleteQuest();
+        }
+    }
+
+    void CompleteQuest()
+    {
+        Debug.Log("QuestManager CompleteQuest(): QUEST COMPLETE!");
+        currentQuest.GrantQuestReward(inventory);
+        //TODO: Add logic for if reward can't be granted
+        //Add UI logic to click accept reward
+
+        currentQuest = null;
+    }
+}

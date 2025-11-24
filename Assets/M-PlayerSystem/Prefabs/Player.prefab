@@ -92,6 +92,15 @@ MonoBehaviour:
   cameraYOffset: 0.4
   fixCameraCulling: 1
   uiManager: {fileID: 7846050707125768826}
+  enableTorch: 1
+  torchToggleKey: 102
+  torchStartsOn: 1
+  torchIntensity: 3
+  torchRange: 18
+  torchSpotAngle: 60
+  torchColor: {r: 1, g: 0.95, b: 0.85, a: 1}
+  torchLocalPosition: {x: 0.2, y: -0.15, z: 0.4}
+  torchLocalRotation: {x: 0, y: 0, z: 0}
   state: 0
 --- !u!114 &2760587132470942539
 MonoBehaviour:
@@ -328,7 +337,7 @@ GameObject:
   - component: {fileID: 4154740690935507891}
   m_Layer: 0
   m_Name: PlayerPlaceholder
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -771,7 +780,7 @@ PrefabInstance:
       objectReference: {fileID: 6314361210716043615}
     - target: {fileID: 1406693600492536801, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000009107244
+      value: 0.000035564783
       objectReference: {fileID: 0}
     - target: {fileID: 2256986644363842930, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchorMax.x
@@ -819,11 +828,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3812330804401556723, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_Size
-      value: 0.9998662
+      value: 0.9997741
       objectReference: {fileID: 0}
     - target: {fileID: 4062813405136551938, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.00001839661
+      value: -0.000009922937
       objectReference: {fileID: 0}
     - target: {fileID: 4598982602031995289, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchorMax.y
@@ -831,7 +840,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5020489207906036075, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_Size
-      value: 0.9998551
+      value: 0.9997554
       objectReference: {fileID: 0}
     - target: {fileID: 5602324742740751442, guid: d9086c74462f08e43a76f510606b9624, type: 3}
       propertyPath: m_AnchorMax.x

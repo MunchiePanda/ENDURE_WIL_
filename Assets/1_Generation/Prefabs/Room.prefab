@@ -64,8 +64,36 @@ MonoBehaviour:
   minEnemiesPerRoom: 0
   maxEnemiesPerRoom: 2
   itemPrefabs:
-  - {fileID: 2675720976549494293, guid: 2da1c2324ee2c854683fa03558b42e1b, type: 3}
+  - {fileID: 2675720976549494293, guid: 1690781cd8f41ec46ad93359e21e1eea, type: 3}
+  - {fileID: 2675720976549494293, guid: 4eb8b2daa4e80694984c58b1c69b166a, type: 3}
+  - {fileID: 2675720976549494293, guid: fd9b3ab8ee47b474bbd5d8af4fbccae3, type: 3}
+  - {fileID: 2675720976549494293, guid: d996a10221c56ff4bb3409c2572a3435, type: 3}
+  - {fileID: 2675720976549494293, guid: ac81db9371260a544898d49e228720c9, type: 3}
   minItemsPerRoom: 5
-  maxItemsPerRoom: 10
+  maxItemsPerRoom: 15
+  plantPropPrefabs:
+  - {fileID: 919132149155446097, guid: 89c05beb9bd09904b9b44a12091d1507, type: 3}
+  - {fileID: 919132149155446097, guid: b737d976fb6326949a99e3f12c7b0a82, type: 3}
+  - {fileID: 919132149155446097, guid: e981eadaa796c9a46a300374331e237e, type: 3}
+  - {fileID: 919132149155446097, guid: 33bba76d49e00b04bb5fda11781044f0, type: 3}
+  - {fileID: 919132149155446097, guid: 2be890806c44f834ab980a2d9d47375c, type: 3}
+  - {fileID: 919132149155446097, guid: e6311ea5da590464ca2d1c313b82c475, type: 3}
+  - {fileID: 919132149155446097, guid: 4b8ea1fc01e12c0409fb6255e97d2d0e, type: 3}
+  - {fileID: 919132149155446097, guid: 679cdb19bcff1c3409eadd6d21787c49, type: 3}
+  - {fileID: 919132149155446097, guid: 11f925f63011cf34b97a6aeb32b37e7c, type: 3}
+  - {fileID: 919132149155446097, guid: f06b822e293b62843a0e9739348f48dc, type: 3}
+  - {fileID: 919132149155446097, guid: 96c75f93020ae0f40b4ee2d390282435, type: 3}
+  - {fileID: 919132149155446097, guid: 907059a9d55bcc54e974cae474317eec, type: 3}
+  - {fileID: 919132149155446097, guid: 80ce81c1e8e408a4994b79f154f04838, type: 3}
+  - {fileID: 919132149155446097, guid: efc63dd952b545e46b90a54ce9594686, type: 3}
+  - {fileID: 919132149155446097, guid: ad30ec7712c93764695c4d826dd864bd, type: 3}
+  - {fileID: 919132149155446097, guid: c3c3098ba5a711a48bf122c2fbd6cff5, type: 3}
+  - {fileID: 919132149155446097, guid: a7219a3729ee5dd4d8de5b2091b96dee, type: 3}
+  - {fileID: 919132149155446097, guid: 7d6a4d94970446c418206366885f6647, type: 3}
+  - {fileID: 919132149155446097, guid: cb479e2815961d849a1c3ada16174092, type: 3}
+  - {fileID: 919132149155446097, guid: 86e660c4cb1a4a647a29331d43861ad9, type: 3}
+  minPlantPropsPerRoom: 200
+  maxPlantPropsPerRoom: 200
+  foliageDensity: 1.73
   minPatrolPointsPerRoom: 2
   maxPatrolPointsPerRoom: 5
