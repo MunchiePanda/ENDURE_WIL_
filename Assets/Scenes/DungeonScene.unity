@@ -323,7 +323,7 @@ MonoBehaviour:
   bakeDelay: 2
   walkableLayers:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 257
   showDebugInfo: 1
   navMeshSurface: {fileID: 1860453867}
   roomMapManager: {fileID: 2130539359}

@@ -97,7 +97,6 @@ public class FootstepManager : MonoBehaviour
     {
         float speed = controller.velocity.magnitude;
 
-
         if(minMoveSpeed > speed)
         {
             //We Moving But
@@ -121,14 +120,14 @@ public class FootstepManager : MonoBehaviour
         }
 
             TryPlayFootsteps();
-
     }
 
     private void TryPlayFootsteps()
     {
+
         if(footsteps == null)
         {
-            Debug.LogWarning("Footstep Disctionary is Null");
+            Debug.LogWarning("Footstep Dictionary is Null");
             return;
         }
 
@@ -137,13 +136,14 @@ public class FootstepManager : MonoBehaviour
         if (!Physics.Raycast(ray, out RaycastHit hit, raycastDistance, groundLayers))
         {
             //Not Grounded (Don't Play)
+            Debug.Log("No Ground");
+
             audioSource.Stop();
             return;
         }
 
         SurfaceType surfaceType = defaultSurface;   //Just in Case
         FootstepSurface surface = hit.collider.gameObject.GetComponent<FootstepSurface>();
-
 
         if(audioSource.isPlaying == true && audioSource.clip == footsteps[surface.surfaceType][audioIndex])
         {
@@ -154,10 +154,8 @@ public class FootstepManager : MonoBehaviour
         //Switch to the Audio Clip from the Person Walking.
         audioSource.clip = footsteps[surface.surfaceType][audioIndex];
 
-
         //Audio source is set to Loop.
         audioSource.Play();
-
 
     }
 
