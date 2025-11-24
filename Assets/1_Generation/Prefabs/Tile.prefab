@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 3331708}
   - component: {fileID: 6438220}
   - component: {fileID: 2317204}
-  m_Layer: 0
+  - component: {fileID: 4419412463224593562}
+  m_Layer: 8
   m_Name: Quad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -109,6 +110,19 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4419412463224593562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 116234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c8d5950f56c23c46a00ab2532bb6a08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  surfaceType: 0
 --- !u!1 &135020
 GameObject:
   m_ObjectHideFlags: 0
@@ -159,6 +173,8 @@ MonoBehaviour:
     z: 0
   walkDegradationAmount: 0.2
   runDegradationAmount: 0.5
+  regenerationRate: 0.1
+  regenerationDelay: 2
   degradationLevel: 0
   isBroken: 0
   currentState: 0

@@ -113,6 +113,11 @@ namespace ENDURE
 			private bool _hasPlayer = false;
 
 			/// <summary>
+			/// Reference to the first room where the player should spawn.
+			/// </summary>
+			private Room _firstRoom = null;
+
+			/// <summary>
 			/// Sets the type of a tile at the specified coordinates.
 			/// </summary>
 			/// <param name="coordinates">The coordinates of the tile.</param>
@@ -155,11 +160,10 @@ namespace ENDURE
                 roomInstance.Setting = RoomSettings[Random.Range(0, RoomSettings.Length)];
                 StartCoroutine(roomInstance.Generate());
 
-                // Only spawn player in first room
-                if (!_hasPlayer)
+                // Store reference to first room for player spawning later
+                if (_firstRoom == null)
                 {
-                    yield return roomInstance.CreatePlayer();
-                    _hasPlayer = true;
+                    _firstRoom = roomInstance;
                 }
 
                 yield return null;
@@ -192,6 +196,18 @@ namespace ENDURE
                 yield return corridor.CreateWalls();
             }
             Debug.Log("Every walls are generated");
+
+            // Generate roof
+            yield return GenerateRoof();
+            Debug.Log("Roof generation complete");
+
+            // Spawn player now that dungeon structure is complete
+            if (!_hasPlayer && _firstRoom != null)
+            {
+                yield return _firstRoom.CreatePlayer();
+                _hasPlayer = true;
+                Debug.Log("Player spawned after dungeon generation complete");
+            }
 
             Debug.Log("Dungeon structure complete - ready for NavMesh baking");
 
@@ -229,6 +245,14 @@ namespace ENDURE
 
         public IEnumerator GenerateRoof()
 		{
+			// Create a parent object for all roof tiles
+			GameObject roofParent = new GameObject("Roof");
+			roofParent.transform.parent = transform;
+			roofParent.transform.localPosition = Vector3.zero;
+
+			// Find all Tile objects in the scene to match roof positions to floor positions
+			Tile[] allTiles = FindObjectsOfType<Tile>();
+
 			// Iterate through all tiles in the map
 			for (int x = 0; x < MapSize.x; x++)
 			{
@@ -240,38 +264,76 @@ namespace ENDURE
 					// Place a roof tile above floor tiles (rooms and corridors)
 					if (tileType == TileType.Room || tileType == TileType.Corridor)
 					{
+						// Find the corresponding floor tile
+						Tile floorTile = null;
+						foreach (Tile tile in allTiles)
+						{
+							if (tile.Coordinates.x == coordinates.x && tile.Coordinates.z == coordinates.z)
+							{
+								floorTile = tile;
+								break;
+							}
+						}
+
 						GameObject roofTile = GameObject.CreatePrimitive(PrimitiveType.Cube);
 						roofTile.name = $"Roof ({coordinates.x}, {coordinates.z})";
-        roofTile.transform.parent = transform;
+						roofTile.transform.parent = roofParent.transform;
 
-        // Position the roof tile directly above the floor tile
-        Vector3 floorPosition = CoordinatesToPosition(coordinates);
-        roofTile.transform.localPosition = new Vector3(
-            floorPosition.x * RoomMapManager.TileSize,
-            14.0f, // Height of the roof above the floor
-            floorPosition.z * RoomMapManager.TileSize
-        );
+						// Position the roof tile directly above the floor tile
+						if (floorTile != null)
+						{
+							// Use the floor tile's world position and place roof above it
+							Vector3 floorWorldPos = floorTile.transform.position;
+							roofTile.transform.position = new Vector3(
+								floorWorldPos.x,
+								floorWorldPos.y + 14.0f, // Height above floor
+								floorWorldPos.z
+							);
+							// Convert to local position relative to roof parent
+							roofTile.transform.localPosition = roofParent.transform.InverseTransformPoint(roofTile.transform.position);
+						}
+						else
+						{
+							// Fallback: use coordinate-based positioning
+							Vector3 floorPosition = CoordinatesToPosition(coordinates);
+							roofTile.transform.localPosition = new Vector3(
+								floorPosition.x * RoomMapManager.TileSize,
+								14.0f, // Height of the roof above the floor
+								floorPosition.z * RoomMapManager.TileSize
+							);
+						}
 
-        // Scale the roof tile to match the floor tile size
-        roofTile.transform.localScale = new Vector3(RoomMapManager.TileSize, 0.2f, RoomMapManager.TileSize);
+						// Scale the roof tile to match the floor tile size
+						roofTile.transform.localScale = new Vector3(RoomMapManager.TileSize, 0.2f, RoomMapManager.TileSize);
 
-        // Apply the roof material from the first room's settings
-        if (_rooms.Count > 0 && _rooms[0].Setting != null && _rooms[0].Setting.roof != null)
-        {
-            roofTile.GetComponent<Renderer>().material = _rooms[0].Setting.roof;
-        }
-        else
-        {
-            // Fallback material if no roof material is set
-            roofTile.GetComponent<Renderer>().material = new Material(Shader.Find("Standard"));
-        }
+						// Apply the roof material from the first room's settings
+						if (_rooms.Count > 0 && _rooms[0].Setting != null && _rooms[0].Setting.roof != null)
+						{
+							roofTile.GetComponent<Renderer>().material = _rooms[0].Setting.roof;
+						}
+						else
+						{
+							// Fallback: use default material or create a simple one
+							// Don't use Shader.Find as it may not work in URP/HDRP
+							Renderer renderer = roofTile.GetComponent<Renderer>();
+							if (renderer != null && renderer.sharedMaterial == null)
+							{
+								// Use default material if available, otherwise leave as is
+								Debug.LogWarning($"GenerateRoof: No roof material set for room settings. Using default material.");
+							}
+						}
+
+						// Yield every 10 tiles to prevent frame drops on large dungeons
+						if ((x * MapSize.z + z) % 10 == 0)
+						{
+							yield return null;
+						}
 					}
 				}
 			}
-			yield return null;
-
-
 			
+			Debug.Log("Roof generation complete");
+			yield return null;
 		}
 	
 

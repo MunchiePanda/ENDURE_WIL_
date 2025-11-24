@@ -2,9 +2,9 @@ using UnityEngine;
 
 public interface IInteractable
 {
-    string prompt { get; }                     // Text shown for interaction
-    bool bIsInteractable { get; }         // Whether this object can currently be interacted with
-    Collider interactCollider { get; }      // The collider used for interaction detection
+    string prompt { get; }                          // Text shown for interaction
+    bool bIsInteractable { get; }                   // Whether this object can currently be interacted with
+    //Collider interactCollider { get; }            // The collider used for interaction detection
 
     // Called when the interactor starts looking at this object
     void OnHoverEnter(Interactor interactor);
