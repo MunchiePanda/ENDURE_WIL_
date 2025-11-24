@@ -9,8 +9,8 @@ namespace ENDURE
     {
         // Our player has extra numbers to keep track of!
         [Header("Player Specific Stats - Extra things only our player cares about!")]
-        [SerializeField] private Stat hungerField;        // How hungry our player is!
-        [SerializeField] private Stat systemExposureField; // How much danger our player is in from the environment!
+        [SerializeField] private Stat hungerField;          // How hungry our player is!
+        [SerializeField] private Stat systemExposureField;  // How much danger our player is in from the environment!
 
         [Header("System Exposure Settings")]
         [Tooltip("Enable the ambient exposure timer (acts as a soft dungeon timer).")]
@@ -189,6 +189,9 @@ namespace ENDURE
                 case ItemStatTarget.SystemExposure:
                     AdjustStat(ref systemExposureField, amount);
                     return true;
+                case ItemStatTarget.MaxSystemExposure:
+                    AdjustMaxStat(ref systemExposureField, amount);
+                    return true;
                 default:
                     return false;
             }
@@ -204,6 +207,11 @@ namespace ENDURE
             {
                 stat.ReduceStat(Mathf.Abs(amount));
             }
+        }
+
+        private void AdjustMaxStat(ref Stat stat, float amount)
+        {
+            stat.IncreaseMaxStat(Mathf.Abs(amount));                    //Always be Positive.
         }
     }
 }

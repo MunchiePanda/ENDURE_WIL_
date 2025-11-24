@@ -17,6 +17,12 @@ public class ItemGiverInteractable : InteractableBase
     public GameObject beforeInteractModel;  //the model that is shown before the interaction
     public GameObject afterInteractModel;   //the model that is shown after the interaction
 
+    [Header("Interactable Colour thingy")]
+    [SerializeField] GameObject highlightedObject;
+    [SerializeField] private Material[] orignalMats;
+    [SerializeField] private Material[] outlineMats;
+    private Renderer rd;
+
     /// <summary>
     /// Implimentation of the Interact method from the IInteractable interface.
     /// Adds the item to the player's inventory and changes the visuals.
@@ -41,6 +47,7 @@ public class ItemGiverInteractable : InteractableBase
 
     private void Start()
     {
+        rd = highlightedObject.GetComponent<Renderer>();
         ChangeVisuals(isInteractable); //set the initial visual state based on isInteractable
     }
 
@@ -50,6 +57,26 @@ public class ItemGiverInteractable : InteractableBase
         beforeInteractModel.SetActive(isInteractable);
         afterInteractModel.SetActive(!isInteractable);  //opposite of isInteractable
     }
+
+
+    //<<<Mouse Hovers Over Item>>>
+
+    // Runs once when the mouse first moves over this object
+    private void OnMouseEnter()
+    {
+        if(outlineMats == null) return;
+
+        rd.materials = outlineMats;
+    }
+
+    // Runs once when the mouse leaves this object
+    private void OnMouseExit()
+    {
+        if (orignalMats == null) return;
+
+        rd.materials = orignalMats;
+    }
+
 }
 
 

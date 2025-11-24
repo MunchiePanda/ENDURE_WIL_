@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b30aea747533e234ebe1d9f27250b8bb, type: 3}
+  m_Name: OverdriveVoxel
+  m_EditorClassIdentifier: 
+  craftedItem: {fileID: 11400000, guid: 5a2145a293947d148a4bb513990ee5b3, type: 2}
+  craftQuantity: 1
+  requiredIngredients:
+  - item: {fileID: 11400000, guid: f3d706324ac671b41a2eb21bdea449bf, type: 2}
+    quantity: 5
+  - item: {fileID: 11400000, guid: 75872699fce42764baf280ebfb4ace0e, type: 2}
+    quantity: 12
+  - item: {fileID: 11400000, guid: 7ef1d9e80b9b5dc49910c2adceffa5f1, type: 2}
+    quantity: 2

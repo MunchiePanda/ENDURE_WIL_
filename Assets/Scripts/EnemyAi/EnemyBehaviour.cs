@@ -205,7 +205,7 @@ public class EnemyBehaviour : MonoBehaviour
 
         float dist = Vector3.Distance(transform.position, noisePos);
 
-        Debug.Log($"The Distance Between the player and the enemy is {dist} and it needs to be less than {hearingRange * noiseVol * hearingSensitivity}. The Nois Pos is {noisePos} and the enemy pos is {transform.position}");
+        //Debug.Log($"The Distance Between the player and the enemy is {dist} and it needs to be less than {hearingRange * noiseVol * hearingSensitivity}. The Nois Pos is {noisePos} and the enemy pos is {transform.position}");
 
         if (dist <= hearingRange * noiseVol * hearingSensitivity)
         {

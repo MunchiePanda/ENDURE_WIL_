@@ -56,7 +56,8 @@ public enum ItemStatTarget
     Health,
     Stamina,
     Hunger,
-    SystemExposure
+    SystemExposure,
+    MaxSystemExposure               //For Cybernetics
 }
 
 [System.Serializable]

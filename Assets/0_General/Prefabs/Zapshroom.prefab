@@ -92,6 +92,12 @@ MonoBehaviour:
   VisualAsset: {fileID: 159108931595930162}
   beforeInteractModel: {fileID: 513806677122931051}
   afterInteractModel: {fileID: 3487708432680194346}
+  highlightedObject: {fileID: 513806677122931051}
+  orignalMats:
+  - {fileID: 2100000, guid: 4cf59003446076b41931fed18b5ade33, type: 2}
+  outlineMats:
+  - {fileID: 2100000, guid: 4cf59003446076b41931fed18b5ade33, type: 2}
+  - {fileID: 2100000, guid: 9101edc98d4106f428fe445eebe85008, type: 2}
 --- !u!33 &2929057608186327149
 MeshFilter:
   m_ObjectHideFlags: 0
