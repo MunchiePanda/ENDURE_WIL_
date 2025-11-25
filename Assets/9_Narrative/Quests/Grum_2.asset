@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcd39007e780b724e92aa1a099258cf7, type: 3}
+  m_Name: Grum_2
+  m_EditorClassIdentifier: 
+  questName: Grum
+  questDescription: Raooul's having another struggle. And it's not looking Good.
+    May need something new.
+  questObjectives:
+  - item: {fileID: 11400000, guid: 21b7818a320daa448929ff18765dd4ba, type: 2}
+    quantity: 0
+    currentQuantity: 0
+    objectiveComplete: 0
+  - item: {fileID: 11400000, guid: ecd927ea26e50bd40bd3c8673dd9fa26, type: 2}
+    quantity: 20
+    currentQuantity: 0
+    objectiveComplete: 0
+  - item: {fileID: 11400000, guid: 7ef1d9e80b9b5dc49910c2adceffa5f1, type: 2}
+    quantity: 8
+    currentQuantity: 0
+    objectiveComplete: 0
+  isComplete: 0
+  rewardItem: {fileID: 0}
+  rewardQuantity: 0
+  rewardRecipie: {fileID: 11400000, guid: bdf0f45a7ddf9b64ab48548f503d27f4, type: 2}

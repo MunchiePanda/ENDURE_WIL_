@@ -10,22 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bcd39007e780b724e92aa1a099258cf7, type: 3}
-  m_Name: Quest_Snyths
+  m_Name: Quest_Food
   m_EditorClassIdentifier: 
-  questName: The Sickness
-  questDescription: People are feeling ill around here and are in need of Health
-    Synths. If you woudn't mind bringing me some ingrediants, I can teach you how
-    to make some. Alot of People really need it
+  questName: Chef Donher
+  questDescription: You know whats more nutritious than those salads you've been
+    eating. A hearty Mushroom Stew. Come on, I'll teach you.
   questObjectives:
-  - item: {fileID: 11400000, guid: 060dbded60840be428c38805d97c0c49, type: 2}
+  - item: {fileID: 11400000, guid: ce9972a8d2a7a244b9cd4119f79732d2, type: 2}
     quantity: 6
     currentQuantity: 0
     objectiveComplete: 0
-  - item: {fileID: 11400000, guid: 24e199446eea1f040859d419944b7220, type: 2}
-    quantity: 2
+  - item: {fileID: 11400000, guid: f3d706324ac671b41a2eb21bdea449bf, type: 2}
+    quantity: 6
     currentQuantity: 0
     objectiveComplete: 0
   isComplete: 0
   rewardItem: {fileID: 0}
   rewardQuantity: 0
-  rewardRecipie: {fileID: 11400000, guid: 5a39b74cf89dd934d94a6b45832ce186, type: 2}
+  rewardRecipie: {fileID: 11400000, guid: 3fe0d092786fd0f4fb9ff9ce35e5684d, type: 2}

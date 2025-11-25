@@ -16,4 +16,4 @@ MonoBehaviour:
   craftQuantity: 1
   requiredIngredients:
   - item: {fileID: 11400000, guid: cc5330d35c0b6ae4e8cbb8b16463fa2e, type: 2}
-    quantity: 2
+    quantity: 4
