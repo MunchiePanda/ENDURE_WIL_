@@ -62,10 +62,26 @@ public class QuestGiverUIManager : MonoBehaviour
     {
         if (quest == null) return string.Empty;
         string objectivesText = quest.questName + " \n";
+        objectivesText += "\n" + quest.questDescription;
         foreach (QuestObjective objective in quest.questObjectives)
         {
             //objectivesText += "\n " + objective.GetQuestObjectiveText();      //this fucked up the currentQuantity, so we change it and do it manually
             objectivesText += "\n " + objective.item.itemName + " x" + objective.quantity.ToString();
+        }
+
+        if(quest.rewardRecipie != null)
+            objectivesText += "\n Rewards: Crafting Recipe for " + quest.rewardRecipie.CraftedItem.itemName;
+        if(quest.rewardItem != null)
+        {
+            // Prefer readable item name if available
+            if (quest.rewardItem is ItemBase rewardItemBase && rewardItemBase != null)
+            {
+                objectivesText += "\n Rewards: " + rewardItemBase.itemName;
+            }
+            else
+            {
+                objectivesText += "\n Rewards: " + quest.rewardItem.ToString();
+            }
         }
 
         return objectivesText;
@@ -85,6 +101,12 @@ public class QuestGiverUIManager : MonoBehaviour
         if (quest == null && QuestgiverNPCBinder.TryConsumePending(out pending))
         {
             SetQuest(pending);
+        }
+
+        // Always refresh description when the panel is enabled
+        if (questDescription != null && quest != null)
+        {
+            questDescription.text = GetQuestDescription();
         }
     }
 
