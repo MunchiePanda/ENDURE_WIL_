@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class JournalEntryManager : MonoBehaviour
 {
@@ -48,7 +50,24 @@ public class JournalEntryManager : MonoBehaviour
         id++;   //Move to next entry next unlock
 
         CreateEntry(entry);
+
+        //NotifyPlayer();
     }
+
+    private void NotifyPlayer()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.P))
+        {
+            UnlockEntry();
+            
+        }
+    }
+
 
     private void CreateEntry(JournalEntryData entry)
     {
@@ -58,6 +77,11 @@ public class JournalEntryManager : MonoBehaviour
         if(ui != null)
         {
             ui.Setup(entry.title, entry.body);
+            
+            // Force layout update
+            //LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)contentParent);
+
+            Debug.Log("Added Entry");
         }
         else
         {
@@ -66,12 +90,39 @@ public class JournalEntryManager : MonoBehaviour
         
     }
 
+    public void ToggleJournal()
+    {
+        if(journal.activeSelf == true)
+        {
+            journal.SetActive(false);
+
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+        else
+        {
+            journal.SetActive(true);
+
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+    }
+
     public void CloseJournal()
     {
         journal.SetActive(false);
+
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
-
+    public void OpenJournal()
+    {
+        journal.SetActive(true);
+        
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+    }
 }
 
 [System.Serializable]

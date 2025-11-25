@@ -46,6 +46,8 @@ public class Quest
     {
         if (!isQuestComplete) return false;
 
+        JournalEntryManager.Instance.UnlockEntry(); //Unlocks a Journal Entry Upon Completion of a Quest
+
         foreach (QuestObjective objective in quest.questObjectives)
         {
             inventory.RemoveItem(objective.item, objective.quantity);
