@@ -116,7 +116,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contentParent: {fileID: 3161796479297013979}
-  journalEntryPrefab: {fileID: 2271472500811319343, guid: f3da9bba915437b4ba04e59a312f86a8, type: 3}
+  journalEntryPrefab: {fileID: 641729410427290599, guid: c49505f1ae05f01459ad2512fc03b343, type: 3}
   journal: {fileID: 3746812264689630699}
   journalEntries:
   - id: 0
