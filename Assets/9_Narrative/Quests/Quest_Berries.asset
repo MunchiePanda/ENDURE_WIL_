@@ -16,7 +16,7 @@ MonoBehaviour:
   questDescription: OI, Come here, I've got a new recipe to show you but I will need
     you to get some supplies for me first, if that's okay.
   questObjectives:
-  - item: {fileID: 11400000, guid: cc5330d35c0b6ae4e8cbb8b16463fa2e, type: 2}
+  - item: {fileID: 11400000, guid: 75872699fce42764baf280ebfb4ace0e, type: 2}
     quantity: 4
     currentQuantity: 0
     objectiveComplete: 0

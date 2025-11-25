@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b30aea747533e234ebe1d9f27250b8bb, type: 3}
-  m_Name: CarrotSquared
+  m_Name: BerrySquared
   m_EditorClassIdentifier: 
   craftedItem: {fileID: 11400000, guid: 6c0480c7db761c047bee6206eaa23c75, type: 2}
   craftQuantity: 1
   requiredIngredients:
-  - item: {fileID: 11400000, guid: cc5330d35c0b6ae4e8cbb8b16463fa2e, type: 2}
+  - item: {fileID: 11400000, guid: 75872699fce42764baf280ebfb4ace0e, type: 2}
     quantity: 4

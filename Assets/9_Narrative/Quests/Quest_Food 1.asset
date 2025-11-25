@@ -24,6 +24,6 @@ MonoBehaviour:
     currentQuantity: 0
     objectiveComplete: 0
   isComplete: 0
-  rewardItem: {fileID: 0}
-  rewardQuantity: 0
+  rewardItem: {fileID: 11400000, guid: 24e199446eea1f040859d419944b7220, type: 2}
+  rewardQuantity: 1
   rewardRecipie: {fileID: 0}

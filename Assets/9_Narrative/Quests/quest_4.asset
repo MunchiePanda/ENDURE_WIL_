@@ -20,7 +20,7 @@ MonoBehaviour:
     quantity: 5
     currentQuantity: 0
     objectiveComplete: 0
-  - item: {fileID: 11400000, guid: cc5330d35c0b6ae4e8cbb8b16463fa2e, type: 2}
+  - item: {fileID: 11400000, guid: ce9972a8d2a7a244b9cd4119f79732d2, type: 2}
     quantity: 5
     currentQuantity: 0
     objectiveComplete: 0

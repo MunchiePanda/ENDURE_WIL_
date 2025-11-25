@@ -1,0 +1,198 @@
+GAME RULES
+
+• SURVIVAL MECHANICS
+  - Monitor your Health, Stamina, Hunger, and System Exposure at all times
+  - Health depletes when taking damage from enemies or environmental hazards
+  - Stamina drains while running and regenerates when walking or standing still
+  - Hunger decreases over time and must be managed through consumable items
+  - System Exposure acts as a timer: when it reaches zero, you take continuous damage
+  - If Health reaches zero, you die and the game ends
+
+• COMBAT SYSTEM
+  - Engage enemies using the Attack action (left mouse button)
+  - All characters (player and enemies) have Health stats that decrease when damaged
+  - When Health reaches minimum, characters die and are removed from the game
+  - Use movement and positioning to avoid enemy attacks
+  - Sneaking (Left Control) allows quieter movement but doesn't require stamina
+
+• QUEST SYSTEM
+  - Interact with NPCs to receive quests
+  - Quests have objectives that must be completed (usually collecting specific items)
+  - Complete quest objectives to finish quests and receive rewards
+  - Rewards may include items or crafting recipes
+  - You can accept or reject quests when offered
+  - Track active quests in the Quest Overview panel (Q key)
+
+• CRAFTING SYSTEM
+  - Access crafting through the inventory interface
+  - Recipes require specific ingredients in exact quantities
+  - You must have all required ingredients in your inventory to craft
+  - Crafted items are automatically added to your inventory
+  - Some recipes are unlocked by completing quests
+  - Inventory must have space for crafted items
+
+• INVENTORY MANAGEMENT
+  - Collect items from the environment and defeated enemies
+  - Items can stack if they are the same type
+  - Inventory has limited space - manage it carefully
+  - Use consumable items to restore health, stamina, or hunger
+  - Some items provide stat effects when used
+
+• ENVIRONMENTAL INTERACTION
+  - Interact with objects using the Interact action (hold key)
+  - Tiles degrade when you walk or run on them - running causes more degradation
+  - Broken tiles can be dangerous - watch your step
+  - Use your torch (F key) to illuminate dark areas
+  - Procedurally generated environments mean each playthrough is unique
+
+• PROGRESSION
+  - Complete quests to unlock new crafting recipes
+  - Collect items to craft better equipment and consumables
+  - Manage your resources carefully to survive longer
+  - Explore procedurally generated dungeons to find valuable resources
+  - Attributes can modify your stats (Vitality increases max health, Agility affects speed)
+
+• DEATH AND FAILURE
+  - Death occurs when Health reaches zero
+  - System Exposure reaching zero causes continuous damage until death
+  - Manage all survival stats to avoid death
+  - Plan your exploration and resource management carefully
+
+
+GAME SPECS
+
+• MOVEMENT SPEEDS
+  - Walking Speed: 7.5 units/second (default movement)
+  - Running Speed: 11.5 units/second (requires stamina, hold Left Shift)
+  - Sneaking Speed: 3.75 units/second (stealth movement, hold Left Control)
+  - Jump Speed: 8.0 units/second (vertical velocity)
+  - Look Speed: 2.0 (mouse sensitivity multiplier)
+  - Look Limit: ±45 degrees (vertical camera rotation limit)
+
+• STATISTICS SYSTEM
+  - Health: Core survival stat, decreases from damage, reaches zero = death
+  - Stamina: Drains at 10/second while running, regenerates at 5/second when not running
+  - Speed: Base movement speed modifier
+  - Hunger: Player-specific stat that decreases over time
+  - System Exposure: Player-specific stat that acts as environmental timer (default 180 seconds to drain)
+
+• COMBAT SPECIFICATIONS
+  - Attack Action: Left mouse button
+  - All entities implement IDamageable interface
+  - Damage reduces Health stat directly
+  - Death occurs when Health.current <= Health.min
+
+• TILE DEGRADATION
+  - Walking on tiles causes degradation (walkDegradationAmount)
+  - Running on tiles causes increased degradation (runDegradationAmount)
+  - Tiles can break when degradation reaches maximum
+  - Broken tiles are dangerous and cannot be further degraded
+  - Tile interaction has 0.1 second cooldown to prevent rapid degradation
+
+• TORCH SYSTEM
+  - Toggle Key: F (default)
+  - Intensity: 3.0 (light brightness)
+  - Range: 18 units
+  - Spot Angle: 60 degrees (light cone width)
+  - Color: Warm white (RGB: 1.0, 0.95, 0.85)
+  - Shadows: Soft shadows enabled
+
+• CRAFTING SPECIFICATIONS
+  - Recipes require exact ingredient quantities
+  - Crafting checks inventory for all required ingredients
+  - Crafted items added in specified quantities (default: 1)
+  - Inventory space required for crafted items
+  - Failed crafts do not consume ingredients
+
+• UI SYSTEM
+  - Inventory: I key (toggle)
+  - Quest Overview: Q key (toggle)
+  - Journal: J key (toggle)
+  - Close UI: X key (when in UI mode)
+  - Cursor locked during gameplay, unlocked in UI mode
+  - Player movement disabled when UI is open
+
+• ATTRIBUTE TYPES
+  - Vitality: Increases maximum Health (+10 per attribute value)
+  - Agility: Modifies Speed stat
+  - Other attribute types may exist for stat modification
+
+• GRAVITY AND PHYSICS
+  - Gravity: 20.0 units/second² (downward acceleration)
+  - Character Controller handles collision and movement
+  - Camera offset: 0.4 units above player position
+  - Camera near clip: 0.1 units, far clip: 2000 units, FOV: 75 degrees
+
+
+PLAYER INSTRUCTIONS - HOW TO PLAY
+
+• BASIC CONTROLS
+  - WASD: Move forward, left, backward, right
+  - Mouse: Look around (camera rotation)
+  - Space: Jump
+  - Left Shift: Hold to run (drains stamina)
+  - Left Control: Hold to sneak (slower, quieter movement)
+  - Left Mouse Button: Attack
+  - Hold E (or configured Interact key): Interact with objects
+  - F: Toggle torch on/off
+
+• UI NAVIGATION
+  - Press I to open/close Inventory
+  - Press Q to open/close Quest Overview
+  - Press J to open/close Journal
+  - Press X to close any open UI panel
+  - Mouse cursor appears when UI is open
+  - Click buttons and items in UI panels to interact
+
+• SURVIVAL TIPS
+  - Keep an eye on your Health bar - it's your lifeline
+  - Manage Stamina: don't run constantly, let it regenerate
+  - Watch System Exposure: it's a timer for environmental danger
+  - Use consumable items from inventory to restore stats
+  - Hunger decreases over time - find and use food items
+
+• EXPLORATION STRATEGY
+  - Use your torch (F) in dark areas to see better
+  - Walk on tiles to preserve them longer (running degrades them faster)
+  - Watch for broken tiles - they can be dangerous
+  - Explore procedurally generated areas to find resources
+  - Interact with NPCs to receive quests
+
+• QUEST COMPLETION
+  - Talk to NPCs marked as quest givers
+  - Read quest descriptions carefully to understand objectives
+  - Collect required items specified in quest objectives
+  - Check Quest Overview (Q) to track progress
+  - Complete objectives to finish quests and earn rewards
+  - Rewards may include items or new crafting recipes
+
+• CRAFTING GUIDE
+  - Open Inventory (I) to access crafting
+  - View available recipes and their required ingredients
+  - Ensure you have all required ingredients before crafting
+  - Click craft button to create items
+  - Crafted items automatically appear in inventory
+  - Some recipes unlock through quest completion
+
+• COMBAT TACTICS
+  - Use Attack (left mouse) to engage enemies
+  - Move while fighting to avoid taking damage
+  - Monitor your Health during combat
+  - Use consumables to heal if Health gets low
+  - Sneak (Left Control) to avoid detection if possible
+
+• INVENTORY MANAGEMENT
+  - Collect items from environment and defeated enemies
+  - Organize items - same types stack automatically
+  - Use consumable items by clicking "Use" button in inventory
+  - Keep inventory space available for important items
+  - Drop or use items you don't need to free space
+
+• ADVANCED TECHNIQUES
+  - Balance running and walking to manage stamina efficiently
+  - Plan routes to minimize tile degradation
+  - Complete quests early to unlock better crafting options
+  - Save consumables for critical moments
+  - Use torch strategically to conserve resources (if applicable)
+  - Monitor all stats simultaneously for optimal survival
+

@@ -1,0 +1,12 @@
+The User Interface Design Document for *Endure* outlines a clean, functional UI system tailored for a sci-fi survival dungeon crawler. The user interface is designed to support gameplay in a futuristic world where nature and technology have been permanently integrated, with humans having long since vanished, leaving behind an overgrown, post-human landscape dominated by advanced AI systems.
+
+The UI currently uses a primarily white color scheme with standard Unity UI components. Text elements utilize TextMesh Pro with LiberationSans SDF as the default font asset, providing clear legibility for all UI text. The interface includes colored stat indicators (green for stamina, red for health, orange for hunger, and purple accents) set against white backgrounds for maximum contrast and readability.
+
+The UI system is built using Unity's standard Canvas and UI components, including Image components, Buttons, Sliders for stat display, and TextMesh Pro (TMP_Text) for all text rendering. Menus are centered on the canvas when open, with reusable button components following Unity's default styling. The UI includes panels for Inventory, Crafting, Quest Overview, Quest Giver interactions, Pause menu, and Death screen, all managed through a centralized UIManager system.
+
+Diegetic elements such as the crafting menu (accessible at crafting benches) and the hand-written journal blend UI into the world, while the current white color scheme provides high contrast and legibility. The UI system includes audio feedback for button clicks, panel opens/closes, and item interactions, enhancing the user experience through sound cues.
+
+Layout follows standard Unity UI conventions with panels anchored to canvas center when open. The cursor is locked during gameplay and unlocked when UI panels are active, allowing for mouse interaction with menu elements. Player movement is disabled when UI is open to prevent conflicts between gameplay and interface interaction.
+
+Accessibility considerations are addressed through the use of high-contrast white text and backgrounds, legible fonts (LiberationSans), and clear visual hierarchy through standard Unity UI components. The system is designed to be functional and readable, with room for future visual styling enhancements to match the intended sci-fi aesthetic.
+

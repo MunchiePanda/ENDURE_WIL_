@@ -18,7 +18,7 @@ MonoBehaviour:
   itemType: 2
   statEffects:
   - target: 2
-    value: 5
+    value: 8
   - target: 1
     value: -2
   actionLabel: Use

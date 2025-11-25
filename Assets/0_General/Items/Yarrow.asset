@@ -18,5 +18,7 @@ MonoBehaviour:
   itemType: 2
   statEffects:
   - target: 4
-    value: 2
+    value: 1
+  - target: 1
+    value: 1
   actionLabel: Eat

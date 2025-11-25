@@ -1,0 +1,96 @@
+E.N.D.U.R.E is a survival-exploration game built around a cyclical loop of exploring, gathering, returning, and crafting. The player ventures into a procedurally generated dungeon to recover materials needed to support their survival, all while managing limited resources, environmental threats, enemy encounters, and a constantly depleting System Exposure meter.
+
+Core Game Loop
+
+Enter the Maze – Player begins at the entrance of a procedurally generated dungeon.
+
+Explore & Gather – Collect materials, defeat creatures, and navigate hazards.
+
+Return to Safety – Escape before System Exposure reaches 0%.
+
+Craft & Upgrade – Use gathered resources to create consumables, gear, and items that modify attributes.
+
+Repeat – Each run enables greater endurance and prepares the player for deeper exploration.
+
+This loop drives progression, risk–reward decision-making, and replayability.
+
+Spatial & Structural Mechanics
+
+Procedural Dungeon: Dangerous, shifting labyrinth created each run using procedural generation techniques. The dungeon generator uses Delaunay Triangulation (Bowyer-Watson algorithm) to connect rooms and Minimal Spanning Tree (Prim's algorithm) to ensure all rooms are connected with minimal corridors. Modular rooms (corridors, junctions, chambers) form unpredictable layouts filled with enemies, loot, and environmental objects.
+
+The dungeon generator handles random spawning of items, enemies, and environmental objects, ensuring each run is unique.
+
+System Exposure Mechanic
+
+System Exposure acts as a soft time limit in the dungeon.
+
+Starts at maximum value (configurable, default 180 seconds to drain from full to zero)
+
+Depletes continuously while inside the maze
+
+When it reaches 0%, player health begins to drain at a configurable rate (default 5 damage per second)
+
+Exposure depletion can be modified through crafted items and attributes (SystemResistance attribute affects exposure)
+
+This mechanic forces the player to balance exploration against survival, creating tension and pacing runs naturally.
+
+Inventory & Resource Management
+
+The inventory is quantity-based with a maximum total item quantity (default 50 items). Items can stack if they are the same type. Inventory can be expanded through configuration (maxInventorySize).
+
+Key functions include:
+
+AddItem, RemoveItem, HasItem, GetItemQuantity, IsFull
+
+Crafting requirement checks (CanCraft method in recipes)
+
+UI integration through event delegates (OnItemAdded, OnItemRemoved, OnItemQuantityChanged)
+
+Items belong to a hierarchy based on a generic ItemBase class and include various item types: Weapon, Armor, Consumable, Material, and Misc.
+
+Scarcity and limited inventory space ensure meaningful choices about what to carry or leave behind.
+
+Combat System
+
+Combat is melee-focused, emphasizing timing, stamina management, and spatial awareness.
+
+Weapons
+
+Weapons are defined as items with ItemType.Weapon. The system supports weapon items but specific weapon types (dagger, sword, spear) are not differentiated in the codebase - weapons are handled generically through the ItemBase system.
+
+Combat uses the IDamageable interface for all entities (player and enemies). Attacks consume stamina. Weapon effects can be modified through item stat effects and attributes.
+
+Enemy Behaviours
+
+Enemies use the CharacterManager system which provides health, stamina, and speed stats. Enemy AI includes NavMesh-based navigation and patrol point systems. Specific behavior archetypes (passive, reactive, aggressive) are not explicitly implemented in the current codebase.
+
+Combat relies on the IDamageable interface for damage dealing and health management.
+
+Crafting System
+
+Crafting is central to progression and survival. Recipes unlock through exploration and story progression. The crafting system uses CraftingRecipieBase scriptable objects that define required ingredients and output items.
+
+Items can be crafted from any ItemType category (Weapon, Armor, Consumable, Material, Misc). Crafted items can provide stat effects that modify Health, Stamina, Hunger, SystemExposure, or MaxSystemExposure.
+
+Crafting stations in the world open the crafting UI, showing available recipes, missing ingredients, and item descriptions.
+
+Stats & Attributes
+
+There is no manual stat levelling. Instead, attributes are modified through gear, crafting, and consumables.
+
+Vitality – Increases max health (+10 per attribute value)
+
+Agility – Increases max speed (0.5% per attribute value)
+
+SystemResistance – Affects System Exposure depletion rate
+
+Fitness – Increases max stamina (+10 per attribute value)
+
+Metabolism – Affects hunger replenishment
+
+Stats are handled through CharacterManager and PlayerManager classes, which use Stat structs for Health, Stamina, Speed, Hunger, and SystemExposure. This allows modular interaction with combat, exposure, and movement systems.
+
+Overall System Philosophy
+
+All mechanics reinforce survival tension, resource scarcity, and the thematic struggle against a decaying, AI-corrupted world. Progression is material-driven, not level-driven, ensuring that each run meaningfully alters the player's capabilities and chances of success.
+
