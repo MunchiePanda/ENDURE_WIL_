@@ -136,6 +136,11 @@ namespace ENDURE
                 ToggleQuestOverview();
             }
 
+            if (Input.GetKeyDown(KeyCode.J))
+            {
+                JournalEntryManager.Instance.ToggleJournal();
+            }
+
             if (enableTorch && Input.GetKeyDown(torchToggleKey))
             {
                 ToggleTorch();
