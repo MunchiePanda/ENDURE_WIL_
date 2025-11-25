@@ -31,12 +31,17 @@ public class JournalEntryManager : MonoBehaviour
 
     [Header("Journal Entries")]
     public List<JournalEntryData> journalEntries;
+    public int waitPeriod = 5;
     private int id = 0;
 
     //Add: new entry message pop up.
 
     public void UnlockEntry()
     {
+        waitPeriod--;
+
+        if (waitPeriod >= 0) return;
+
         JournalEntryData entry = journalEntries.Find(e => e.id == id);
 
         if (entry == null)
@@ -45,8 +50,9 @@ public class JournalEntryManager : MonoBehaviour
             return;
         }
 
-        entry.unlocked = true;
+        //The Rest
 
+        entry.unlocked = true;
         id++;   //Move to next entry next unlock
 
         CreateEntry(entry);

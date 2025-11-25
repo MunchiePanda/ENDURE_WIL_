@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcd39007e780b724e92aa1a099258cf7, type: 3}
+  m_Name: Grum_1
+  m_EditorClassIdentifier: 
+  questName: Grum
+  questDescription: I need some metal to fix Raoul's Arm. It's been bugging him all
+    morning. Pop me some Energy Crystals too. I'll pay.
+  questObjectives:
+  - item: {fileID: 11400000, guid: ecd927ea26e50bd40bd3c8673dd9fa26, type: 2}
+    quantity: 5
+    currentQuantity: 0
+    objectiveComplete: 0
+  - item: {fileID: 11400000, guid: 7ef1d9e80b9b5dc49910c2adceffa5f1, type: 2}
+    quantity: 3
+    currentQuantity: 0
+    objectiveComplete: 0
+  isComplete: 0
+  rewardItem: {fileID: 11400000, guid: cc5330d35c0b6ae4e8cbb8b16463fa2e, type: 2}
+  rewardQuantity: 2
+  rewardRecipie: {fileID: 0}

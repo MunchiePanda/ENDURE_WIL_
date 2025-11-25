@@ -10,22 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bcd39007e780b724e92aa1a099258cf7, type: 3}
-  m_Name: Quest_Snyths
+  m_Name: Quest_Illness
   m_EditorClassIdentifier: 
-  questName: The Sickness
-  questDescription: People are feeling ill around here and are in need of Health
-    Synths. If you woudn't mind bringing me some ingrediants, I can teach you how
-    to make some. Alot of People really need it
+  questName: Hogqe
+  questDescription: I hear you're starting to really struggle in that hell hole.
+    Help me and I'll help you. Promise
   questObjectives:
   - item: {fileID: 11400000, guid: 060dbded60840be428c38805d97c0c49, type: 2}
-    quantity: 6
-    currentQuantity: 0
-    objectiveComplete: 0
-  - item: {fileID: 11400000, guid: 24e199446eea1f040859d419944b7220, type: 2}
-    quantity: 2
+    quantity: 10
     currentQuantity: 0
     objectiveComplete: 0
   isComplete: 0
   rewardItem: {fileID: 0}
   rewardQuantity: 0
-  rewardRecipie: {fileID: 11400000, guid: 5a39b74cf89dd934d94a6b45832ce186, type: 2}
+  rewardRecipie: {fileID: 11400000, guid: 8e34a48d2d1ed364b93cc1911aa17012, type: 2}

@@ -3177,17 +3177,121 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: npcQuests.Array.size
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
       propertyPath: 'npcQuests.Array.data[0]'
       value: 
       objectReference: {fileID: 11400000, guid: a8988570381807d429ada7d9b066bc0b, type: 2}
     - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
       propertyPath: 'npcQuests.Array.data[1]'
       value: 
-      objectReference: {fileID: 11400000, guid: 6ebb6e5ac4cb5bb43ad512d18ac75842, type: 2}
+      objectReference: {fileID: 11400000, guid: 04dbb5bff363dd240aa117e27a7b94fc, type: 2}
     - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
       propertyPath: 'npcQuests.Array.data[2]'
       value: 
       objectReference: {fileID: 11400000, guid: 9078d6db92541cd47a0d21d313a2dd9c, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[3]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 6ebb6e5ac4cb5bb43ad512d18ac75842, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[4]'
+      value: 
+      objectReference: {fileID: 11400000, guid: c8e23600ac0b35c4d9683d363ad86b93, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[5]'
+      value: 
+      objectReference: {fileID: 11400000, guid: e5d2df6f3239ef44c96ffaf44c8668bd, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[6]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 5aad6be17487184438dbac991f225e78, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[7]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 638329576dcd12f419f432aaa4d5fc2b, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[8]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 94c9a7a1761aa3344b66a6debb8a239b, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[9]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 23e332ddcb1f5c6408896a6aa53d417c, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[10]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 72a85c12a08c2d24aa2c10da335d864b, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[11]'
+      value: 
+      objectReference: {fileID: 11400000, guid: e106c35afc6e38246a6e3c53d071377e, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[12]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 16cb8067a7432a54f8f2d4d59dd9b52f, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[13]'
+      value: 
+      objectReference: {fileID: 11400000, guid: e5d2df6f3239ef44c96ffaf44c8668bd, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[14]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 23e332ddcb1f5c6408896a6aa53d417c, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[15]'
+      value: 
+      objectReference: {fileID: 11400000, guid: c374226bc63e77c4784707cf0e47f93c, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[16]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 18afc7b690181454fb5cfb30070612c1, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[17]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 94c9a7a1761aa3344b66a6debb8a239b, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[18]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 59098e4de0f186a458aa7aaadf8ccdf8, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[19]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 23e332ddcb1f5c6408896a6aa53d417c, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[20]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 9078d6db92541cd47a0d21d313a2dd9c, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[21]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 135e68816513cc24eaf3206fcedae4de, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[22]'
+      value: 
+      objectReference: {fileID: 11400000, guid: e5d2df6f3239ef44c96ffaf44c8668bd, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[23]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 16cb8067a7432a54f8f2d4d59dd9b52f, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[24]'
+      value: 
+      objectReference: {fileID: 11400000, guid: df31d4d4bfa231e45b2389090cd81443, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[25]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 9556f0243d6333049bf548c098841b20, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[26]'
+      value: 
+      objectReference: {fileID: 11400000, guid: dc52ba95f658fbb40aae04869b697beb, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[27]'
+      value: 
+      objectReference: {fileID: 11400000, guid: c66bb8f191f5037489413db55c424247, type: 2}
     - target: {fileID: 2360272505150731290, guid: 8545e479e681d084d9993526ac861754, type: 3}
       propertyPath: m_Name
       value: Questgiver
@@ -3198,11 +3302,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4780003528728102714, guid: 8545e479e681d084d9993526ac861754, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.43166733
+      value: 1.07
       objectReference: {fileID: 0}
     - target: {fileID: 4780003528728102714, guid: 8545e479e681d084d9993526ac861754, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 181.4
+      value: 177.4
       objectReference: {fileID: 0}
     - target: {fileID: 4780003528728102714, guid: 8545e479e681d084d9993526ac861754, type: 3}
       propertyPath: m_LocalRotation.w

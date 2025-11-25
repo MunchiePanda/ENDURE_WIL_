@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using ENDURE;
+using System.Collections.Generic;
 
 public class ItemUIManager : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class ItemUIManager : MonoBehaviour
 
     private InventoryUIManager owner;
 
+    private Dictionary<string, bool> onceOffItems;
+
     private void Awake()
     {
         owner = GetComponentInParent<InventoryUIManager>();
@@ -22,6 +25,15 @@ public class ItemUIManager : MonoBehaviour
         {
             btn_itemAction.onClick.AddListener(OnItemActionClicked);
         }
+
+        //<<< I know this is not the best practice but I try>>>
+
+        onceOffItems = new Dictionary<string, bool>();
+
+        onceOffItems.Add("Pulse Stabilizer", true);
+        onceOffItems.Add("Nano  Vitaliser", true);
+        onceOffItems.Add("Iron Lung", true);
+
     }
 
     private void OnDestroy()
@@ -100,7 +112,13 @@ public class ItemUIManager : MonoBehaviour
             case ItemType.Consumable:
                 if (TryApplyConsumableEffect())
                 {
-                    owner.Inventory.RemoveItem(item, 1);
+                    if (onceOffItems[item.itemName])
+                    {
+                        onceOffItems[item.itemName] = false;    //Change to false
+                        owner.Inventory.RemoveItem(item, 1);
+
+                    }
+
                 }
                 break;
             case ItemType.Armor:

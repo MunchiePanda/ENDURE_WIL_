@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bcd39007e780b724e92aa1a099258cf7, type: 3}
-  m_Name: Quest_Flowers
+  m_Name: SynthsForTheMedBay
   m_EditorClassIdentifier: 
-  questName: Flowers For The Air
-  questDescription: It's been so bleak aound here, I we had something a little nice
-    to look at. Flowers would be nice. I hear the surface was once filled with them.
+  questName: Liue
+  questDescription: The Med Bay is really strugglin right now. An Illness is Passing
+    through. ENDURE says we need more Synths.
   questObjectives:
-  - item: {fileID: 11400000, guid: f8b1e87caf40a304385d475913400efd, type: 2}
+  - item: {fileID: 11400000, guid: 21b7818a320daa448929ff18765dd4ba, type: 2}
     quantity: 6
     currentQuantity: 0
     objectiveComplete: 0
   isComplete: 0
-  rewardItem: {fileID: 11400000, guid: 7ef1d9e80b9b5dc49910c2adceffa5f1, type: 2}
-  rewardQuantity: 3
-  rewardRecipie: {fileID: 0}
+  rewardItem: {fileID: 0}
+  rewardQuantity: 0
+  rewardRecipie: {fileID: 11400000, guid: 15266216653ecf944b8c54cd76222c87, type: 2}
