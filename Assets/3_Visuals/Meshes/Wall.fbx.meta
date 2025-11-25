@@ -1,9 +1,24 @@
 fileFormatVersion: 2
-guid: 294e845a12b027f41a2a262ca8f581ef
+guid: 83aca14f2f728f54f9e7783c4585f3e5
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LightMat
+    second: {fileID: 2100000, guid: b54324d1160c81d48a3bfb7ea6297388, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MetalMat
+    second: {fileID: 2100000, guid: 9e4ca1245d618b94b8c41bf94c9ad42f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WallMat
+    second: {fileID: 2100000, guid: b003d7bc0b3cdcf4c98eeae1a03ae026, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -3,6 +3,8 @@ using UnityEngine.SceneManagement;
 
 public class StartScreenUI : MonoBehaviour
 {
+    private UIManager uiManager;
+
     [Header("Scene Names")]
     [Tooltip("Name of the tutorial scene to load when starting a new game.")]
     public string tutorialSceneName = "TutorialScene";
@@ -19,6 +21,8 @@ public class StartScreenUI : MonoBehaviour
 
     private void Awake()
     {
+        uiManager = FindObjectOfType<UIManager>(true);
+
         if (sceneLoader == null)
         {
             sceneLoader = SceneLoader.Instance;
@@ -36,6 +40,7 @@ public class StartScreenUI : MonoBehaviour
     /// </summary>
     public void StartGame()
     {
+        if (uiManager != null) uiManager.PlayClick();
         if (sceneLoader == null)
         {
             Debug.LogError("StartScreenUI: SceneLoader is missing, cannot start game.");
@@ -69,6 +74,7 @@ public class StartScreenUI : MonoBehaviour
     /// </summary>
     public void ExitGame()
     {
+        if (uiManager != null) uiManager.PlayClick();
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else

@@ -91,7 +91,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c70c36b4c67499a4b925ef4e998a5b5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  quest: {fileID: 11400000, guid: a8988570381807d429ada7d9b066bc0b, type: 2}
+  quest: {fileID: 0}
   panel_QuestgiverUI: {fileID: 2002901677401500757}
   questDescription: {fileID: 811236323436396056}
   btn_AcceptQuest: {fileID: 9018475303516073772}

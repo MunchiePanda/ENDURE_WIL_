@@ -20,11 +20,12 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: ce9972a8d2a7a244b9cd4119f79732d2, type: 2}
     quantity: 3
     currentQuantity: 0
-    objectiveComplete: 1
+    objectiveComplete: 0
   - item: {fileID: 11400000, guid: f3d706324ac671b41a2eb21bdea449bf, type: 2}
     quantity: 1
     currentQuantity: 0
-    objectiveComplete: 1
+    objectiveComplete: 0
+  isComplete: 0
   rewardItem: {fileID: 0}
   rewardQuantity: 0
   rewardRecipie: {fileID: 11400000, guid: 5a39b74cf89dd934d94a6b45832ce186, type: 2}

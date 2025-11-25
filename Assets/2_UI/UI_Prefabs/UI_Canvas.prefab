@@ -435,6 +435,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerController: {fileID: 0}
+  uiAudioSource: {fileID: 0}
+  clickMidHighClip: {fileID: 8300000, guid: 5c3644f87dbe047d8b753e2b718f334f, type: 3}
+  panelOpenClip: {fileID: 8300000, guid: 641573b0effb3499eab92c9e01567a7a, type: 3}
+  panelCloseClip: {fileID: 8300000, guid: 641573b0effb3499eab92c9e01567a7a, type: 3}
+  inventoryOpenClip: {fileID: 8300000, guid: 680981f600562f84280721c9bf25062e, type: 3}
+  inventoryCloseClip: {fileID: 8300000, guid: 680981f600562f84280721c9bf25062e, type: 3}
+  addItemSound: {fileID: 8300000, guid: 72202a84b58c846f4b9f534efc0562a1, type: 3}
+  itemPickupSound: {fileID: 8300000, guid: 72202a84b58c846f4b9f534efc0562a1, type: 3}
+  questCompleteSound: {fileID: 8300000, guid: 9c79974edf60747c0b3adaba49dec9c8, type: 3}
   group_PlayerStats: {fileID: 1267830366598567567}
   playerUIManager: {fileID: 1126092829951880421}
   panel_Inventory: {fileID: 6641105026950764795}
@@ -1773,7 +1782,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 166089988764671429, guid: 46ddbc3ecb5475c48a2619afceeeb0b0, type: 3}
       propertyPath: m_Size
-      value: 0.9898679
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 166089988764671429, guid: 46ddbc3ecb5475c48a2619afceeeb0b0, type: 3}
       propertyPath: m_Value
@@ -1929,7 +1938,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6082069254064486223, guid: 46ddbc3ecb5475c48a2619afceeeb0b0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000016774531
+      value: 0.000027358923
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2063,7 +2072,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4850832302560860493, guid: 56e2f44ccf68033479002f746ed3b493, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000010242978
+      value: -0.00003741819
       objectReference: {fileID: 0}
     - target: {fileID: 4873637525480292567, guid: 56e2f44ccf68033479002f746ed3b493, type: 3}
       propertyPath: m_SizeDelta.x
@@ -2071,7 +2080,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5754337708224746940, guid: 56e2f44ccf68033479002f746ed3b493, type: 3}
       propertyPath: m_Size
-      value: 0.99064714
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5888551560134359928, guid: 56e2f44ccf68033479002f746ed3b493, type: 3}
       propertyPath: m_AnchorMax.x

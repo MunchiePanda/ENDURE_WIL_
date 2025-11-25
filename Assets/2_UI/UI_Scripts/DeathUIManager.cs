@@ -86,6 +86,7 @@ public class DeathUIManager : MonoBehaviour
 
     void OnExitClicked()
     {
+        if (uiManager != null) uiManager.PlayClick();
         // Resume time before scene change
         Time.timeScale = 1f;
 
@@ -101,6 +102,7 @@ public class DeathUIManager : MonoBehaviour
 
     void OnRespawnClicked()
     {
+        if (uiManager != null) uiManager.PlayClick();
         // Resume time before scene change
         Time.timeScale = 1f;
 

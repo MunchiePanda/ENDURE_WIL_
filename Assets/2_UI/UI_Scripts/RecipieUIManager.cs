@@ -18,6 +18,10 @@ public class RecipieUIManager : MonoBehaviour
         // Wire up the craft button to call CraftItem when clicked
         if (btn_Craft != null)
         {
+            btn_Craft.onClick.AddListener(() => {
+                var ui = FindObjectOfType<UIManager>(true);
+                if (ui != null) ui.PlayClick();
+            });
             btn_Craft.onClick.AddListener(CraftItem);
         }
     }
@@ -89,6 +93,10 @@ public class RecipieUIManager : MonoBehaviour
     // Called when the craft button is clicked
     public void CraftItem()
     {
+        // UI click SFX (in case called from elsewhere)
+        var ui = FindObjectOfType<UIManager>(true);
+        if (ui != null) ui.PlayClick();
+
         if (recipe == null || inventory == null)
         {
             Debug.LogWarning("RecipieUIManager CraftItem(): Missing recipe or inventory (D2, D5)");
@@ -100,6 +108,8 @@ public class RecipieUIManager : MonoBehaviour
         
         if (success)
         {
+            // Play add item sound
+            if (ui != null) ui.PlayAddItemSound();
             // Update UI to reflect new inventory state
             UpdateRecipeUI();
         }

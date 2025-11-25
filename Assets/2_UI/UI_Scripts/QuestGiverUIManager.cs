@@ -19,8 +19,16 @@ public class QuestGiverUIManager : MonoBehaviour
             panel_QuestgiverUI.SetActive(false);
         }
         
+        // Clear quest reference on start - quests should be set dynamically via SetQuest()
+        // This prevents stale quest data from inspector assignments
+        if (quest != null)
+        {
+            Debug.Log($"QuestGiverUIManager Start: Clearing pre-assigned quest '{quest.questName}' from inspector. Quest will be set dynamically.");
+        }
+        quest = null;
+        
         if (questDescription != null)
-            questDescription.text = quest != null ? GetQuestDescription() : string.Empty;
+            questDescription.text = string.Empty;
         
         // Setup button listeners with null checks
         SetupButtonListeners();
@@ -62,10 +70,26 @@ public class QuestGiverUIManager : MonoBehaviour
     {
         if (quest == null) return string.Empty;
         string objectivesText = quest.questName + " \n";
+        objectivesText += "\n" + quest.questDescription;
         foreach (QuestObjective objective in quest.questObjectives)
         {
             //objectivesText += "\n " + objective.GetQuestObjectiveText();      //this fucked up the currentQuantity, so we change it and do it manually
             objectivesText += "\n " + objective.item.itemName + " x" + objective.quantity.ToString();
+        }
+
+        if(quest.rewardRecipie != null)
+            objectivesText += "\n Rewards: Crafting Recipe for " + quest.rewardRecipie.CraftedItem.itemName;
+        if(quest.rewardItem != null)
+        {
+            // Prefer readable item name if available
+            if (quest.rewardItem is ItemBase rewardItemBase && rewardItemBase != null)
+            {
+                objectivesText += "\n Rewards: " + rewardItemBase.itemName;
+            }
+            else
+            {
+                objectivesText += "\n Rewards: " + quest.rewardItem.ToString();
+            }
         }
 
         return objectivesText;
@@ -74,23 +98,48 @@ public class QuestGiverUIManager : MonoBehaviour
     public void SetQuest(QuestBase newQuest)
     {
         quest = newQuest;
+        // Always update text immediately when quest is set
         if (questDescription != null)
-            questDescription.text = GetQuestDescription();
+        {
+            questDescription.text = quest != null ? GetQuestDescription() : string.Empty;
+        }
+        Debug.Log($"QuestGiverUIManager: Quest set to '{newQuest?.questName}'");
     }
 
     void OnEnable()
     {
         // Pick up a pending quest (for instantiate-on-open flow)
         QuestBase pending;
-        if (quest == null && QuestgiverNPCBinder.TryConsumePending(out pending))
+        if (QuestgiverNPCBinder.TryConsumePending(out pending))
         {
             SetQuest(pending);
+        }
+        
+        // Always refresh description when the panel is enabled (important for UI panel reuse)
+        RefreshQuestDescription();
+    }
+    
+    public void RefreshQuestDescription()
+    {
+        if (questDescription != null)
+        {
+            if (quest != null)
+            {
+                questDescription.text = GetQuestDescription();
+            }
+            else
+            {
+                questDescription.text = string.Empty;
+            }
         }
     }
 
     void OnAcceptQuestButtonClicked()
     {
         Debug.Log("QuestGiverUIManager: Accept button clicked!");
+        // UI click SFX
+        var ui = FindObjectOfType<UIManager>(true);
+        if (ui != null) ui.PlayClick();
         
         if (quest == null)
         {
@@ -121,13 +170,27 @@ public class QuestGiverUIManager : MonoBehaviour
             return;
         }
 
-        questManager.AddQuest(quest);
+        // Store the quest to add before closing panel
+        QuestBase questToAdd = quest;
+        
+        // Clear quest reference immediately to prevent showing stale data
+        quest = null;
+        
+        // Close panel first
         CloseQuestPanel();
+        
+        // Add quest after panel is closed to ensure QuestOverviewUI updates correctly
+        questManager.AddQuest(questToAdd);
+        
+        Debug.Log($"QuestGiverUIManager: Accepted and added quest '{questToAdd?.questName}'");
     }
 
     void OnRejectQuestButtonClicked()
     {
         Debug.Log("QuestGiverUIManager: Reject button clicked!");
+        // UI click SFX
+        var ui = FindObjectOfType<UIManager>(true);
+        if (ui != null) ui.PlayClick();
         CloseQuestPanel();
     }
 

@@ -7,6 +7,27 @@ public class UIManager : MonoBehaviour
     // Panels/containers on UI_Canvas prefab
     public PlayerController playerController;
 
+    // UI Audio
+    [Header("Audio")]
+    [Tooltip("AudioSource used to play UI click sounds. If not assigned, one will be created.")]
+    public AudioSource uiAudioSource;
+    [Tooltip("Audio clip to play on UI button click (e.g., 'Click_Mid-High').")]
+    public AudioClip clickMidHighClip;
+    [Tooltip("Audio clip to play when a UI panel is opened/enabled.")]
+    public AudioClip panelOpenClip;
+    [Tooltip("Audio clip to play when a UI panel is closed/disabled.")]
+    public AudioClip panelCloseClip;
+    [Tooltip("Audio clip to play when the inventory panel is opened/enabled.")]
+    public AudioClip inventoryOpenClip;
+    [Tooltip("Audio clip to play when the inventory panel is closed/disabled.")]
+    public AudioClip inventoryCloseClip;
+    [Tooltip("Audio clip to play when an item is added (e.g., crafting success).")]
+    public AudioClip addItemSound;
+    [Tooltip("Audio clip to play when an interactable item is picked up.")]
+    public AudioClip itemPickupSound;
+    [Tooltip("Audio clip to play when quest requirements are met (quest ready to complete).")]
+    public AudioClip questCompleteSound;
+
     public RectTransform group_PlayerStats;     // Container holding player stat sliders
     public PlayerUIManager playerUIManager;
     public GameObject panel_Inventory;          // Inventory panel root
@@ -47,6 +68,17 @@ public class UIManager : MonoBehaviour
                 Debug.LogWarning("UIManager Start(): PlayerUIManager not found.");
             }
         }
+
+        // Ensure there is an AudioSource to play UI sounds
+        if (uiAudioSource == null)
+        {
+            uiAudioSource = GetComponent<AudioSource>();
+            if (uiAudioSource == null)
+            {
+                uiAudioSource = gameObject.AddComponent<AudioSource>();
+                uiAudioSource.playOnAwake = false;
+            }
+        }
         EnableInventoryUI(false);
         EnableCraftingUI(false);
 
@@ -69,18 +101,51 @@ public class UIManager : MonoBehaviour
 
     public void EnableInventoryUI(bool enable)
     {
+        if (panel_Inventory != null && panel_Inventory.activeSelf != enable)
+        {
+            if (enable)
+            {
+                PlayInventoryOpen();
+            }
+            else
+            {
+                PlayInventoryClose();
+            }
+        }
         panel_Inventory.SetActive(enable);
         EnableUI(enable);
     }
 
     public void EnableCraftingUI(bool enable)
     {
+        if (panel_CraftingMenu != null && panel_CraftingMenu.activeSelf != enable)
+        {
+            if (enable)
+            {
+                PlayPanelOpen();
+            }
+            else
+            {
+                PlayPanelClose();
+            }
+        }
         panel_CraftingMenu.SetActive(enable);
         EnableUI(enable);
     }
 
     public void EnableQuestOverviewUI(bool enable)
     {
+        if (panel_QuestOverviewUI != null && panel_QuestOverviewUI.activeSelf != enable)
+        {
+            if (enable)
+            {
+                PlayPanelOpen();
+            }
+            else
+            {
+                PlayPanelClose();
+            }
+        }
         if (panel_QuestOverviewUI != null)
         {
             panel_QuestOverviewUI.SetActive(enable);
@@ -183,5 +248,69 @@ public class UIManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    public void PlayClick()
+    {
+        if (uiAudioSource != null && clickMidHighClip != null)
+        {
+            uiAudioSource.PlayOneShot(clickMidHighClip);
+        }
+    }
+
+    public void PlayPanelOpen()
+    {
+        if (uiAudioSource != null && panelOpenClip != null)
+        {
+            uiAudioSource.PlayOneShot(panelOpenClip);
+        }
+    }
+
+    public void PlayPanelClose()
+    {
+        if (uiAudioSource != null && panelCloseClip != null)
+        {
+            uiAudioSource.PlayOneShot(panelCloseClip);
+        }
+    }
+
+    public void PlayAddItemSound()
+    {
+        if (uiAudioSource != null && addItemSound != null)
+        {
+            uiAudioSource.PlayOneShot(addItemSound);
+        }
+    }
+
+    public void PlayInventoryOpen()
+    {
+        if (uiAudioSource != null && inventoryOpenClip != null)
+        {
+            uiAudioSource.PlayOneShot(inventoryOpenClip);
+        }
+    }
+
+    public void PlayInventoryClose()
+    {
+        if (uiAudioSource != null && inventoryCloseClip != null)
+        {
+            uiAudioSource.PlayOneShot(inventoryCloseClip);
+        }
+    }
+
+    public void PlayItemPickupSound()
+    {
+        if (uiAudioSource != null && itemPickupSound != null)
+        {
+            uiAudioSource.PlayOneShot(itemPickupSound);
+        }
+    }
+
+    public void PlayQuestCompleteSound()
+    {
+        if (uiAudioSource != null && questCompleteSound != null)
+        {
+            uiAudioSource.PlayOneShot(questCompleteSound);
+        }
     }
 }
