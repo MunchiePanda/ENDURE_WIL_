@@ -113,9 +113,18 @@ public class InventoryUIManager : MonoBehaviour
     // Add a UI entry when an item is added to the Inventory (listener for Inventory.AddItem)
     public void AddItem(ItemBase item, int quantity)
     {
-        if (itemUIPrefab == null || content == null || item == null)
+        if (item == null)
         {
-            Debug.LogWarning("InventoryUIManager.AddItem(): Missing references or item is null.");
+            Debug.LogWarning("InventoryUIManager.AddItem(): Item is null. Item will not be added to UI.");
+            return;
+        }
+
+        // Silently skip UI update if UI references aren't ready (item is still in inventory)
+        // This can happen during initialization or when UI components aren't fully set up yet
+        if (itemUIPrefab == null || content == null)
+        {
+            // Don't log warning - this is normal during initialization
+            // The item is still added to the inventory, just not shown in UI yet
             return;
         }
 

@@ -17,10 +17,17 @@ public class QuestgiverManager : MonoBehaviour
         // Auto-find UI components if not assigned
         FindUIComponents();
 
+        // Clear quest reference on start - quests should be set dynamically via SetQuest()
+        // This prevents stale quest data from inspector assignments
+        if (quest != null)
+        {
+            Debug.Log($"QuestgiverManager Start: Clearing pre-assigned quest '{quest.questName}' from inspector. Quest will be set dynamically.");
+        }
+        quest = null;
+
 		if (questDescription != null)
 		{
-			// If no quest is assigned yet (NPC will assign later), show empty text
-			questDescription.text = quest != null ? GetQuestDescription() : string.Empty;
+			questDescription.text = string.Empty;
 		}
 		
 		// Setup button listeners with null checks
@@ -29,6 +36,14 @@ public class QuestgiverManager : MonoBehaviour
 
     private void SetupButtonListeners()
     {
+        // Check if QuestGiverUIManager exists - if so, let it handle buttons to prevent duplicate listeners
+        QuestGiverUIManager questGiverUI = FindObjectOfType<QuestGiverUIManager>(true);
+        if (questGiverUI != null)
+        {
+            Debug.Log("QuestgiverManager: QuestGiverUIManager found. Skipping button listener setup to prevent duplicates.");
+            return;
+        }
+
         // Remove existing listeners first to prevent duplicates
         if (btn_AcceptQuest != null)
         {
@@ -149,6 +164,11 @@ public class QuestgiverManager : MonoBehaviour
 		{
 			SetQuest(pending);
 		}
+		// Always refresh description when panel is enabled (important for UI panel reuse)
+		if (questDescription != null && quest != null)
+		{
+			questDescription.text = GetQuestDescription();
+		}
 	}
 
     // Update is called once per frame
@@ -161,13 +181,28 @@ public class QuestgiverManager : MonoBehaviour
     {
 		if (quest == null) return string.Empty;
 		string objectivesText = quest.questName + " \n";
-		if (quest.questObjectives != null)
-		{
+		objectivesText += "\n" + quest.questDescription;
 			foreach (QuestObjective objective in quest.questObjectives)
 			{
-				objectivesText += "\n " + objective.GetQuestObjectiveText();
+			//objectivesText += "\n " + objective.GetQuestObjectiveText();      //this fucked up the currentQuantity, so we change it and do it manually
+			objectivesText += "\n " + objective.item.itemName + " x" + objective.quantity.ToString();
+		}
+
+		if(quest.rewardRecipie != null)
+			objectivesText += "\n Rewards: Crafting Recipe for " + quest.rewardRecipie.CraftedItem.itemName;
+		if(quest.rewardItem != null)
+		{
+			// Prefer readable item name if available
+			if (quest.rewardItem is ItemBase rewardItemBase && rewardItemBase != null)
+			{
+				objectivesText += "\n Rewards: " + rewardItemBase.itemName;
+			}
+			else
+			{
+				objectivesText += "\n Rewards: " + quest.rewardItem.ToString();
 			}
 		}
+
 		return objectivesText;
     }
 
@@ -207,8 +242,19 @@ public class QuestgiverManager : MonoBehaviour
             return;
         }
 
-        questManager.AddQuest(quest);
+        // Store the quest to add before clearing
+        QuestBase questToAdd = quest;
+        
+        // Clear quest reference immediately to prevent showing stale data
+        quest = null;
+        
+        // Close panel first
         CloseQuestPanel();
+        
+        // Add quest after panel is closed to ensure QuestOverviewUI updates correctly
+        questManager.AddQuest(questToAdd);
+        
+        Debug.Log($"QuestgiverManager: Accepted and added quest '{questToAdd?.questName}'");
     }
 
     void OnRejectQuestButtonClicked()
@@ -255,10 +301,24 @@ public class QuestgiverManager : MonoBehaviour
     // Allow per-NPC assignment of a quest at open-time
     public void SetQuest(QuestBase newQuest)
     {
+        if (newQuest == null)
+        {
+            Debug.LogWarning("QuestgiverManager SetQuest: newQuest is null!");
+            quest = null;
+            if (questDescription != null)
+            {
+                questDescription.text = string.Empty;
+            }
+            return;
+        }
+        
         quest = newQuest;
+        Debug.Log($"QuestgiverManager SetQuest: Setting quest to '{newQuest.questName}' (ID: {newQuest.GetInstanceID()})");
+        
+        // Always update text immediately when quest is set
         if (questDescription != null)
         {
-            questDescription.text = GetQuestDescription();
+            questDescription.text = quest != null ? GetQuestDescription() : string.Empty;
         }
     }
 }

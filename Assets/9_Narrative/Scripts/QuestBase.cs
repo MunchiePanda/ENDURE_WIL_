@@ -9,6 +9,11 @@ public class QuestBase : ScriptableObject
     public string questDescription;
     public List<QuestObjective> questObjectives = new List<QuestObjective>();
 
+    [Header("Quest State")]
+    [Tooltip("Whether this quest has been completed. Set to false initially, will be set to true when quest is completed.")]
+    public bool isComplete = false;
+
+    [Header("Quest Rewards")]
     public ItemBase rewardItem;
     public int rewardQuantity;
     public CraftingRecipieBase rewardRecipie;

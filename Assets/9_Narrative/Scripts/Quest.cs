@@ -44,15 +44,32 @@ public class Quest
 
     public bool GrantQuestReward(Inventory inventory)
     {
-        if (!isQuestComplete) return false;
+        if (!isQuestComplete || inventory == null || quest == null) return false;
 
-        JournalEntryManager.Instance.UnlockEntry(); //Unlocks a Journal Entry Upon Completion of a Quest
-
-        foreach (QuestObjective objective in quest.questObjectives)
+        // Unlock journal entry if JournalEntryManager exists
+        if (JournalEntryManager.Instance != null)
         {
-            inventory.RemoveItem(objective.item, objective.quantity);
+            JournalEntryManager.Instance.UnlockEntry();
+        }
+
+        // Remove quest objective items from inventory
+        if (quest.questObjectives != null)
+        {
+            foreach (QuestObjective objective in quest.questObjectives)
+            {
+                if (objective.item != null)
+                {
+                    inventory.RemoveItem(objective.item, objective.quantity);
+                }
+            }
         }
         
-        return inventory.AddItem(quest.rewardItem, quest.rewardQuantity);
+        // Grant reward item
+        if (quest.rewardItem != null && quest.rewardQuantity > 0)
+        {
+            return inventory.AddItem(quest.rewardItem, quest.rewardQuantity);
+        }
+        
+        return true; // Return true even if no reward item (quest completed successfully)
     }
 }

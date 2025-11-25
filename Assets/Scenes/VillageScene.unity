@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: f8d62a77384aa254082cb446dc42eaee, type: 2}
+  m_SkyboxMaterial: {fileID: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -3172,13 +3172,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: npcQuest
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: a8988570381807d429ada7d9b066bc0b, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[1]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 6ebb6e5ac4cb5bb43ad512d18ac75842, type: 2}
+    - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
+      propertyPath: 'npcQuests.Array.data[2]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 9078d6db92541cd47a0d21d313a2dd9c, type: 2}
     - target: {fileID: 2360272505150731290, guid: 8545e479e681d084d9993526ac861754, type: 3}
       propertyPath: m_Name
       value: Questgiver
       objectReference: {fileID: 0}
     - target: {fileID: 4780003528728102714, guid: 8545e479e681d084d9993526ac861754, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 122.05447
+      value: 205.9
       objectReference: {fileID: 0}
     - target: {fileID: 4780003528728102714, guid: 8545e479e681d084d9993526ac861754, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3186,7 +3202,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4780003528728102714, guid: 8545e479e681d084d9993526ac861754, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 32.53869
+      value: 181.4
       objectReference: {fileID: 0}
     - target: {fileID: 4780003528728102714, guid: 8545e479e681d084d9993526ac861754, type: 3}
       propertyPath: m_LocalRotation.w

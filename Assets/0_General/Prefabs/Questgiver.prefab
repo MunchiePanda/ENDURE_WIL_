@@ -120,8 +120,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4780003528728102714}
   - component: {fileID: 6436393175348061201}
-  - component: {fileID: 5852000131796494062}
   - component: {fileID: 192636913601054115}
+  - component: {fileID: 7159496816051284766}
   m_Layer: 6
   m_Name: Questgiver
   m_TagString: Untagged
@@ -166,27 +166,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 1.4504595
   m_Center: {x: 0, y: -0.10845125, z: -3.8315535e-17}
---- !u!114 &5852000131796494062
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2360272505150731290}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 259a43907bb747046abe05f97eedcf00, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uiPrompt: Press E to recieve Quest
-  isInteractable: 1
-  interactableCollider: {fileID: 6436393175348061201}
-  requiredLayerName: InteractableObjects
-  enforceLayerInEditor: 1
-  onInteractAnimation: {fileID: 0}
-  screenToOpen: {fileID: 2002901677401500757, guid: abfa27053fb69eb4289b658cba52eb7d, type: 3}
-  toggle: 1
-  instantiateIfMissing: 1
 --- !u!114 &192636913601054115
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,8 +178,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dce611996c36a7e45b7985fde93d82bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  npcQuests:
+  - {fileID: 11400000, guid: a8988570381807d429ada7d9b066bc0b, type: 2}
+  - {fileID: 11400000, guid: 9078d6db92541cd47a0d21d313a2dd9c, type: 2}
+  - {fileID: 11400000, guid: 6ebb6e5ac4cb5bb43ad512d18ac75842, type: 2}
   npcQuest: {fileID: 11400000, guid: a8988570381807d429ada7d9b066bc0b, type: 2}
   questgiverManager: {fileID: 0}
+  questGiverUiManager: {fileID: 0}
+--- !u!114 &7159496816051284766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2360272505150731290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84c76c8fd514507409c8c02a2d104ce4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiPrompt: Press E to Recieve Quest
+  isInteractable: 1
+  interactableCollider: {fileID: 6436393175348061201}
+  requiredLayerName: InteractableObjects
+  enforceLayerInEditor: 1
+  questgiverBinder: {fileID: 192636913601054115}
+  questUIPanel: {fileID: 2002901677401500757, guid: abfa27053fb69eb4289b658cba52eb7d, type: 3}
+  onInteractAnimation: {fileID: 0}
 --- !u!1 &6496648879811883734
 GameObject:
   m_ObjectHideFlags: 0

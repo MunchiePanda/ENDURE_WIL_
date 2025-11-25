@@ -12,7 +12,13 @@ public class QuestOverviewUIManager : MonoBehaviour
     public QuestManager questManager;
     private UIManager uiManager;
 
+    [Header("Quest Completion Visuals")]
+    [Tooltip("Text color when quest requirements are met (ready to complete).")]
+    public Color completedQuestColor = new Color(0.5f, 0f, 0.5f, 1f); // Purple by default
+
     private bool isEnabled;
+    private Color originalTextColor;
+    private bool hasPlayedCompleteSound = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -49,6 +55,12 @@ public class QuestOverviewUIManager : MonoBehaviour
             btn_toggleQuesOverview.onClick.AddListener(ToggleQuestOverviewUI);  //bind button click
         }
 
+        // Store original text color
+        if (txt_questObjectives != null)
+        {
+            originalTextColor = txt_questObjectives.color;
+        }
+
         EnableQuestOverviewUI(true);
     }
 
@@ -59,7 +71,12 @@ public class QuestOverviewUIManager : MonoBehaviour
         if (questManager.currentQuest == null)
         {
             // Clear UI when no active quest
-            if (txt_questObjectives != null) txt_questObjectives.text = string.Empty;
+            if (txt_questObjectives != null)
+            {
+                txt_questObjectives.text = string.Empty;
+                txt_questObjectives.color = originalTextColor; // Reset color
+            }
+            hasPlayedCompleteSound = false; // Reset sound flag
             return;
         }
 
@@ -99,6 +116,26 @@ public class QuestOverviewUIManager : MonoBehaviour
         }
 
         txt_questObjectives.text = objectivesText;
+
+        // Check if quest is complete and update visuals/sound
+        if (questManager.currentQuest.isQuestComplete)
+        {
+            // Change text color to purple when quest is ready to complete
+            txt_questObjectives.color = completedQuestColor;
+
+            // Play completion sound once when quest becomes complete
+            if (!hasPlayedCompleteSound && uiManager != null)
+            {
+                uiManager.PlayQuestCompleteSound();
+                hasPlayedCompleteSound = true;
+            }
+        }
+        else
+        {
+            // Reset to original color and sound flag when quest is not complete
+            txt_questObjectives.color = originalTextColor;
+            hasPlayedCompleteSound = false;
+        }
     }
 
     public void ToggleQuestOverviewUI()

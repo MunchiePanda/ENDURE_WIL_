@@ -443,6 +443,7 @@ MonoBehaviour:
   inventoryCloseClip: {fileID: 8300000, guid: 680981f600562f84280721c9bf25062e, type: 3}
   addItemSound: {fileID: 8300000, guid: 72202a84b58c846f4b9f534efc0562a1, type: 3}
   itemPickupSound: {fileID: 8300000, guid: 72202a84b58c846f4b9f534efc0562a1, type: 3}
+  questCompleteSound: {fileID: 8300000, guid: 9c79974edf60747c0b3adaba49dec9c8, type: 3}
   group_PlayerStats: {fileID: 1267830366598567567}
   playerUIManager: {fileID: 1126092829951880421}
   panel_Inventory: {fileID: 6641105026950764795}

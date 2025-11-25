@@ -25,6 +25,8 @@ public class UIManager : MonoBehaviour
     public AudioClip addItemSound;
     [Tooltip("Audio clip to play when an interactable item is picked up.")]
     public AudioClip itemPickupSound;
+    [Tooltip("Audio clip to play when quest requirements are met (quest ready to complete).")]
+    public AudioClip questCompleteSound;
 
     public RectTransform group_PlayerStats;     // Container holding player stat sliders
     public PlayerUIManager playerUIManager;
@@ -301,6 +303,14 @@ public class UIManager : MonoBehaviour
         if (uiAudioSource != null && itemPickupSound != null)
         {
             uiAudioSource.PlayOneShot(itemPickupSound);
+        }
+    }
+
+    public void PlayQuestCompleteSound()
+    {
+        if (uiAudioSource != null && questCompleteSound != null)
+        {
+            uiAudioSource.PlayOneShot(questCompleteSound);
         }
     }
 }
