@@ -12,8 +12,10 @@ namespace ENDURE.Tutorial
         [Header("References")]
         public RoomMapManager roomManager;
         public Transform player;
+        public TutorialManager tutorialManager;
 
         [Header("Prefabs")]
+        public GameObject tutorialGiverPrefab;
         public List<GameObject> enemyPrefabs = new List<GameObject>();
         public List<GameObject> itemPrefabs = new List<GameObject>();
         public List<GameObject> craftingPrefabs = new List<GameObject>();
@@ -51,6 +53,11 @@ namespace ENDURE.Tutorial
                 }
             }
 
+            if (tutorialManager == null)
+            {
+                tutorialManager = FindObjectOfType<TutorialManager>();
+            }
+
             if (roomManager != null)
             {
                 float tileSize = Mathf.Max(1, RoomMapManager.TileSize);
@@ -67,10 +74,37 @@ namespace ENDURE.Tutorial
 
         private void Start()
         {
+            SpawnTutorialGiverNearPlayer();
+
             // Always ensure at least one of each category is spawned when prefabs exist.
             SpawnPrefabs(itemPrefabs, Mathf.Max(itemCount, 1), "Item");
             SpawnPrefabs(craftingPrefabs, Mathf.Max(craftingCount, 1), "Crafting");
             SpawnPrefabs(enemyPrefabs, Mathf.Max(enemyCount, 1), "Enemy");
+        }
+
+        private void SpawnTutorialGiverNearPlayer()
+        {
+            if (tutorialGiverPrefab == null || player == null) return;
+
+            Vector3 playerPos = player.position;
+            Vector3 spawnOffset = player.forward * 3f + player.right * 1.5f;
+            Vector3 spawnPoint = playerPos + spawnOffset;
+
+            Ray ray = new Ray(spawnPoint + Vector3.up * groundRayHeight, Vector3.down);
+            if (Physics.Raycast(ray, out RaycastHit hit, groundRayHeight * 2f, groundMask, QueryTriggerInteraction.Ignore))
+            {
+                spawnPoint = hit.point;
+            }
+
+            var giver = Instantiate(tutorialGiverPrefab, spawnPoint, Quaternion.LookRotation(player.forward), transform);
+
+            var interactable = giver.GetComponentInChildren<TutorialGiverInteractable>();
+            var manager = tutorialManager != null ? tutorialManager : FindObjectOfType<TutorialManager>();
+
+            if (interactable != null && manager != null)
+            {
+                interactable.tutorialManager = manager;
+            }
         }
 
         private void SpawnPrefabs(IList<GameObject> list, int count, string label)

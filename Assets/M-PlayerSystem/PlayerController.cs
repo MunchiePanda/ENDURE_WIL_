@@ -291,9 +291,13 @@ namespace ENDURE
             {
                 case PlayerState.Playing:
                     canMove = true;
+                    Cursor.lockState = CursorLockMode.Locked;
+                    Cursor.visible = false;
                     break;
                 case PlayerState.UI:
                     canMove = false;
+                    Cursor.lockState = CursorLockMode.None;
+                    Cursor.visible = true;
                     break;
             }
         }

@@ -35,6 +35,12 @@ namespace ENDURE.Tutorial
         [Tooltip("Optional ID used for CustomEvent / Trigger steps.")]
         public string targetId;
 
+        [Tooltip("Optional sprite shown in the dialogue panel for this step.")]
+        public Sprite displaySprite;
+
+        [Tooltip("If false, the Continue button is enabled immediately and no condition is checked.")]
+        public bool requiresCondition = true;
+
         [Tooltip("Invoked when the step becomes active (use to enable props, doors, etc.).")]
         public UnityEvent onStepStart;
     }
@@ -48,6 +54,12 @@ namespace ENDURE.Tutorial
         [Header("UI")]
         [Tooltip("Text component that shows the current tutorial message.")]
         public TMPro.TextMeshProUGUI promptText;
+        [Tooltip("Optional dialogue panel UI that shows images and a continue button.")]
+        public TutorialDialoguePanel dialoguePanel;
+        [Tooltip("Reference to the player controller so we can toggle cursor/input when the dialogue is open.")]
+        public ENDURE.PlayerController playerController;
+        [Tooltip("Persistent objective text shown while the player works on a step. If null, promptText is used.")]
+        public TMPro.TextMeshProUGUI objectiveText;
 
         [Header("Steps")]
         public List<TutorialStep> steps = new List<TutorialStep>();
@@ -69,22 +81,33 @@ namespace ENDURE.Tutorial
         private int currentStepIndex = -1;
         private TutorialStep activeStep;
         private bool tutorialRunning;
+        private bool stepReadyToContinue;
+        private bool dialogueOpen;
 
         // Tracking for move step
         private readonly HashSet<KeyCode> moveKeysPressed = new HashSet<KeyCode>();
 
         private void Awake()
         {
+            if (playerController == null)
+            {
+                playerController = FindObjectOfType<ENDURE.PlayerController>();
+            }
+
+            dialoguePanel?.Hide();
+
             if (autoStartOnAwake)
             {
                 StartTutorial();
             }
         }
-
         public void StartTutorial()
         {
             currentStepIndex = -1;
             moveKeysPressed.Clear();
+            stepReadyToContinue = false;
+            dialogueOpen = false;
+            CloseDialogueInternal();
             AdvanceStep();
         }
 
@@ -100,16 +123,17 @@ namespace ENDURE.Tutorial
             tutorialRunning = false;
             activeStep = null;
             currentStepIndex = -1;
-            if (promptText != null)
-            {
-                promptText.text = string.Empty;
-            }
+            stepReadyToContinue = false;
+            dialogueOpen = false;
+            SetObjectiveText(string.Empty);
+            CloseDialogueInternal();
         }
 
         private void AdvanceStep()
         {
             currentStepIndex++;
             moveKeysPressed.Clear();
+            stepReadyToContinue = false;
 
             if (currentStepIndex >= steps.Count)
             {
@@ -119,10 +143,10 @@ namespace ENDURE.Tutorial
 
             activeStep = steps[currentStepIndex];
             tutorialRunning = true;
-            if (promptText != null)
-            {
-                promptText.text = activeStep.message;
-            }
+            CloseDialogueInternal();
+            SetObjectiveText(activeStep.message);
+            stepReadyToContinue = !activeStep.requiresCondition;
+            UpdateHintVisibility();
 
             activeStep.onStepStart?.Invoke();
         }
@@ -177,6 +201,11 @@ namespace ENDURE.Tutorial
                     // Wait for NotifyActionCompleted to be called externally.
                     break;
             }
+
+            if (dialogueOpen && stepReadyToContinue && Input.GetKeyDown(KeyCode.Return))
+            {
+                ContinueCurrentStep();
+            }
         }
 
         private void MonitorMovementInput()
@@ -209,31 +238,36 @@ namespace ENDURE.Tutorial
 
         private void CompleteCurrentStep()
         {
-            tutorialRunning = false;
-            AdvanceStep();
+            if (!tutorialRunning || activeStep == null)
+            {
+                return;
+            }
+
+            stepReadyToContinue = true;
+            SetObjectiveText(string.Empty);
+            UpdateHintVisibility();
+
+            if (!activeStep.requiresCondition)
+            {
+                // Informational steps that already allowed continue shouldn't auto-advance.
+                return;
+            }
+
+            // Wait for player to press continue button.
         }
 
         private void HandleTutorialComplete()
         {
             tutorialRunning = false;
             activeStep = null;
-            if (promptText != null)
-            {
-                promptText.text = string.Empty;
-            }
+            SetObjectiveText(string.Empty);
+            CloseDialogueInternal();
 
             onTutorialCompleted?.Invoke();
 
             if (loadNextSceneOnComplete && !string.IsNullOrEmpty(nextSceneName))
             {
-                try
-                {
-                    SceneManager.LoadScene(nextSceneName);
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError($"TutorialManager: Failed to load scene '{nextSceneName}'. Exception: {ex.Message}");
-                }
+                TryLoadNextScene();
             }
         }
 
@@ -259,6 +293,116 @@ namespace ENDURE.Tutorial
             }
         }
 
+        public void ContinueCurrentStep()
+        {
+            if (!tutorialRunning || activeStep == null)
+            {
+                return;
+            }
+
+            if (!stepReadyToContinue)
+            {
+                return;
+            }
+
+            tutorialRunning = false;
+            CloseDialogueInternal();
+            AdvanceStep();
+        }
+
+        public void CloseDialoguePanel()
+        {
+            CloseDialogueInternal();
+        }
+
+        private void TryLoadNextScene()
+        {
+            SceneLoader loader = SceneLoader.Instance;
+            if (loader == null)
+            {
+                loader = FindObjectOfType<SceneLoader>(true);
+            }
+
+            if (loader != null)
+            {
+                loader.LoadScene(nextSceneName);
+                return;
+            }
+
+            try
+            {
+                SceneManager.LoadScene(nextSceneName);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"TutorialManager: Failed to load scene '{nextSceneName}'. Exception: {ex.Message}");
+            }
+        }
+        
+        public void OnDialogueInteract()
+        {
+            if (!tutorialRunning || activeStep == null || dialoguePanel == null)
+            {
+                return;
+            }
+
+            if (dialogueOpen)
+            {
+                CloseDialogueInternal();
+            }
+            else
+            {
+                OpenDialogueInternal();
+            }
+        }
+
+        private void OpenDialogueInternal()
+        {
+            if (dialoguePanel == null || activeStep == null)
+            {
+                return;
+            }
+
+            dialogueOpen = true;
+            dialoguePanel.ShowStep(activeStep.message, activeStep.displaySprite);
+            UpdateHintVisibility();
+            playerController?.SetState(ENDURE.PlayerController.PlayerState.UI);
+        }
+
+        private void CloseDialogueInternal()
+        {
+            bool wasOpen = dialogueOpen;
+            dialogueOpen = false;
+            dialoguePanel?.Hide();
+            playerController?.SetState(ENDURE.PlayerController.PlayerState.Playing);
+
+            if (wasOpen)
+            {
+                UpdateHintVisibility();
+            }
+        }
+
+        private void SetObjectiveText(string text)
+        {
+            string content = text ?? string.Empty;
+
+            if (objectiveText != null)
+            {
+                objectiveText.text = content;
+            }
+
+            if (promptText != null)
+            {
+                promptText.text = content;
+            }
+        }
+
+        private void UpdateHintVisibility()
+        {
+            dialoguePanel?.SetContinueHintVisible(dialogueOpen && stepReadyToContinue);
+        }
+        
+
 #if UNITY_EDITOR
         private void OnValidate()
         {
@@ -283,4 +427,5 @@ namespace ENDURE.Tutorial
 #endif
     }
 }
+
 

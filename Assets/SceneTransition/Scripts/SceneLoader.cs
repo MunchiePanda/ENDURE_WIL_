@@ -11,15 +11,16 @@ public class SceneLoader : MonoBehaviour
     public static SceneLoader Instance { get; private set; }
 
     [Header("Loading Screen")]
-    [Tooltip("Prefab containing the loading screen UI (should have a Slider and TextMeshProUGUI)")]
-    public GameObject loadingScreenPrefab;
-    
-    private GameObject loadingScreenInstance;
-    private UnityEngine.UI.Slider progressBar;
-    private TMPro.TextMeshProUGUI loadingText;
-    private bool isLoading = false;
+    [Tooltip("Reference to the in-scene LoadingScreenUI controller (auto-found if not set).")]
+    public LoadingScreenUI loadingScreenUI;
 
-    private void Awake()
+    [TextArea]
+    [Tooltip("Lore or helper text to display while loading when no dynamic text is provided.")]
+    public string defaultLoreText = "Traversing to the next area...";
+
+    private bool isLoading;
+
+    void Awake()
     {
         if (Instance == null)
         {
@@ -32,17 +33,9 @@ public class SceneLoader : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Load a scene asynchronously with a loading screen by scene name
-    /// </summary>
     public void LoadScene(string sceneName)
     {
-        if (isLoading)
-        {
-            Debug.LogWarning("SceneLoader: Already loading a scene. Ignoring request.");
-            return;
-        }
-
+        if (!CanStartLoading()) return;
         if (string.IsNullOrEmpty(sceneName))
         {
             Debug.LogError("SceneLoader: Scene name is null or empty!");
@@ -52,17 +45,9 @@ public class SceneLoader : MonoBehaviour
         StartCoroutine(LoadSceneAsync(sceneName));
     }
 
-    /// <summary>
-    /// Load a scene asynchronously with a loading screen by build index
-    /// </summary>
     public void LoadScene(int sceneBuildIndex)
     {
-        if (isLoading)
-        {
-            Debug.LogWarning("SceneLoader: Already loading a scene. Ignoring request.");
-            return;
-        }
-
+        if (!CanStartLoading()) return;
         if (sceneBuildIndex < 0 || sceneBuildIndex >= SceneManager.sceneCountInBuildSettings)
         {
             Debug.LogError($"SceneLoader: Invalid scene build index: {sceneBuildIndex}");
@@ -72,68 +57,55 @@ public class SceneLoader : MonoBehaviour
         StartCoroutine(LoadSceneAsync(sceneBuildIndex));
     }
 
-    private IEnumerator LoadSceneAsync(string sceneName)
+    bool CanStartLoading()
+    {
+        if (isLoading)
+        {
+            Debug.LogWarning("SceneLoader: Already loading a scene. Ignoring request.");
+            return false;
+        }
+        return true;
+    }
+
+    IEnumerator LoadSceneAsync(string sceneName)
     {
         isLoading = true;
         ShowLoadingScreen();
-
-        // Wait a frame to ensure loading screen is visible
         yield return null;
 
-        // Start loading the scene
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
         asyncLoad.allowSceneActivation = false;
 
-        // Update progress while loading
-        while (!asyncLoad.isDone)
-        {
-            // Unity's progress goes from 0-0.9, then jumps to 1 when ready
-            float progress = Mathf.Clamp01(asyncLoad.progress / 0.9f);
-            
-            UpdateLoadingProgress(progress);
-
-            // When loading is complete (0.9), allow scene activation
-            if (asyncLoad.progress >= 0.9f)
-            {
-                // Small delay to show 100% before switching
-                yield return new WaitForSeconds(0.1f);
-                asyncLoad.allowSceneActivation = true;
-            }
-
-            yield return null;
-        }
-
-        // Wait one more frame to ensure scene is fully loaded
-        yield return null;
+        yield return RunLoadLoop(asyncLoad);
 
         HideLoadingScreen();
         isLoading = false;
     }
 
-    private IEnumerator LoadSceneAsync(int sceneBuildIndex)
+    IEnumerator LoadSceneAsync(int sceneBuildIndex)
     {
         isLoading = true;
         ShowLoadingScreen();
-
-        // Wait a frame to ensure loading screen is visible
         yield return null;
 
-        // Start loading the scene
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneBuildIndex);
         asyncLoad.allowSceneActivation = false;
 
-        // Update progress while loading
+        yield return RunLoadLoop(asyncLoad);
+
+        HideLoadingScreen();
+        isLoading = false;
+    }
+
+    IEnumerator RunLoadLoop(AsyncOperation asyncLoad)
+    {
         while (!asyncLoad.isDone)
         {
-            // Unity's progress goes from 0-0.9, then jumps to 1 when ready
             float progress = Mathf.Clamp01(asyncLoad.progress / 0.9f);
-            
             UpdateLoadingProgress(progress);
 
-            // When loading is complete (0.9), allow scene activation
             if (asyncLoad.progress >= 0.9f)
             {
-                // Small delay to show 100% before switching
                 yield return new WaitForSeconds(0.1f);
                 asyncLoad.allowSceneActivation = true;
             }
@@ -141,85 +113,50 @@ public class SceneLoader : MonoBehaviour
             yield return null;
         }
 
-        // Wait one more frame to ensure scene is fully loaded
         yield return null;
-
-        HideLoadingScreen();
-        isLoading = false;
     }
 
-    private void ShowLoadingScreen()
+    void ShowLoadingScreen()
     {
-        if (loadingScreenPrefab == null)
+        var ui = EnsureLoadingScreenUI();
+        if (ui == null) return;
+        ui.Show();
+        if (!string.IsNullOrWhiteSpace(defaultLoreText))
         {
-            Debug.LogWarning("SceneLoader: No loading screen prefab assigned. Loading without visual feedback.");
-            return;
-        }
-
-        if (loadingScreenInstance != null)
-        {
-            Destroy(loadingScreenInstance);
-        }
-
-        // Find or create a canvas for the loading screen
-        Canvas canvas = FindObjectOfType<Canvas>();
-        if (canvas == null)
-        {
-            GameObject canvasObj = new GameObject("LoadingScreenCanvas");
-            canvas = canvasObj.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 9999; // Ensure it's on top
-            canvasObj.AddComponent<UnityEngine.UI.CanvasScaler>();
-            canvasObj.AddComponent<UnityEngine.UI.GraphicRaycaster>();
-        }
-
-        loadingScreenInstance = Instantiate(loadingScreenPrefab, canvas.transform);
-        loadingScreenInstance.name = "LoadingScreen";
-
-        // Find progress bar and text components
-        progressBar = loadingScreenInstance.GetComponentInChildren<UnityEngine.UI.Slider>();
-        loadingText = loadingScreenInstance.GetComponentInChildren<TMPro.TextMeshProUGUI>();
-
-        if (progressBar != null)
-        {
-            progressBar.value = 0f;
-        }
-        if (loadingText != null)
-        {
-            loadingText.text = "Loading...";
+            ui.SetLore(defaultLoreText);
         }
     }
 
-    private void UpdateLoadingProgress(float progress)
+    void UpdateLoadingProgress(float progress)
     {
-        if (progressBar != null)
-        {
-            progressBar.value = progress;
-        }
-        if (loadingText != null)
-        {
-            loadingText.text = $"Loading... {Mathf.RoundToInt(progress * 100)}%";
-        }
+        loadingScreenUI?.UpdateProgress(progress);
     }
 
-    private void HideLoadingScreen()
+    void HideLoadingScreen()
     {
-        if (loadingScreenInstance != null)
-        {
-            Destroy(loadingScreenInstance);
-            loadingScreenInstance = null;
-            progressBar = null;
-            loadingText = null;
-        }
+        loadingScreenUI?.Hide();
     }
 
-    /// <summary>
-    /// Check if a scene is currently being loaded
-    /// </summary>
+    LoadingScreenUI EnsureLoadingScreenUI()
+    {
+        if (loadingScreenUI != null) return loadingScreenUI;
+
+#if UNITY_2023_1_OR_NEWER
+        loadingScreenUI = Object.FindFirstObjectByType<LoadingScreenUI>(FindObjectsInactive.Include);
+#else
+        loadingScreenUI = FindObjectOfType<LoadingScreenUI>(true);
+#endif
+
+        if (loadingScreenUI == null)
+        {
+            Debug.LogWarning("SceneLoader: No LoadingScreenUI found in the scene. Loading will proceed without visual feedback.");
+        }
+
+        return loadingScreenUI;
+    }
+
     public bool IsLoading()
     {
         return isLoading;
     }
 }
-
-

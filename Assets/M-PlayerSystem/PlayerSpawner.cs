@@ -61,7 +61,7 @@ namespace ENDURE
             // Spawn new player if prefab is assigned
             if (playerPrefab != null)
             {
-                GameObject player = Instantiate(playerPrefab, spawnPosition, Quaternion.Euler(spawnRotation));
+                GameObject player = Instantiate(playerPrefab, spawnPosition, Quaternion.Euler(spawnRotation)); 
                 player.name = "Player";
                 Debug.Log($"PlayerSpawner: Spawned player at position {spawnPosition}");
             }
