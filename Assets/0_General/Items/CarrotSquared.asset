@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemID: -472987074
   itemName: CarrotSquared
-  itemImage: {fileID: 0}
+  itemImage: {fileID: -1093893010, guid: f3309ca12d5ff5444b534574b2ec5b8a, type: 3}
   itemType: 0
   statEffects:
   - target: 3

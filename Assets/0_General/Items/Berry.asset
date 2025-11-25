@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemID: 479180390
   itemName: Berry
-  itemImage: {fileID: 0}
+  itemImage: {fileID: 1826099800, guid: f3309ca12d5ff5444b534574b2ec5b8a, type: 3}
   itemType: 2
   statEffects:
   - target: 3
