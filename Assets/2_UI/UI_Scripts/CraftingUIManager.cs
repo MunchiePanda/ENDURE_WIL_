@@ -22,6 +22,7 @@ public class CraftingUIManager : MonoBehaviour
         // Wire up the close button to hide the crafting panel
         if (btn_CloseCrafting != null)
         {
+            btn_CloseCrafting.onClick.AddListener(() => { if (uiManager != null) uiManager.PlayClick(); });
             btn_CloseCrafting.onClick.AddListener(CloseCrafting);
         }
         //Get Inventory from the attached player
@@ -146,6 +147,7 @@ public class CraftingUIManager : MonoBehaviour
     // Close the crafting panel when close button is clicked (mirrors InventoryUIManager)
     public void CloseCrafting()
     {
+        if (uiManager != null) uiManager.PlayClick();
         uiManager.EnableCraftingUI(false);
         Debug.Log("CraftingUIManager CloseCrafting(): Crafting panel closed (D2, D5)");
     }
@@ -153,6 +155,7 @@ public class CraftingUIManager : MonoBehaviour
     // Open the crafting panel (optional helper for external calls)
     public void OpenCrafting()
     {
+        if (uiManager != null) uiManager.PlayClick();
         uiManager.EnableCraftingUI(true);
         Debug.Log("CraftingUIManager OpenCrafting(): Crafting panel opened (D2, D5)");
     }

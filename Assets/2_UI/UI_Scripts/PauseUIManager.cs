@@ -125,6 +125,7 @@ public class PauseUIManager : MonoBehaviour
 
     void OnExitClicked()
     {
+        if (uiManager != null) uiManager.PlayClick();
         // Resume time before scene change
         Time.timeScale = 1f;
 
@@ -140,6 +141,7 @@ public class PauseUIManager : MonoBehaviour
 
     void OnResumeClicked()
     {
+        if (uiManager != null) uiManager.PlayClick();
         Resume();
     }
 

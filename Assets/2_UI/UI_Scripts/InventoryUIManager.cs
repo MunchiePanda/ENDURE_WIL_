@@ -171,12 +171,14 @@ public class InventoryUIManager : MonoBehaviour
     // Close the inventory panel when close button is clicked
     public void CloseInventory()
     {
+        if (uiManager != null) uiManager.PlayClick();
         uiManager.EnableInventoryUI(false);
     }
 
     // Open the inventory panel (useful for external calls)
     public void OpenInventory()
     {
+        if (uiManager != null) uiManager.PlayClick();
         uiManager.EnableInventoryUI(true);
     }
 

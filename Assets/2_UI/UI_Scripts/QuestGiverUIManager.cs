@@ -113,6 +113,9 @@ public class QuestGiverUIManager : MonoBehaviour
     void OnAcceptQuestButtonClicked()
     {
         Debug.Log("QuestGiverUIManager: Accept button clicked!");
+        // UI click SFX
+        var ui = FindObjectOfType<UIManager>(true);
+        if (ui != null) ui.PlayClick();
         
         if (quest == null)
         {
@@ -150,6 +153,9 @@ public class QuestGiverUIManager : MonoBehaviour
     void OnRejectQuestButtonClicked()
     {
         Debug.Log("QuestGiverUIManager: Reject button clicked!");
+        // UI click SFX
+        var ui = FindObjectOfType<UIManager>(true);
+        if (ui != null) ui.PlayClick();
         CloseQuestPanel();
     }
 

@@ -78,6 +78,17 @@ public class ItemUIManager : MonoBehaviour
 
     private void OnItemActionClicked()
     {
+        // UI click SFX
+        if (owner != null && owner.uiManager != null)
+        {
+            owner.uiManager.PlayClick();
+        }
+        else
+        {
+            var ui = Object.FindFirstObjectByType<UIManager>();
+            if (ui != null) ui.PlayClick();
+        }
+
         if (item == null || owner == null || owner.Inventory == null)
         {
             Debug.LogWarning("ItemUIManager: Cannot perform action because dependencies are missing.");

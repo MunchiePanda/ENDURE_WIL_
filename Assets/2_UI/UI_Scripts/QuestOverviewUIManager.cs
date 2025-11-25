@@ -10,12 +10,20 @@ public class QuestOverviewUIManager : MonoBehaviour
     public Button btn_toggleQuesOverview;
 
     public QuestManager questManager;
+    private UIManager uiManager;
 
     private bool isEnabled;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        // Resolve UIManager reference
+        uiManager = GetComponentInParent<UIManager>();
+        if (uiManager == null)
+        {
+            uiManager = FindObjectOfType<UIManager>(true);
+        }
+
         // Try to find QuestManager using multiple methods
         if (questManager == null)
         {
@@ -37,6 +45,7 @@ public class QuestOverviewUIManager : MonoBehaviour
 
         if (btn_toggleQuesOverview != null)
         {
+            btn_toggleQuesOverview.onClick.AddListener(() => { if (uiManager != null) uiManager.PlayClick(); });
             btn_toggleQuesOverview.onClick.AddListener(ToggleQuestOverviewUI);  //bind button click
         }
 
@@ -61,6 +70,17 @@ public class QuestOverviewUIManager : MonoBehaviour
 
     public void EnableQuestOverviewUI(bool enable)
     {
+        if (panel_questOverview != null && panel_questOverview.activeSelf != enable)
+        {
+            if (enable)
+            {
+                if (uiManager != null) uiManager.PlayPanelOpen();
+            }
+            else
+            {
+                if (uiManager != null) uiManager.PlayPanelClose();
+            }
+        }
         isEnabled = enable;
         panel_questOverview.SetActive(enable);
 
@@ -83,6 +103,7 @@ public class QuestOverviewUIManager : MonoBehaviour
 
     public void ToggleQuestOverviewUI()
     {
+        if (uiManager != null) uiManager.PlayClick();
         EnableQuestOverviewUI(!isEnabled);  //inverse enabaled
     }
 }
