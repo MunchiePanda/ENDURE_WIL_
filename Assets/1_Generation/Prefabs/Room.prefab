@@ -73,6 +73,9 @@ MonoBehaviour:
   - {fileID: 2675720976549494293, guid: fd9b3ab8ee47b474bbd5d8af4fbccae3, type: 3}
   - {fileID: 2675720976549494293, guid: d996a10221c56ff4bb3409c2572a3435, type: 3}
   - {fileID: 2675720976549494293, guid: ac81db9371260a544898d49e228720c9, type: 3}
+  - {fileID: 4198135998521864123, guid: 352fdb0e04f5e664ab8cbd22ed7d9ee7, type: 3}
+  - {fileID: 523407403917836056, guid: 47e4f36fb09cf0b42a71c5fa4414b1a3, type: 3}
+  - {fileID: 5978997940509336378, guid: 056f2f384ac126e499a065487cccd19c, type: 3}
   minItemsPerRoom: 5
   maxItemsPerRoom: 15
   plantPropPrefabs:
