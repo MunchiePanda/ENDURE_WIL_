@@ -15,6 +15,8 @@ MonoBehaviour:
   itemID: -1554574603
   itemName: Nano  Vitaliser
   itemImage: {fileID: 965354357, guid: f3309ca12d5ff5444b534574b2ec5b8a, type: 3}
-  itemType: 1
-  statEffects: []
-  actionLabel: Use
+  itemType: 2
+  statEffects:
+  - target: 5
+    value: 15
+  actionLabel: Implant
