@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemID: 190225431
   itemName: Salad
-  itemImage: {fileID: 0}
+  itemImage: {fileID: 1501421308, guid: f3309ca12d5ff5444b534574b2ec5b8a, type: 3}
   itemType: 2
   statEffects:
   - target: 3
