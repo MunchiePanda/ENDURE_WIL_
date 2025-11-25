@@ -11,6 +11,9 @@ public class QuestManager : MonoBehaviour
 
     public Inventory inventory;
 
+    // Persist quest data between scene loads without forcing the entire player object to stay alive
+    private static Quest persistedQuestState;
+
     void Awake()
     {
         if (Instance == null)
@@ -24,6 +27,14 @@ public class QuestManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
+        // Rehydrate quest state if one was active before this instance was rebuilt
+        if (persistedQuestState != null && currentQuest == null)
+        {
+            currentQuest = persistedQuestState;
+        }
+
+        ResolveInventoryReference();
     }
 
     public static bool TryGet(out QuestManager questManager)
@@ -38,12 +49,24 @@ public class QuestManager : MonoBehaviour
         return questManager != null;
     }
 
+    void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            persistedQuestState = currentQuest;
+            Instance = null;
+        }
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        if (inventory == null) inventory = GetComponent<Inventory>();
-        if (inventory == null) inventory = GetComponentInParent<Inventory>();
-        if (inventory == null) Debug.LogWarning("QuestManager Start(): inventory is null.");
+        ResolveInventoryReference();
+
+        if (currentQuest != null && inventory != null)
+        {
+            currentQuest.CheckQuestCompletion(inventory);
+        }
     }
 
     // Update is called once per frame
@@ -62,6 +85,7 @@ public class QuestManager : MonoBehaviour
 
         currentQuest = new Quest(questBase);
         currentQuest.CheckQuestCompletion(inventory);
+        persistedQuestState = currentQuest;
 
         Debug.Log($"QuestManager: Added quest '{questBase.questName}'");
 
@@ -73,9 +97,18 @@ public class QuestManager : MonoBehaviour
 
     public void UpdateCurrentQuest()
     {
+        if (currentQuest == null)
+        {
+            return;
+        }
+
         if (currentQuest.CheckQuestCompletion(inventory))   //CheckQuestCompletion also runs the updates
         {
             CompleteQuest();
+        }
+        else
+        {
+            persistedQuestState = currentQuest;
         }
     }
 
@@ -87,5 +120,20 @@ public class QuestManager : MonoBehaviour
         //Add UI logic to click accept reward
 
         currentQuest = null;
+        persistedQuestState = null;
+    }
+
+    void ResolveInventoryReference()
+    {
+        if (inventory != null) return;
+
+        inventory = GetComponent<Inventory>();
+        if (inventory == null) inventory = GetComponentInParent<Inventory>();
+        if (inventory == null) inventory = FindObjectOfType<Inventory>();
+
+        if (inventory == null)
+        {
+            Debug.LogWarning("QuestManager ResolveInventoryReference(): inventory is null. Quest progress cannot update until an inventory is found.");
+        }
     }
 }

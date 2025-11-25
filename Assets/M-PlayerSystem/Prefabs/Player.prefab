@@ -149,7 +149,7 @@ MonoBehaviour:
     isHidden: 0
   systemExposureEnabled: 1
   exposureDurationSeconds: 180
-  exposureDamagePerSecond: 5
+  exposureDamagePerSecond: 1
   resetExposureOnStart: 1
   exposureDrainScenes:
   - DungeonScene
