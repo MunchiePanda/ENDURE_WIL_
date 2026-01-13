@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Grum_2
   m_EditorClassIdentifier: 
   questName: Grum
-  questDescription: Raooul's having another struggle. And it's not looking Good.
-    May need something new.
+  questDescription: Raoul's having another struggle. And it's not looking Good. May
+    need something new.
   questObjectives:
   - item: {fileID: 11400000, guid: 21b7818a320daa448929ff18765dd4ba, type: 2}
     quantity: 0

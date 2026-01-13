@@ -3178,7 +3178,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
       propertyPath: npcQuests.Array.size
-      value: 28
+      value: 27
       objectReference: {fileID: 0}
     - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
       propertyPath: 'npcQuests.Array.data[0]'
@@ -3275,23 +3275,23 @@ PrefabInstance:
     - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
       propertyPath: 'npcQuests.Array.data[23]'
       value: 
-      objectReference: {fileID: 11400000, guid: 16cb8067a7432a54f8f2d4d59dd9b52f, type: 2}
+      objectReference: {fileID: 11400000, guid: df31d4d4bfa231e45b2389090cd81443, type: 2}
     - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
       propertyPath: 'npcQuests.Array.data[24]'
       value: 
-      objectReference: {fileID: 11400000, guid: df31d4d4bfa231e45b2389090cd81443, type: 2}
+      objectReference: {fileID: 11400000, guid: 9556f0243d6333049bf548c098841b20, type: 2}
     - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
       propertyPath: 'npcQuests.Array.data[25]'
       value: 
-      objectReference: {fileID: 11400000, guid: 9556f0243d6333049bf548c098841b20, type: 2}
+      objectReference: {fileID: 11400000, guid: dc52ba95f658fbb40aae04869b697beb, type: 2}
     - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
       propertyPath: 'npcQuests.Array.data[26]'
       value: 
-      objectReference: {fileID: 11400000, guid: dc52ba95f658fbb40aae04869b697beb, type: 2}
+      objectReference: {fileID: 11400000, guid: c66bb8f191f5037489413db55c424247, type: 2}
     - target: {fileID: 192636913601054115, guid: 8545e479e681d084d9993526ac861754, type: 3}
       propertyPath: 'npcQuests.Array.data[27]'
       value: 
-      objectReference: {fileID: 11400000, guid: c66bb8f191f5037489413db55c424247, type: 2}
+      objectReference: {fileID: 11400000, guid: 16cb8067a7432a54f8f2d4d59dd9b52f, type: 2}
     - target: {fileID: 2360272505150731290, guid: 8545e479e681d084d9993526ac861754, type: 3}
       propertyPath: m_Name
       value: Questgiver
